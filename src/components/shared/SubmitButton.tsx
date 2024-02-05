@@ -1,18 +1,20 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
-import { Button } from "../ui/button";
+import { Button, ButtonProps } from "../ui/button";
 import Loader from "./Loader";
+import { cn } from "@/lib/utils/utils";
 
-interface SubmitButtonProps {
+interface SubmitButtonProps extends ButtonProps {
   text?: string;
   loadingText?: string;
+  className?: string;
 }
 
-const SubmitButton = ({ text = "Submit", loadingText = "Submitting" }: SubmitButtonProps) => {
+const SubmitButton = ({ text = "Submit", loadingText = "Submitting", className, ...rest }: SubmitButtonProps) => {
   const { pending } = useFormStatus()
   return (
-    <Button className="flex gap-2">
+    <Button className={cn("flex gap-2", className)} {...rest}>
       {pending && <Loader />}
       {pending ? loadingText : text}
     </Button>

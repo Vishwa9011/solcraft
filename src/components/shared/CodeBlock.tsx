@@ -16,8 +16,8 @@ const CodeBlock = ({ code, title }: CodeBlockProps) => {
   const { isCopied, onCopy } = useCopyToClipboard();
 
   return (
-    <div className="relative flex flex-col p-4 bg-gray-600 rounded-lg">
-      <Button onClick={onCopy(code)} className="absolute flex items-center gap-2 p-1 px-2 ml-auto bg-gray-800 rounded-md h-7 right-5 p-semibold-14">
+    <div className="relative flex flex-col p-4 bg-gray-800 rounded-lg">
+      <Button onClick={onCopy(code)} className="absolute flex items-center gap-2 p-1 px-2 ml-auto bg-gray-950 rounded-md h-7 right-5 p-semibold-14">
         {isCopied ? <FaClipboardCheck className="text-green-500" /> : <LuClipboard className="text-gray-200" />}
         {isCopied ? "Copied" : "Copy"}
       </Button>
