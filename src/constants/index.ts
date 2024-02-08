@@ -1,7 +1,10 @@
-export const tokenDefaultValues = {
+import type { Token } from "@/lib/types";
+
+export const tokenDefaultValues: Token & { description: string } = {
   name: "",
+  amount: 0,
   symbol: "",
-  totalSupply: 0,
   decimals: 0,
+  description: "",
   metadataUrl: ""
 }

@@ -13,7 +13,7 @@ let sampleTemplate = `{
 
 export default function Home() {
   return (
-    <div className="flex flex-col h-screen ">
+    <div className="h-screen">
       <Header />
       <main className="wrapper">
         <div className="flex flex-col gap-5 mt-5">

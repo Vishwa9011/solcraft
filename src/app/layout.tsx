@@ -2,6 +2,10 @@ import "./globals.css";
 import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
+import SolanaProvider from "@/solana/providers/solana-provider";
+import AppProvider from "@/context/AppProvider";
+import { Toaster } from 'react-hot-toast'
+import ClusterProvider from "@/solana/providers/cluster-provider";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -14,7 +18,17 @@ export default function RootLayout({ children, }: Readonly<{ children: ReactNode
   return (
     <html lang="en">
       <body className={outfit.className}>
-        {children}
+        <ClusterProvider>
+          <SolanaProvider>
+            <AppProvider>
+              {children}
+              <Toaster
+                reverseOrder={false}
+                position="bottom-right"
+              />
+            </AppProvider>
+          </SolanaProvider>
+        </ClusterProvider>
       </body>
     </html>
   );

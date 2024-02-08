@@ -76,7 +76,29 @@
   }
 }
 
+
+
 @layer utilities {
+  .btn {
+    @apply rounded-lg px-4 py-2 cursor-pointer;
+  }
+
+  .btn-active {
+    @apply active:scale-95 active:shadow-none;
+  }
+
+  .btn-sm {
+    @apply p-medium-14 px-3 py-1;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .gray-200 {
+    @apply text-gray-200;
+  }
+
   .wrapper {
     @apply w-full p-5 max-w-7xl lg:mx-auto md:px-10 xl:px-0;
   }
@@ -169,6 +191,15 @@
   }
 
   /* 12 */
+
+  .p-regular-12 {
+    @apply text-[12px] font-normal leading-[20px];
+  }
+
+  .p-semibold-12 {
+    @apply text-[12px] font-semibold leading-[20px];
+  }
+
   .p-medium-12 {
     @apply text-[12px] font-medium leading-[20px];
   }
@@ -179,4 +210,41 @@
   .input-field {
     @apply bg-gray-50 text-black h-[54px] focus-visible:ring-offset-0 placeholder:text-gray-500 rounded-lg p-regular-16 px-4 py-3 border-none focus-visible:ring-transparent !important;
   }
+
+  .textfield {
+    @apply bg-gray-50 text-black h-[100px] focus-visible:ring-offset-0 placeholder:text-gray-500 rounded-lg p-regular-16 px-4 py-3 border-none focus-visible:ring-transparent !important;
+  }
+}
+
+/* styles/globals.css */
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+.animate-enter {
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.animate-leave {
+  animation: slideOut 0.5s ease-in forwards;
 }

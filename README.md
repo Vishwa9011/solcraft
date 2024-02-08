@@ -15,3 +15,23 @@ npm run dev
 6. Solana
 7. Metaplex
 8. Phantom Wallet
+
+
+
+## Wallet connect and solana dependencies
+```bash
+npm install @solana/web3.js @solana/wallet-adapter-base @solana/wallet-adapter-react @solana/wallet-adapter-react-ui @solana/wallet-adapter-solflare bs58 buffer
+```
+```bash
+npm install @types/bs58 --save-dev
+```
+
+## Metaplex dependencies
+```bash
+npm install \
+  @metaplex-foundation/umi \
+  @metaplex-foundation/umi-bundle-defaults \
+  @metaplex-foundation/mpl-candy-machine \
+  @solana/web3.js \
+  @metaplex-foundation/mpl-token-metadata
+```
