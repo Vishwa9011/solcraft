@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./components/providers";
+import { Providers } from "./providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <Providers>
         <body
           suppressHydrationWarning

@@ -110,11 +110,14 @@
   body {
     @apply bg-bg1 text-foreground antialiased;
     font-family: var(--font-sans);
-    color-scheme: light dark;
+    color-scheme: dark;
   }
 }
 
 .dark {
+ --border-strong: oklch(1 0 0 / 0.12);
+ --border-low: oklch(1 0 0 / 0.08);
+ --cream: oklch(0.22 0.009 70.82);
  --background: oklch(0.145 0 0);
  --foreground: oklch(0.985 0 0);
  --card: oklch(0.205 0 0);

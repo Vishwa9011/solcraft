@@ -1,6 +1,6 @@
 "use client";
 import { useWalletConnection } from "@solana/react-hooks";
-import { ConnectButton } from "./components/connect-button";
+import { ConnectButton } from "../components/shared/connect-button";
 
 export default function Home() {
   const { connectors, connect, disconnect, wallet, status } =
