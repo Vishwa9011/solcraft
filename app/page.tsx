@@ -1,17 +1,19 @@
 "use client";
-import { useWalletConnection } from "@solana/react-hooks";
+
+import { Button } from "@/components/ui/button";
 import { ConnectButton } from "../components/shared/connect-button";
+import { useFactoryClient } from "@/features/factory/hooks/use-factory-client";
 
 export default function Home() {
-  const { connectors, connect, disconnect, wallet, status } =
-    useWalletConnection();
-
-  const address = wallet?.account.address.toString();
+  const { factoryConfig, initializeFactory } = useFactoryClient();
 
   return (
     <div className="">
       <main>
         <ConnectButton />
+        <Button onClick={() => initializeFactory.mutateAsync()}>
+          Initialize Factory
+        </Button>
       </main>
     </div>
   );

@@ -1,4 +1,4 @@
-import { getBase58Decoder } from "@solana/codecs-strings";
+import { getBase58Encoder } from "@solana/codecs-strings";
 import type { WalletSession } from "@solana/client";
 import { signatureBytes } from "@solana/keys";
 import type { SendableTransaction, Transaction } from "@solana/transactions";
@@ -8,13 +8,14 @@ import type {
   TransactionSigner,
 } from "@solana/kit";
 
-const base58Decoder = getBase58Decoder();
+const base58Encoder = getBase58Encoder();
 
 function getSignature(
   transaction: Transaction,
   address: WalletSession["account"]["address"],
 ) {
-  const signature = transaction.signatures[address as string];
+  const signature =
+    transaction.signatures[address as keyof typeof transaction.signatures];
   if (!signature) {
     throw new Error("Wallet did not return a signature for the fee payer.");
   }
@@ -59,7 +60,7 @@ export function createWalletSigner(session: WalletSession): TransactionSigner {
           ),
         );
         return signatures.map((signature) =>
-          signatureBytes(base58Decoder.decode(signature)),
+          signatureBytes(base58Encoder.encode(signature)),
         );
       },
     };
