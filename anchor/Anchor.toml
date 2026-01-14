@@ -11,7 +11,7 @@ vault = "Er2QdeLcDeGUNZDeXpETR4XFnmQu7c9mqLSTPi5kofAX"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
