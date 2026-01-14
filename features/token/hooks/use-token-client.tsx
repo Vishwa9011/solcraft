@@ -4,7 +4,7 @@ import {
   getCreateTokenInstructionAsync,
   isSolcraftError,
 } from "@/generated/solcraft";
-import { createWalletSigner } from "@/features/wallet/utils/wallet-signer";
+import { createWalletSigner, useWalletSigner } from "@/features/wallet";
 import {
   TOKEN_PROGRAM_ADDRESS,
   findAssociatedTokenPda,
@@ -24,20 +24,18 @@ const TOKEN_METADATA_PROGRAM_ADDRESS =
   "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s" as Address<"metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s">;
 
 export function useTokenClient() {
-  const session = useWalletSession();
+  const signer = useWalletSigner();
   const { send } = useSendTransaction();
 
   let instructions: CreateTokenInstruction;
 
   const createToken = useMutation({
     mutationFn: async () => {
-      if (!session) {
+      if (!signer) {
         throw new Error("Connect a wallet to initialize the factory.");
       }
-      const mint = await generateKeyPairSigner();
-      console.log("mint: ", mint.address);
 
-      const signer = createWalletSigner(session);
+      const mint = await generateKeyPairSigner();
 
       const [payer_ata] = await findAssociatedTokenPda({
         owner: signer.address,
@@ -66,12 +64,16 @@ export function useTokenClient() {
         metadata,
       });
 
-      await send({
+      return await send({
         instructions: [instructions],
         feePayer: signer,
         authority: signer,
         commitment: "confirmed",
       });
+    },
+
+    onSuccess: (data) => {
+      console.log("Token created successfully. Transaction signature:", data);
     },
 
     onError: (error) => {

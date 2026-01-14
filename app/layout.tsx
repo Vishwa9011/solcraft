@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Solana dApp Starter",
-  description: "A minimal Next.js starter powered by @solana/react-hooks",
+  title: "Solcraft",
+  description: "Create and manage Solana tokens with ease.",
 };
 
 export default function RootLayout({

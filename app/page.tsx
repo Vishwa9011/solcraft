@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { ConnectButton } from "@/features/wallet";
-import { useFactoryClient } from "@/features/factory/hooks/use-factory-client";
-import { useTokenClient } from "@/features/token/hooks/use-token-client";
+import { useFactoryClient } from "@/features/factory";
+import { useTokenClient } from "@/features/token";
 
 export default function Home() {
   const { createToken } = useTokenClient();

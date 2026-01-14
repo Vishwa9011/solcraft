@@ -3,8 +3,7 @@ import {
   getInitializeFactoryInstructionAsync,
   SOLCRAFT_PROGRAM_ADDRESS,
 } from "@/generated/solcraft";
-import { rpc } from "@/features/wallet/utils/rpc";
-import { createWalletSigner } from "@/features/wallet/utils/";
+import { createWalletSigner, rpc, useWalletSigner } from "@/features/wallet";
 import { lamportsFromSol } from "@solana/client";
 import { getProgramDerivedAddress } from "@solana/kit";
 import { useSendTransaction, useWalletSession } from "@solana/react-hooks";
@@ -20,7 +19,7 @@ async function getFactoryPDA() {
 }
 
 export function useFactoryClient() {
-  const session = useWalletSession();
+  const signer = useWalletSigner();
   const { send } = useSendTransaction();
 
   const factoryConfig = useQuery({
@@ -30,15 +29,13 @@ export function useFactoryClient() {
       return await fetchMaybeFactoryConfig(rpc, pda);
     },
   });
-  console.log("factoryConfig: ", factoryConfig.data);
 
   const initializeFactory = useMutation({
     mutationFn: async () => {
-      if (!session) {
+      if (!signer) {
         throw new Error("Connect a wallet to initialize the factory.");
       }
 
-      const signer = createWalletSigner(session);
       const instruction = await getInitializeFactoryInstructionAsync({
         admin: signer,
         creationFeeLamports: lamportsFromSol("0.1"),
