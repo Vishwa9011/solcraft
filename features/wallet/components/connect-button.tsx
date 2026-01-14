@@ -120,7 +120,11 @@ export function ConnectButton() {
         </span>
         <span className="relative flex items-center gap-2 text-xs font-semibold text-muted-foreground">
           {isConnected ? "Manage" : "Select"}
-          {open ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          {open ? (
+            <ChevronUp className="size-4" />
+          ) : (
+            <ChevronDown className="size-4" />
+          )}
         </span>
       </Button>
 

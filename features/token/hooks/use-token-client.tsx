@@ -4,7 +4,7 @@ import {
   getCreateTokenInstructionAsync,
   isSolcraftError,
 } from "@/generated/solcraft";
-import { createWalletSigner } from "@/lib/solana/wallet-signer";
+import { createWalletSigner } from "@/features/wallet/utils/wallet-signer";
 import {
   TOKEN_PROGRAM_ADDRESS,
   findAssociatedTokenPda,

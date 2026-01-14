@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ConnectButton } from "../components/shared/connect-button";
+import { ConnectButton } from "@/features/wallet";
 import { useFactoryClient } from "@/features/factory/hooks/use-factory-client";
 import { useTokenClient } from "@/features/token/hooks/use-token-client";
 

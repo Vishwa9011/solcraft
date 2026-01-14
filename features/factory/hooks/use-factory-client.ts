@@ -3,8 +3,8 @@ import {
   getInitializeFactoryInstructionAsync,
   SOLCRAFT_PROGRAM_ADDRESS,
 } from "@/generated/solcraft";
-import { rpc } from "@/lib/rpc";
-import { createWalletSigner } from "@/lib/solana/wallet-signer";
+import { rpc } from "@/features/wallet/utils/rpc";
+import { createWalletSigner } from "@/features/wallet/utils/";
 import { lamportsFromSol } from "@solana/client";
 import { getProgramDerivedAddress } from "@solana/kit";
 import { useSendTransaction, useWalletSession } from "@solana/react-hooks";
