@@ -32,7 +32,7 @@ type AppShellProps = {
 
 const primaryNav = [
    { label: 'Overview', href: '/overview', icon: LayoutGrid },
-   { label: 'Token Builder', href: '/token-builder', icon: Coins },
+   { label: 'Token', href: '/token', icon: Coins },
    { label: 'Faucet', href: '/faucet', icon: Droplet },
 ];
 
@@ -139,9 +139,7 @@ export function AppShell({ children }: AppShellProps) {
                         <h1 className="text-foreground text-2xl font-semibold tracking-tight md:text-3xl lg:text-4xl">
                            {current.title}
                         </h1>
-                        <p className="text-muted-foreground text-pretty text-sm md:text-base">
-                           {current.subtitle}
-                        </p>
+                        <p className="text-muted-foreground text-sm text-pretty md:text-base">{current.subtitle}</p>
                      </div>
                   </div>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -153,7 +151,7 @@ export function AppShell({ children }: AppShellProps) {
                      </div>
                   </div>
                </header>
-               <div className="flex-1 px-6 pb-14 pt-10">
+               <div className="flex-1 px-6 pt-10 pb-14">
                   <div className="mx-auto w-full max-w-6xl">{children}</div>
                </div>
             </div>
