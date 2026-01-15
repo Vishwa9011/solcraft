@@ -7,395 +7,347 @@
  */
 
 import {
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getAddressEncoder,
-  getBytesDecoder,
-  getBytesEncoder,
-  getProgramDerivedAddress,
-  getStructDecoder,
-  getStructEncoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type ReadonlyAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-  type WritableSignerAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import {
-  expectAddress,
-  getAccountMetaFactory,
-  type ResolvedAccount,
-} from "../shared";
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getAddressEncoder,
+   getBytesDecoder,
+   getBytesEncoder,
+   getProgramDerivedAddress,
+   getStructDecoder,
+   getStructEncoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type ReadonlyAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+   type WritableSignerAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { expectAddress, getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const CLAIM_FROM_FAUCET_DISCRIMINATOR = new Uint8Array([
-  97, 161, 157, 131, 89, 237, 16, 168,
-]);
+export const CLAIM_FROM_FAUCET_DISCRIMINATOR = new Uint8Array([97, 161, 157, 131, 89, 237, 16, 168]);
 
 export function getClaimFromFaucetDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    CLAIM_FROM_FAUCET_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(CLAIM_FROM_FAUCET_DISCRIMINATOR);
 }
 
 export type ClaimFromFaucetInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountFaucetConfig extends string | AccountMeta<string> = string,
-  TAccountRecipientData extends string | AccountMeta<string> = string,
-  TAccountTreasuryAta extends string | AccountMeta<string> = string,
-  TAccountRecipientAta extends string | AccountMeta<string> = string,
-  TAccountRecipient extends string | AccountMeta<string> = string,
-  TAccountTokenProgram extends string | AccountMeta<string> =
-    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-  TAccountSystemProgram extends string | AccountMeta<string> =
-    "11111111111111111111111111111111",
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFaucetConfig extends string | AccountMeta<string> = string,
+   TAccountRecipientData extends string | AccountMeta<string> = string,
+   TAccountTreasuryAta extends string | AccountMeta<string> = string,
+   TAccountRecipientAta extends string | AccountMeta<string> = string,
+   TAccountRecipient extends string | AccountMeta<string> = string,
+   TAccountTokenProgram extends string | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+   TAccountSystemProgram extends string | AccountMeta<string> = '11111111111111111111111111111111',
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountFaucetConfig extends string
-        ? WritableAccount<TAccountFaucetConfig>
-        : TAccountFaucetConfig,
-      TAccountRecipientData extends string
-        ? WritableAccount<TAccountRecipientData>
-        : TAccountRecipientData,
-      TAccountTreasuryAta extends string
-        ? WritableAccount<TAccountTreasuryAta>
-        : TAccountTreasuryAta,
-      TAccountRecipientAta extends string
-        ? WritableAccount<TAccountRecipientAta>
-        : TAccountRecipientAta,
-      TAccountRecipient extends string
-        ? WritableSignerAccount<TAccountRecipient> &
-            AccountSignerMeta<TAccountRecipient>
-        : TAccountRecipient,
-      TAccountTokenProgram extends string
-        ? ReadonlyAccount<TAccountTokenProgram>
-        : TAccountTokenProgram,
-      TAccountSystemProgram extends string
-        ? ReadonlyAccount<TAccountSystemProgram>
-        : TAccountSystemProgram,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountFaucetConfig extends string ? WritableAccount<TAccountFaucetConfig> : TAccountFaucetConfig,
+         TAccountRecipientData extends string ? WritableAccount<TAccountRecipientData> : TAccountRecipientData,
+         TAccountTreasuryAta extends string ? WritableAccount<TAccountTreasuryAta> : TAccountTreasuryAta,
+         TAccountRecipientAta extends string ? WritableAccount<TAccountRecipientAta> : TAccountRecipientAta,
+         TAccountRecipient extends string
+            ? WritableSignerAccount<TAccountRecipient> & AccountSignerMeta<TAccountRecipient>
+            : TAccountRecipient,
+         TAccountTokenProgram extends string ? ReadonlyAccount<TAccountTokenProgram> : TAccountTokenProgram,
+         TAccountSystemProgram extends string ? ReadonlyAccount<TAccountSystemProgram> : TAccountSystemProgram,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type ClaimFromFaucetInstructionData = {
-  discriminator: ReadonlyUint8Array;
+   discriminator: ReadonlyUint8Array;
 };
 
 export type ClaimFromFaucetInstructionDataArgs = {};
 
 export function getClaimFromFaucetInstructionDataEncoder(): FixedSizeEncoder<ClaimFromFaucetInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([["discriminator", fixEncoderSize(getBytesEncoder(), 8)]]),
-    (value) => ({ ...value, discriminator: CLAIM_FROM_FAUCET_DISCRIMINATOR }),
-  );
+   return transformEncoder(getStructEncoder([['discriminator', fixEncoderSize(getBytesEncoder(), 8)]]), value => ({
+      ...value,
+      discriminator: CLAIM_FROM_FAUCET_DISCRIMINATOR,
+   }));
 }
 
 export function getClaimFromFaucetInstructionDataDecoder(): FixedSizeDecoder<ClaimFromFaucetInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-  ]);
+   return getStructDecoder([['discriminator', fixDecoderSize(getBytesDecoder(), 8)]]);
 }
 
 export function getClaimFromFaucetInstructionDataCodec(): FixedSizeCodec<
-  ClaimFromFaucetInstructionDataArgs,
-  ClaimFromFaucetInstructionData
+   ClaimFromFaucetInstructionDataArgs,
+   ClaimFromFaucetInstructionData
 > {
-  return combineCodec(
-    getClaimFromFaucetInstructionDataEncoder(),
-    getClaimFromFaucetInstructionDataDecoder(),
-  );
+   return combineCodec(getClaimFromFaucetInstructionDataEncoder(), getClaimFromFaucetInstructionDataDecoder());
 }
 
 export type ClaimFromFaucetAsyncInput<
-  TAccountFaucetConfig extends string = string,
-  TAccountRecipientData extends string = string,
-  TAccountTreasuryAta extends string = string,
-  TAccountRecipientAta extends string = string,
-  TAccountRecipient extends string = string,
-  TAccountTokenProgram extends string = string,
-  TAccountSystemProgram extends string = string,
+   TAccountFaucetConfig extends string = string,
+   TAccountRecipientData extends string = string,
+   TAccountTreasuryAta extends string = string,
+   TAccountRecipientAta extends string = string,
+   TAccountRecipient extends string = string,
+   TAccountTokenProgram extends string = string,
+   TAccountSystemProgram extends string = string,
 > = {
-  faucetConfig?: Address<TAccountFaucetConfig>;
-  recipientData?: Address<TAccountRecipientData>;
-  treasuryAta: Address<TAccountTreasuryAta>;
-  recipientAta: Address<TAccountRecipientAta>;
-  recipient: TransactionSigner<TAccountRecipient>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  systemProgram?: Address<TAccountSystemProgram>;
+   faucetConfig?: Address<TAccountFaucetConfig>;
+   recipientData?: Address<TAccountRecipientData>;
+   treasuryAta: Address<TAccountTreasuryAta>;
+   recipientAta: Address<TAccountRecipientAta>;
+   recipient: TransactionSigner<TAccountRecipient>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   systemProgram?: Address<TAccountSystemProgram>;
 };
 
 export async function getClaimFromFaucetInstructionAsync<
-  TAccountFaucetConfig extends string,
-  TAccountRecipientData extends string,
-  TAccountTreasuryAta extends string,
-  TAccountRecipientAta extends string,
-  TAccountRecipient extends string,
-  TAccountTokenProgram extends string,
-  TAccountSystemProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFaucetConfig extends string,
+   TAccountRecipientData extends string,
+   TAccountTreasuryAta extends string,
+   TAccountRecipientAta extends string,
+   TAccountRecipient extends string,
+   TAccountTokenProgram extends string,
+   TAccountSystemProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: ClaimFromFaucetAsyncInput<
-    TAccountFaucetConfig,
-    TAccountRecipientData,
-    TAccountTreasuryAta,
-    TAccountRecipientAta,
-    TAccountRecipient,
-    TAccountTokenProgram,
-    TAccountSystemProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: ClaimFromFaucetAsyncInput<
+      TAccountFaucetConfig,
+      TAccountRecipientData,
+      TAccountTreasuryAta,
+      TAccountRecipientAta,
+      TAccountRecipient,
+      TAccountTokenProgram,
+      TAccountSystemProgram
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): Promise<
-  ClaimFromFaucetInstruction<
-    TProgramAddress,
-    TAccountFaucetConfig,
-    TAccountRecipientData,
-    TAccountTreasuryAta,
-    TAccountRecipientAta,
-    TAccountRecipient,
-    TAccountTokenProgram,
-    TAccountSystemProgram
-  >
+   ClaimFromFaucetInstruction<
+      TProgramAddress,
+      TAccountFaucetConfig,
+      TAccountRecipientData,
+      TAccountTreasuryAta,
+      TAccountRecipientAta,
+      TAccountRecipient,
+      TAccountTokenProgram,
+      TAccountSystemProgram
+   >
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
-    recipientData: { value: input.recipientData ?? null, isWritable: true },
-    treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
-    recipientAta: { value: input.recipientAta ?? null, isWritable: true },
-    recipient: { value: input.recipient ?? null, isWritable: true },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
+      recipientData: { value: input.recipientData ?? null, isWritable: true },
+      treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
+      recipientAta: { value: input.recipientAta ?? null, isWritable: true },
+      recipient: { value: input.recipient ?? null, isWritable: true },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+      systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Resolve default values.
-  if (!accounts.faucetConfig.value) {
-    accounts.faucetConfig.value = await getProgramDerivedAddress({
-      programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 117, 99, 101, 116, 95, 99, 111, 110, 102, 105, 103,
-          ]),
-        ),
+   // Resolve default values.
+   if (!accounts.faucetConfig.value) {
+      accounts.faucetConfig.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(new Uint8Array([102, 97, 117, 99, 101, 116, 95, 99, 111, 110, 102, 105, 103])),
+         ],
+      });
+   }
+   if (!accounts.recipientData.value) {
+      accounts.recipientData.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 117, 99, 101, 116, 95, 114, 101, 99, 105, 112, 105, 101, 110, 116])
+            ),
+            getAddressEncoder().encode(expectAddress(accounts.recipient.value)),
+         ],
+      });
+   }
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
+   if (!accounts.systemProgram.value) {
+      accounts.systemProgram.value = '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+   }
+
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.faucetConfig),
+         getAccountMeta(accounts.recipientData),
+         getAccountMeta(accounts.treasuryAta),
+         getAccountMeta(accounts.recipientAta),
+         getAccountMeta(accounts.recipient),
+         getAccountMeta(accounts.tokenProgram),
+         getAccountMeta(accounts.systemProgram),
       ],
-    });
-  }
-  if (!accounts.recipientData.value) {
-    accounts.recipientData.value = await getProgramDerivedAddress({
+      data: getClaimFromFaucetInstructionDataEncoder().encode({}),
       programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 117, 99, 101, 116, 95, 114, 101, 99, 105, 112, 105, 101,
-            110, 116,
-          ]),
-        ),
-        getAddressEncoder().encode(expectAddress(accounts.recipient.value)),
-      ],
-    });
-  }
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
-  if (!accounts.systemProgram.value) {
-    accounts.systemProgram.value =
-      "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
-  }
-
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.faucetConfig),
-      getAccountMeta(accounts.recipientData),
-      getAccountMeta(accounts.treasuryAta),
-      getAccountMeta(accounts.recipientAta),
-      getAccountMeta(accounts.recipient),
-      getAccountMeta(accounts.tokenProgram),
-      getAccountMeta(accounts.systemProgram),
-    ],
-    data: getClaimFromFaucetInstructionDataEncoder().encode({}),
-    programAddress,
-  } as ClaimFromFaucetInstruction<
-    TProgramAddress,
-    TAccountFaucetConfig,
-    TAccountRecipientData,
-    TAccountTreasuryAta,
-    TAccountRecipientAta,
-    TAccountRecipient,
-    TAccountTokenProgram,
-    TAccountSystemProgram
-  >);
+   } as ClaimFromFaucetInstruction<
+      TProgramAddress,
+      TAccountFaucetConfig,
+      TAccountRecipientData,
+      TAccountTreasuryAta,
+      TAccountRecipientAta,
+      TAccountRecipient,
+      TAccountTokenProgram,
+      TAccountSystemProgram
+   >);
 }
 
 export type ClaimFromFaucetInput<
-  TAccountFaucetConfig extends string = string,
-  TAccountRecipientData extends string = string,
-  TAccountTreasuryAta extends string = string,
-  TAccountRecipientAta extends string = string,
-  TAccountRecipient extends string = string,
-  TAccountTokenProgram extends string = string,
-  TAccountSystemProgram extends string = string,
+   TAccountFaucetConfig extends string = string,
+   TAccountRecipientData extends string = string,
+   TAccountTreasuryAta extends string = string,
+   TAccountRecipientAta extends string = string,
+   TAccountRecipient extends string = string,
+   TAccountTokenProgram extends string = string,
+   TAccountSystemProgram extends string = string,
 > = {
-  faucetConfig: Address<TAccountFaucetConfig>;
-  recipientData: Address<TAccountRecipientData>;
-  treasuryAta: Address<TAccountTreasuryAta>;
-  recipientAta: Address<TAccountRecipientAta>;
-  recipient: TransactionSigner<TAccountRecipient>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  systemProgram?: Address<TAccountSystemProgram>;
+   faucetConfig: Address<TAccountFaucetConfig>;
+   recipientData: Address<TAccountRecipientData>;
+   treasuryAta: Address<TAccountTreasuryAta>;
+   recipientAta: Address<TAccountRecipientAta>;
+   recipient: TransactionSigner<TAccountRecipient>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   systemProgram?: Address<TAccountSystemProgram>;
 };
 
 export function getClaimFromFaucetInstruction<
-  TAccountFaucetConfig extends string,
-  TAccountRecipientData extends string,
-  TAccountTreasuryAta extends string,
-  TAccountRecipientAta extends string,
-  TAccountRecipient extends string,
-  TAccountTokenProgram extends string,
-  TAccountSystemProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFaucetConfig extends string,
+   TAccountRecipientData extends string,
+   TAccountTreasuryAta extends string,
+   TAccountRecipientAta extends string,
+   TAccountRecipient extends string,
+   TAccountTokenProgram extends string,
+   TAccountSystemProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: ClaimFromFaucetInput<
-    TAccountFaucetConfig,
-    TAccountRecipientData,
-    TAccountTreasuryAta,
-    TAccountRecipientAta,
-    TAccountRecipient,
-    TAccountTokenProgram,
-    TAccountSystemProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: ClaimFromFaucetInput<
+      TAccountFaucetConfig,
+      TAccountRecipientData,
+      TAccountTreasuryAta,
+      TAccountRecipientAta,
+      TAccountRecipient,
+      TAccountTokenProgram,
+      TAccountSystemProgram
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): ClaimFromFaucetInstruction<
-  TProgramAddress,
-  TAccountFaucetConfig,
-  TAccountRecipientData,
-  TAccountTreasuryAta,
-  TAccountRecipientAta,
-  TAccountRecipient,
-  TAccountTokenProgram,
-  TAccountSystemProgram
+   TProgramAddress,
+   TAccountFaucetConfig,
+   TAccountRecipientData,
+   TAccountTreasuryAta,
+   TAccountRecipientAta,
+   TAccountRecipient,
+   TAccountTokenProgram,
+   TAccountSystemProgram
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
-    recipientData: { value: input.recipientData ?? null, isWritable: true },
-    treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
-    recipientAta: { value: input.recipientAta ?? null, isWritable: true },
-    recipient: { value: input.recipient ?? null, isWritable: true },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
+      recipientData: { value: input.recipientData ?? null, isWritable: true },
+      treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
+      recipientAta: { value: input.recipientAta ?? null, isWritable: true },
+      recipient: { value: input.recipient ?? null, isWritable: true },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+      systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Resolve default values.
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
-  if (!accounts.systemProgram.value) {
-    accounts.systemProgram.value =
-      "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
-  }
+   // Resolve default values.
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
+   if (!accounts.systemProgram.value) {
+      accounts.systemProgram.value = '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+   }
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.faucetConfig),
-      getAccountMeta(accounts.recipientData),
-      getAccountMeta(accounts.treasuryAta),
-      getAccountMeta(accounts.recipientAta),
-      getAccountMeta(accounts.recipient),
-      getAccountMeta(accounts.tokenProgram),
-      getAccountMeta(accounts.systemProgram),
-    ],
-    data: getClaimFromFaucetInstructionDataEncoder().encode({}),
-    programAddress,
-  } as ClaimFromFaucetInstruction<
-    TProgramAddress,
-    TAccountFaucetConfig,
-    TAccountRecipientData,
-    TAccountTreasuryAta,
-    TAccountRecipientAta,
-    TAccountRecipient,
-    TAccountTokenProgram,
-    TAccountSystemProgram
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.faucetConfig),
+         getAccountMeta(accounts.recipientData),
+         getAccountMeta(accounts.treasuryAta),
+         getAccountMeta(accounts.recipientAta),
+         getAccountMeta(accounts.recipient),
+         getAccountMeta(accounts.tokenProgram),
+         getAccountMeta(accounts.systemProgram),
+      ],
+      data: getClaimFromFaucetInstructionDataEncoder().encode({}),
+      programAddress,
+   } as ClaimFromFaucetInstruction<
+      TProgramAddress,
+      TAccountFaucetConfig,
+      TAccountRecipientData,
+      TAccountTreasuryAta,
+      TAccountRecipientAta,
+      TAccountRecipient,
+      TAccountTokenProgram,
+      TAccountSystemProgram
+   >);
 }
 
 export type ParsedClaimFromFaucetInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    faucetConfig: TAccountMetas[0];
-    recipientData: TAccountMetas[1];
-    treasuryAta: TAccountMetas[2];
-    recipientAta: TAccountMetas[3];
-    recipient: TAccountMetas[4];
-    tokenProgram: TAccountMetas[5];
-    systemProgram: TAccountMetas[6];
-  };
-  data: ClaimFromFaucetInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      faucetConfig: TAccountMetas[0];
+      recipientData: TAccountMetas[1];
+      treasuryAta: TAccountMetas[2];
+      recipientAta: TAccountMetas[3];
+      recipient: TAccountMetas[4];
+      tokenProgram: TAccountMetas[5];
+      systemProgram: TAccountMetas[6];
+   };
+   data: ClaimFromFaucetInstructionData;
 };
 
-export function parseClaimFromFaucetInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
->(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+export function parseClaimFromFaucetInstruction<TProgram extends string, TAccountMetas extends readonly AccountMeta[]>(
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedClaimFromFaucetInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 7) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: {
-      faucetConfig: getNextAccount(),
-      recipientData: getNextAccount(),
-      treasuryAta: getNextAccount(),
-      recipientAta: getNextAccount(),
-      recipient: getNextAccount(),
-      tokenProgram: getNextAccount(),
-      systemProgram: getNextAccount(),
-    },
-    data: getClaimFromFaucetInstructionDataDecoder().decode(instruction.data),
-  };
+   if (instruction.accounts.length < 7) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: {
+         faucetConfig: getNextAccount(),
+         recipientData: getNextAccount(),
+         treasuryAta: getNextAccount(),
+         recipientAta: getNextAccount(),
+         recipient: getNextAccount(),
+         tokenProgram: getNextAccount(),
+         systemProgram: getNextAccount(),
+      },
+      data: getClaimFromFaucetInstructionDataDecoder().decode(instruction.data),
+   };
 }

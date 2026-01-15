@@ -7,236 +7,187 @@
  */
 
 import {
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getBytesDecoder,
-  getBytesEncoder,
-  getProgramDerivedAddress,
-  getStructDecoder,
-  getStructEncoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type ReadonlySignerAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import { getAccountMetaFactory, type ResolvedAccount } from "../shared";
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getBytesDecoder,
+   getBytesEncoder,
+   getProgramDerivedAddress,
+   getStructDecoder,
+   getStructEncoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type ReadonlySignerAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const UNPAUSE_FACTORY_DISCRIMINATOR = new Uint8Array([
-  30, 5, 208, 192, 1, 217, 141, 118,
-]);
+export const UNPAUSE_FACTORY_DISCRIMINATOR = new Uint8Array([30, 5, 208, 192, 1, 217, 141, 118]);
 
 export function getUnpauseFactoryDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    UNPAUSE_FACTORY_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(UNPAUSE_FACTORY_DISCRIMINATOR);
 }
 
 export type UnpauseFactoryInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountFactoryConfig extends string | AccountMeta<string> = string,
-  TAccountAdmin extends string | AccountMeta<string> = string,
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string | AccountMeta<string> = string,
+   TAccountAdmin extends string | AccountMeta<string> = string,
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountFactoryConfig extends string
-        ? WritableAccount<TAccountFactoryConfig>
-        : TAccountFactoryConfig,
-      TAccountAdmin extends string
-        ? ReadonlySignerAccount<TAccountAdmin> &
-            AccountSignerMeta<TAccountAdmin>
-        : TAccountAdmin,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountFactoryConfig extends string ? WritableAccount<TAccountFactoryConfig> : TAccountFactoryConfig,
+         TAccountAdmin extends string
+            ? ReadonlySignerAccount<TAccountAdmin> & AccountSignerMeta<TAccountAdmin>
+            : TAccountAdmin,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type UnpauseFactoryInstructionData = {
-  discriminator: ReadonlyUint8Array;
+   discriminator: ReadonlyUint8Array;
 };
 
 export type UnpauseFactoryInstructionDataArgs = {};
 
 export function getUnpauseFactoryInstructionDataEncoder(): FixedSizeEncoder<UnpauseFactoryInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([["discriminator", fixEncoderSize(getBytesEncoder(), 8)]]),
-    (value) => ({ ...value, discriminator: UNPAUSE_FACTORY_DISCRIMINATOR }),
-  );
+   return transformEncoder(getStructEncoder([['discriminator', fixEncoderSize(getBytesEncoder(), 8)]]), value => ({
+      ...value,
+      discriminator: UNPAUSE_FACTORY_DISCRIMINATOR,
+   }));
 }
 
 export function getUnpauseFactoryInstructionDataDecoder(): FixedSizeDecoder<UnpauseFactoryInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-  ]);
+   return getStructDecoder([['discriminator', fixDecoderSize(getBytesDecoder(), 8)]]);
 }
 
 export function getUnpauseFactoryInstructionDataCodec(): FixedSizeCodec<
-  UnpauseFactoryInstructionDataArgs,
-  UnpauseFactoryInstructionData
+   UnpauseFactoryInstructionDataArgs,
+   UnpauseFactoryInstructionData
 > {
-  return combineCodec(
-    getUnpauseFactoryInstructionDataEncoder(),
-    getUnpauseFactoryInstructionDataDecoder(),
-  );
+   return combineCodec(getUnpauseFactoryInstructionDataEncoder(), getUnpauseFactoryInstructionDataDecoder());
 }
 
 export type UnpauseFactoryAsyncInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountAdmin extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountAdmin extends string = string,
 > = {
-  factoryConfig?: Address<TAccountFactoryConfig>;
-  admin: TransactionSigner<TAccountAdmin>;
+   factoryConfig?: Address<TAccountFactoryConfig>;
+   admin: TransactionSigner<TAccountAdmin>;
 };
 
 export async function getUnpauseFactoryInstructionAsync<
-  TAccountFactoryConfig extends string,
-  TAccountAdmin extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountAdmin extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: UnpauseFactoryAsyncInput<TAccountFactoryConfig, TAccountAdmin>,
-  config?: { programAddress?: TProgramAddress },
-): Promise<
-  UnpauseFactoryInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountAdmin
-  >
-> {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   input: UnpauseFactoryAsyncInput<TAccountFactoryConfig, TAccountAdmin>,
+   config?: { programAddress?: TProgramAddress }
+): Promise<UnpauseFactoryInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin>> {
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
-    admin: { value: input.admin ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
+      admin: { value: input.admin ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Resolve default values.
-  if (!accounts.factoryConfig.value) {
-    accounts.factoryConfig.value = await getProgramDerivedAddress({
+   // Resolve default values.
+   if (!accounts.factoryConfig.value) {
+      accounts.factoryConfig.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103])
+            ),
+         ],
+      });
+   }
+
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [getAccountMeta(accounts.factoryConfig), getAccountMeta(accounts.admin)],
+      data: getUnpauseFactoryInstructionDataEncoder().encode({}),
       programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103,
-          ]),
-        ),
-      ],
-    });
-  }
-
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.admin),
-    ],
-    data: getUnpauseFactoryInstructionDataEncoder().encode({}),
-    programAddress,
-  } as UnpauseFactoryInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountAdmin
-  >);
+   } as UnpauseFactoryInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin>);
 }
 
 export type UnpauseFactoryInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountAdmin extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountAdmin extends string = string,
 > = {
-  factoryConfig: Address<TAccountFactoryConfig>;
-  admin: TransactionSigner<TAccountAdmin>;
+   factoryConfig: Address<TAccountFactoryConfig>;
+   admin: TransactionSigner<TAccountAdmin>;
 };
 
 export function getUnpauseFactoryInstruction<
-  TAccountFactoryConfig extends string,
-  TAccountAdmin extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountAdmin extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: UnpauseFactoryInput<TAccountFactoryConfig, TAccountAdmin>,
-  config?: { programAddress?: TProgramAddress },
-): UnpauseFactoryInstruction<
-  TProgramAddress,
-  TAccountFactoryConfig,
-  TAccountAdmin
-> {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   input: UnpauseFactoryInput<TAccountFactoryConfig, TAccountAdmin>,
+   config?: { programAddress?: TProgramAddress }
+): UnpauseFactoryInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin> {
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
-    admin: { value: input.admin ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
+      admin: { value: input.admin ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.admin),
-    ],
-    data: getUnpauseFactoryInstructionDataEncoder().encode({}),
-    programAddress,
-  } as UnpauseFactoryInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountAdmin
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [getAccountMeta(accounts.factoryConfig), getAccountMeta(accounts.admin)],
+      data: getUnpauseFactoryInstructionDataEncoder().encode({}),
+      programAddress,
+   } as UnpauseFactoryInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin>);
 }
 
 export type ParsedUnpauseFactoryInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    factoryConfig: TAccountMetas[0];
-    admin: TAccountMetas[1];
-  };
-  data: UnpauseFactoryInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      factoryConfig: TAccountMetas[0];
+      admin: TAccountMetas[1];
+   };
+   data: UnpauseFactoryInstructionData;
 };
 
-export function parseUnpauseFactoryInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
->(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+export function parseUnpauseFactoryInstruction<TProgram extends string, TAccountMetas extends readonly AccountMeta[]>(
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedUnpauseFactoryInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 2) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: { factoryConfig: getNextAccount(), admin: getNextAccount() },
-    data: getUnpauseFactoryInstructionDataDecoder().decode(instruction.data),
-  };
+   if (instruction.accounts.length < 2) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: { factoryConfig: getNextAccount(), admin: getNextAccount() },
+      data: getUnpauseFactoryInstructionDataDecoder().decode(instruction.data),
+   };
 }

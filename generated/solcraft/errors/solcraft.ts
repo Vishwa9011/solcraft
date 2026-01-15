@@ -7,12 +7,12 @@
  */
 
 import {
-  isProgramError,
-  type Address,
-  type SOLANA_ERROR__INSTRUCTION_ERROR__CUSTOM,
-  type SolanaError,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
+   isProgramError,
+   type Address,
+   type SOLANA_ERROR__INSTRUCTION_ERROR__CUSTOM,
+   type SolanaError,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
 
 /** InsufficientFunds: Insufficient funds in the depositor's account. */
 export const SOLCRAFT_ERROR__INSUFFICIENT_FUNDS = 0x1770; // 6000
@@ -26,43 +26,38 @@ export const SOLCRAFT_ERROR__INVALID_TREASURY_ATA = 0x1773; // 6003
 export const SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS = 0x1774; // 6004
 
 export type SolcraftError =
-  | typeof SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED
-  | typeof SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS
-  | typeof SOLCRAFT_ERROR__INSUFFICIENT_FUNDS
-  | typeof SOLCRAFT_ERROR__INVALID_TREASURY_ATA
-  | typeof SOLCRAFT_ERROR__UNAUTHORIZED;
+   | typeof SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED
+   | typeof SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS
+   | typeof SOLCRAFT_ERROR__INSUFFICIENT_FUNDS
+   | typeof SOLCRAFT_ERROR__INVALID_TREASURY_ATA
+   | typeof SOLCRAFT_ERROR__UNAUTHORIZED;
 
 let solcraftErrorMessages: Record<SolcraftError, string> | undefined;
-if (process.env.NODE_ENV !== "production") {
-  solcraftErrorMessages = {
-    [SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED]: `Cooldown period has not yet elapsed.`,
-    [SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS]: `The provided decimals exceed the maximum allowed.`,
-    [SOLCRAFT_ERROR__INSUFFICIENT_FUNDS]: `Insufficient funds in the depositor's account.`,
-    [SOLCRAFT_ERROR__INVALID_TREASURY_ATA]: `The provided treasury ATA does not match the faucet configuration.`,
-    [SOLCRAFT_ERROR__UNAUTHORIZED]: `Unauthorized action attempted.`,
-  };
+if (process.env.NODE_ENV !== 'production') {
+   solcraftErrorMessages = {
+      [SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED]: `Cooldown period has not yet elapsed.`,
+      [SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS]: `The provided decimals exceed the maximum allowed.`,
+      [SOLCRAFT_ERROR__INSUFFICIENT_FUNDS]: `Insufficient funds in the depositor's account.`,
+      [SOLCRAFT_ERROR__INVALID_TREASURY_ATA]: `The provided treasury ATA does not match the faucet configuration.`,
+      [SOLCRAFT_ERROR__UNAUTHORIZED]: `Unauthorized action attempted.`,
+   };
 }
 
 export function getSolcraftErrorMessage(code: SolcraftError): string {
-  if (process.env.NODE_ENV !== "production") {
-    return (solcraftErrorMessages as Record<SolcraftError, string>)[code];
-  }
+   if (process.env.NODE_ENV !== 'production') {
+      return (solcraftErrorMessages as Record<SolcraftError, string>)[code];
+   }
 
-  return "Error message not available in production bundles.";
+   return 'Error message not available in production bundles.';
 }
 
 export function isSolcraftError<TProgramErrorCode extends SolcraftError>(
-  error: unknown,
-  transactionMessage: {
-    instructions: Record<number, { programAddress: Address }>;
-  },
-  code?: TProgramErrorCode,
+   error: unknown,
+   transactionMessage: {
+      instructions: Record<number, { programAddress: Address }>;
+   },
+   code?: TProgramErrorCode
 ): error is SolanaError<typeof SOLANA_ERROR__INSTRUCTION_ERROR__CUSTOM> &
-  Readonly<{ context: Readonly<{ code: TProgramErrorCode }> }> {
-  return isProgramError<TProgramErrorCode>(
-    error,
-    transactionMessage,
-    SOLCRAFT_PROGRAM_ADDRESS,
-    code,
-  );
+   Readonly<{ context: Readonly<{ code: TProgramErrorCode }> }> {
+   return isProgramError<TProgramErrorCode>(error, transactionMessage, SOLCRAFT_PROGRAM_ADDRESS, code);
 }

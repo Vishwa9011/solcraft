@@ -6,16 +6,16 @@
  * @see https://github.com/codama-idl/codama
  */
 
-export * from "./claimFromFaucet";
-export * from "./createToken";
-export * from "./depositToFaucet";
-export * from "./initializeFactory";
-export * from "./initializeFaucet";
-export * from "./mintTokens";
-export * from "./pauseFactory";
-export * from "./transferFreezeAuthority";
-export * from "./transferMintAuthority";
-export * from "./unpauseFactory";
-export * from "./updateCreationFee";
-export * from "./withdrawFees";
-export * from "./withdrawFromFaucet";
+export * from './claimFromFaucet';
+export * from './createToken';
+export * from './depositToFaucet';
+export * from './initializeFactory';
+export * from './initializeFaucet';
+export * from './mintTokens';
+export * from './pauseFactory';
+export * from './transferFreezeAuthority';
+export * from './transferMintAuthority';
+export * from './unpauseFactory';
+export * from './updateCreationFee';
+export * from './withdrawFees';
+export * from './withdrawFromFaucet';

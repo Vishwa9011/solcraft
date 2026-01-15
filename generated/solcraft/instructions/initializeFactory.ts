@@ -7,335 +7,296 @@
  */
 
 import {
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getBytesDecoder,
-  getBytesEncoder,
-  getProgramDerivedAddress,
-  getStructDecoder,
-  getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type ReadonlyAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-  type WritableSignerAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import { getAccountMetaFactory, type ResolvedAccount } from "../shared";
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getBytesDecoder,
+   getBytesEncoder,
+   getProgramDerivedAddress,
+   getStructDecoder,
+   getStructEncoder,
+   getU64Decoder,
+   getU64Encoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type ReadonlyAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+   type WritableSignerAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const INITIALIZE_FACTORY_DISCRIMINATOR = new Uint8Array([
-  179, 64, 75, 250, 39, 254, 240, 178,
-]);
+export const INITIALIZE_FACTORY_DISCRIMINATOR = new Uint8Array([179, 64, 75, 250, 39, 254, 240, 178]);
 
 export function getInitializeFactoryDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    INITIALIZE_FACTORY_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(INITIALIZE_FACTORY_DISCRIMINATOR);
 }
 
 export type InitializeFactoryInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountFactoryConfig extends string | AccountMeta<string> = string,
-  TAccountTreasuryAccount extends string | AccountMeta<string> = string,
-  TAccountAdmin extends string | AccountMeta<string> = string,
-  TAccountSystemProgram extends string | AccountMeta<string> =
-    "11111111111111111111111111111111",
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string | AccountMeta<string> = string,
+   TAccountTreasuryAccount extends string | AccountMeta<string> = string,
+   TAccountAdmin extends string | AccountMeta<string> = string,
+   TAccountSystemProgram extends string | AccountMeta<string> = '11111111111111111111111111111111',
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountFactoryConfig extends string
-        ? WritableAccount<TAccountFactoryConfig>
-        : TAccountFactoryConfig,
-      TAccountTreasuryAccount extends string
-        ? WritableAccount<TAccountTreasuryAccount>
-        : TAccountTreasuryAccount,
-      TAccountAdmin extends string
-        ? WritableSignerAccount<TAccountAdmin> &
-            AccountSignerMeta<TAccountAdmin>
-        : TAccountAdmin,
-      TAccountSystemProgram extends string
-        ? ReadonlyAccount<TAccountSystemProgram>
-        : TAccountSystemProgram,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountFactoryConfig extends string ? WritableAccount<TAccountFactoryConfig> : TAccountFactoryConfig,
+         TAccountTreasuryAccount extends string ? WritableAccount<TAccountTreasuryAccount> : TAccountTreasuryAccount,
+         TAccountAdmin extends string
+            ? WritableSignerAccount<TAccountAdmin> & AccountSignerMeta<TAccountAdmin>
+            : TAccountAdmin,
+         TAccountSystemProgram extends string ? ReadonlyAccount<TAccountSystemProgram> : TAccountSystemProgram,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type InitializeFactoryInstructionData = {
-  discriminator: ReadonlyUint8Array;
-  creationFeeLamports: bigint;
+   discriminator: ReadonlyUint8Array;
+   creationFeeLamports: bigint;
 };
 
 export type InitializeFactoryInstructionDataArgs = {
-  creationFeeLamports: number | bigint;
+   creationFeeLamports: number | bigint;
 };
 
 export function getInitializeFactoryInstructionDataEncoder(): FixedSizeEncoder<InitializeFactoryInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["creationFeeLamports", getU64Encoder()],
-    ]),
-    (value) => ({ ...value, discriminator: INITIALIZE_FACTORY_DISCRIMINATOR }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['creationFeeLamports', getU64Encoder()],
+      ]),
+      value => ({ ...value, discriminator: INITIALIZE_FACTORY_DISCRIMINATOR })
+   );
 }
 
 export function getInitializeFactoryInstructionDataDecoder(): FixedSizeDecoder<InitializeFactoryInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["creationFeeLamports", getU64Decoder()],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['creationFeeLamports', getU64Decoder()],
+   ]);
 }
 
 export function getInitializeFactoryInstructionDataCodec(): FixedSizeCodec<
-  InitializeFactoryInstructionDataArgs,
-  InitializeFactoryInstructionData
+   InitializeFactoryInstructionDataArgs,
+   InitializeFactoryInstructionData
 > {
-  return combineCodec(
-    getInitializeFactoryInstructionDataEncoder(),
-    getInitializeFactoryInstructionDataDecoder(),
-  );
+   return combineCodec(getInitializeFactoryInstructionDataEncoder(), getInitializeFactoryInstructionDataDecoder());
 }
 
 export type InitializeFactoryAsyncInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountTreasuryAccount extends string = string,
-  TAccountAdmin extends string = string,
-  TAccountSystemProgram extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountTreasuryAccount extends string = string,
+   TAccountAdmin extends string = string,
+   TAccountSystemProgram extends string = string,
 > = {
-  factoryConfig?: Address<TAccountFactoryConfig>;
-  treasuryAccount?: Address<TAccountTreasuryAccount>;
-  admin: TransactionSigner<TAccountAdmin>;
-  systemProgram?: Address<TAccountSystemProgram>;
-  creationFeeLamports: InitializeFactoryInstructionDataArgs["creationFeeLamports"];
+   factoryConfig?: Address<TAccountFactoryConfig>;
+   treasuryAccount?: Address<TAccountTreasuryAccount>;
+   admin: TransactionSigner<TAccountAdmin>;
+   systemProgram?: Address<TAccountSystemProgram>;
+   creationFeeLamports: InitializeFactoryInstructionDataArgs['creationFeeLamports'];
 };
 
 export async function getInitializeFactoryInstructionAsync<
-  TAccountFactoryConfig extends string,
-  TAccountTreasuryAccount extends string,
-  TAccountAdmin extends string,
-  TAccountSystemProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountTreasuryAccount extends string,
+   TAccountAdmin extends string,
+   TAccountSystemProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: InitializeFactoryAsyncInput<
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountAdmin,
-    TAccountSystemProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: InitializeFactoryAsyncInput<
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountAdmin,
+      TAccountSystemProgram
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): Promise<
-  InitializeFactoryInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountAdmin,
-    TAccountSystemProgram
-  >
+   InitializeFactoryInstruction<
+      TProgramAddress,
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountAdmin,
+      TAccountSystemProgram
+   >
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
-    treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
-    admin: { value: input.admin ?? null, isWritable: true },
-    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
+      treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
+      admin: { value: input.admin ?? null, isWritable: true },
+      systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.factoryConfig.value) {
-    accounts.factoryConfig.value = await getProgramDerivedAddress({
-      programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103,
-          ]),
-        ),
+   // Resolve default values.
+   if (!accounts.factoryConfig.value) {
+      accounts.factoryConfig.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103])
+            ),
+         ],
+      });
+   }
+   if (!accounts.treasuryAccount.value) {
+      accounts.treasuryAccount.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 99, 116, 111, 114, 121, 95, 116, 114, 101, 97, 115, 117, 114, 121])
+            ),
+         ],
+      });
+   }
+   if (!accounts.systemProgram.value) {
+      accounts.systemProgram.value = '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+   }
+
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.factoryConfig),
+         getAccountMeta(accounts.treasuryAccount),
+         getAccountMeta(accounts.admin),
+         getAccountMeta(accounts.systemProgram),
       ],
-    });
-  }
-  if (!accounts.treasuryAccount.value) {
-    accounts.treasuryAccount.value = await getProgramDerivedAddress({
+      data: getInitializeFactoryInstructionDataEncoder().encode(args as InitializeFactoryInstructionDataArgs),
       programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 99, 116, 111, 114, 121, 95, 116, 114, 101, 97, 115, 117,
-            114, 121,
-          ]),
-        ),
-      ],
-    });
-  }
-  if (!accounts.systemProgram.value) {
-    accounts.systemProgram.value =
-      "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
-  }
-
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.treasuryAccount),
-      getAccountMeta(accounts.admin),
-      getAccountMeta(accounts.systemProgram),
-    ],
-    data: getInitializeFactoryInstructionDataEncoder().encode(
-      args as InitializeFactoryInstructionDataArgs,
-    ),
-    programAddress,
-  } as InitializeFactoryInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountAdmin,
-    TAccountSystemProgram
-  >);
+   } as InitializeFactoryInstruction<
+      TProgramAddress,
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountAdmin,
+      TAccountSystemProgram
+   >);
 }
 
 export type InitializeFactoryInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountTreasuryAccount extends string = string,
-  TAccountAdmin extends string = string,
-  TAccountSystemProgram extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountTreasuryAccount extends string = string,
+   TAccountAdmin extends string = string,
+   TAccountSystemProgram extends string = string,
 > = {
-  factoryConfig: Address<TAccountFactoryConfig>;
-  treasuryAccount: Address<TAccountTreasuryAccount>;
-  admin: TransactionSigner<TAccountAdmin>;
-  systemProgram?: Address<TAccountSystemProgram>;
-  creationFeeLamports: InitializeFactoryInstructionDataArgs["creationFeeLamports"];
+   factoryConfig: Address<TAccountFactoryConfig>;
+   treasuryAccount: Address<TAccountTreasuryAccount>;
+   admin: TransactionSigner<TAccountAdmin>;
+   systemProgram?: Address<TAccountSystemProgram>;
+   creationFeeLamports: InitializeFactoryInstructionDataArgs['creationFeeLamports'];
 };
 
 export function getInitializeFactoryInstruction<
-  TAccountFactoryConfig extends string,
-  TAccountTreasuryAccount extends string,
-  TAccountAdmin extends string,
-  TAccountSystemProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountTreasuryAccount extends string,
+   TAccountAdmin extends string,
+   TAccountSystemProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: InitializeFactoryInput<
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountAdmin,
-    TAccountSystemProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: InitializeFactoryInput<TAccountFactoryConfig, TAccountTreasuryAccount, TAccountAdmin, TAccountSystemProgram>,
+   config?: { programAddress?: TProgramAddress }
 ): InitializeFactoryInstruction<
-  TProgramAddress,
-  TAccountFactoryConfig,
-  TAccountTreasuryAccount,
-  TAccountAdmin,
-  TAccountSystemProgram
+   TProgramAddress,
+   TAccountFactoryConfig,
+   TAccountTreasuryAccount,
+   TAccountAdmin,
+   TAccountSystemProgram
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
-    treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
-    admin: { value: input.admin ?? null, isWritable: true },
-    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
+      treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
+      admin: { value: input.admin ?? null, isWritable: true },
+      systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.systemProgram.value) {
-    accounts.systemProgram.value =
-      "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
-  }
+   // Resolve default values.
+   if (!accounts.systemProgram.value) {
+      accounts.systemProgram.value = '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+   }
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.treasuryAccount),
-      getAccountMeta(accounts.admin),
-      getAccountMeta(accounts.systemProgram),
-    ],
-    data: getInitializeFactoryInstructionDataEncoder().encode(
-      args as InitializeFactoryInstructionDataArgs,
-    ),
-    programAddress,
-  } as InitializeFactoryInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountAdmin,
-    TAccountSystemProgram
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.factoryConfig),
+         getAccountMeta(accounts.treasuryAccount),
+         getAccountMeta(accounts.admin),
+         getAccountMeta(accounts.systemProgram),
+      ],
+      data: getInitializeFactoryInstructionDataEncoder().encode(args as InitializeFactoryInstructionDataArgs),
+      programAddress,
+   } as InitializeFactoryInstruction<
+      TProgramAddress,
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountAdmin,
+      TAccountSystemProgram
+   >);
 }
 
 export type ParsedInitializeFactoryInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    factoryConfig: TAccountMetas[0];
-    treasuryAccount: TAccountMetas[1];
-    admin: TAccountMetas[2];
-    systemProgram: TAccountMetas[3];
-  };
-  data: InitializeFactoryInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      factoryConfig: TAccountMetas[0];
+      treasuryAccount: TAccountMetas[1];
+      admin: TAccountMetas[2];
+      systemProgram: TAccountMetas[3];
+   };
+   data: InitializeFactoryInstructionData;
 };
 
 export function parseInitializeFactoryInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
+   TProgram extends string,
+   TAccountMetas extends readonly AccountMeta[],
 >(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedInitializeFactoryInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 4) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: {
-      factoryConfig: getNextAccount(),
-      treasuryAccount: getNextAccount(),
-      admin: getNextAccount(),
-      systemProgram: getNextAccount(),
-    },
-    data: getInitializeFactoryInstructionDataDecoder().decode(instruction.data),
-  };
+   if (instruction.accounts.length < 4) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: {
+         factoryConfig: getNextAccount(),
+         treasuryAccount: getNextAccount(),
+         admin: getNextAccount(),
+         systemProgram: getNextAccount(),
+      },
+      data: getInitializeFactoryInstructionDataDecoder().decode(instruction.data),
+   };
 }

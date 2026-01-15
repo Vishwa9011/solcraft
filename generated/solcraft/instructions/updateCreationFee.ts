@@ -7,257 +7,209 @@
  */
 
 import {
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getBytesDecoder,
-  getBytesEncoder,
-  getProgramDerivedAddress,
-  getStructDecoder,
-  getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type ReadonlySignerAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import { getAccountMetaFactory, type ResolvedAccount } from "../shared";
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getBytesDecoder,
+   getBytesEncoder,
+   getProgramDerivedAddress,
+   getStructDecoder,
+   getStructEncoder,
+   getU64Decoder,
+   getU64Encoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type ReadonlySignerAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const UPDATE_CREATION_FEE_DISCRIMINATOR = new Uint8Array([
-  61, 2, 124, 84, 182, 199, 38, 134,
-]);
+export const UPDATE_CREATION_FEE_DISCRIMINATOR = new Uint8Array([61, 2, 124, 84, 182, 199, 38, 134]);
 
 export function getUpdateCreationFeeDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    UPDATE_CREATION_FEE_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(UPDATE_CREATION_FEE_DISCRIMINATOR);
 }
 
 export type UpdateCreationFeeInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountFactoryConfig extends string | AccountMeta<string> = string,
-  TAccountAdmin extends string | AccountMeta<string> = string,
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string | AccountMeta<string> = string,
+   TAccountAdmin extends string | AccountMeta<string> = string,
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountFactoryConfig extends string
-        ? WritableAccount<TAccountFactoryConfig>
-        : TAccountFactoryConfig,
-      TAccountAdmin extends string
-        ? ReadonlySignerAccount<TAccountAdmin> &
-            AccountSignerMeta<TAccountAdmin>
-        : TAccountAdmin,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountFactoryConfig extends string ? WritableAccount<TAccountFactoryConfig> : TAccountFactoryConfig,
+         TAccountAdmin extends string
+            ? ReadonlySignerAccount<TAccountAdmin> & AccountSignerMeta<TAccountAdmin>
+            : TAccountAdmin,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type UpdateCreationFeeInstructionData = {
-  discriminator: ReadonlyUint8Array;
-  creationFeeLamports: bigint;
+   discriminator: ReadonlyUint8Array;
+   creationFeeLamports: bigint;
 };
 
 export type UpdateCreationFeeInstructionDataArgs = {
-  creationFeeLamports: number | bigint;
+   creationFeeLamports: number | bigint;
 };
 
 export function getUpdateCreationFeeInstructionDataEncoder(): FixedSizeEncoder<UpdateCreationFeeInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["creationFeeLamports", getU64Encoder()],
-    ]),
-    (value) => ({ ...value, discriminator: UPDATE_CREATION_FEE_DISCRIMINATOR }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['creationFeeLamports', getU64Encoder()],
+      ]),
+      value => ({ ...value, discriminator: UPDATE_CREATION_FEE_DISCRIMINATOR })
+   );
 }
 
 export function getUpdateCreationFeeInstructionDataDecoder(): FixedSizeDecoder<UpdateCreationFeeInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["creationFeeLamports", getU64Decoder()],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['creationFeeLamports', getU64Decoder()],
+   ]);
 }
 
 export function getUpdateCreationFeeInstructionDataCodec(): FixedSizeCodec<
-  UpdateCreationFeeInstructionDataArgs,
-  UpdateCreationFeeInstructionData
+   UpdateCreationFeeInstructionDataArgs,
+   UpdateCreationFeeInstructionData
 > {
-  return combineCodec(
-    getUpdateCreationFeeInstructionDataEncoder(),
-    getUpdateCreationFeeInstructionDataDecoder(),
-  );
+   return combineCodec(getUpdateCreationFeeInstructionDataEncoder(), getUpdateCreationFeeInstructionDataDecoder());
 }
 
 export type UpdateCreationFeeAsyncInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountAdmin extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountAdmin extends string = string,
 > = {
-  factoryConfig?: Address<TAccountFactoryConfig>;
-  admin: TransactionSigner<TAccountAdmin>;
-  creationFeeLamports: UpdateCreationFeeInstructionDataArgs["creationFeeLamports"];
+   factoryConfig?: Address<TAccountFactoryConfig>;
+   admin: TransactionSigner<TAccountAdmin>;
+   creationFeeLamports: UpdateCreationFeeInstructionDataArgs['creationFeeLamports'];
 };
 
 export async function getUpdateCreationFeeInstructionAsync<
-  TAccountFactoryConfig extends string,
-  TAccountAdmin extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountAdmin extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: UpdateCreationFeeAsyncInput<TAccountFactoryConfig, TAccountAdmin>,
-  config?: { programAddress?: TProgramAddress },
-): Promise<
-  UpdateCreationFeeInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountAdmin
-  >
-> {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   input: UpdateCreationFeeAsyncInput<TAccountFactoryConfig, TAccountAdmin>,
+   config?: { programAddress?: TProgramAddress }
+): Promise<UpdateCreationFeeInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin>> {
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
-    admin: { value: input.admin ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
+      admin: { value: input.admin ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.factoryConfig.value) {
-    accounts.factoryConfig.value = await getProgramDerivedAddress({
+   // Resolve default values.
+   if (!accounts.factoryConfig.value) {
+      accounts.factoryConfig.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103])
+            ),
+         ],
+      });
+   }
+
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [getAccountMeta(accounts.factoryConfig), getAccountMeta(accounts.admin)],
+      data: getUpdateCreationFeeInstructionDataEncoder().encode(args as UpdateCreationFeeInstructionDataArgs),
       programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103,
-          ]),
-        ),
-      ],
-    });
-  }
-
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.admin),
-    ],
-    data: getUpdateCreationFeeInstructionDataEncoder().encode(
-      args as UpdateCreationFeeInstructionDataArgs,
-    ),
-    programAddress,
-  } as UpdateCreationFeeInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountAdmin
-  >);
+   } as UpdateCreationFeeInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin>);
 }
 
 export type UpdateCreationFeeInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountAdmin extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountAdmin extends string = string,
 > = {
-  factoryConfig: Address<TAccountFactoryConfig>;
-  admin: TransactionSigner<TAccountAdmin>;
-  creationFeeLamports: UpdateCreationFeeInstructionDataArgs["creationFeeLamports"];
+   factoryConfig: Address<TAccountFactoryConfig>;
+   admin: TransactionSigner<TAccountAdmin>;
+   creationFeeLamports: UpdateCreationFeeInstructionDataArgs['creationFeeLamports'];
 };
 
 export function getUpdateCreationFeeInstruction<
-  TAccountFactoryConfig extends string,
-  TAccountAdmin extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountAdmin extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: UpdateCreationFeeInput<TAccountFactoryConfig, TAccountAdmin>,
-  config?: { programAddress?: TProgramAddress },
-): UpdateCreationFeeInstruction<
-  TProgramAddress,
-  TAccountFactoryConfig,
-  TAccountAdmin
-> {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   input: UpdateCreationFeeInput<TAccountFactoryConfig, TAccountAdmin>,
+   config?: { programAddress?: TProgramAddress }
+): UpdateCreationFeeInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin> {
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
-    admin: { value: input.admin ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: true },
+      admin: { value: input.admin ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.admin),
-    ],
-    data: getUpdateCreationFeeInstructionDataEncoder().encode(
-      args as UpdateCreationFeeInstructionDataArgs,
-    ),
-    programAddress,
-  } as UpdateCreationFeeInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountAdmin
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [getAccountMeta(accounts.factoryConfig), getAccountMeta(accounts.admin)],
+      data: getUpdateCreationFeeInstructionDataEncoder().encode(args as UpdateCreationFeeInstructionDataArgs),
+      programAddress,
+   } as UpdateCreationFeeInstruction<TProgramAddress, TAccountFactoryConfig, TAccountAdmin>);
 }
 
 export type ParsedUpdateCreationFeeInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    factoryConfig: TAccountMetas[0];
-    admin: TAccountMetas[1];
-  };
-  data: UpdateCreationFeeInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      factoryConfig: TAccountMetas[0];
+      admin: TAccountMetas[1];
+   };
+   data: UpdateCreationFeeInstructionData;
 };
 
 export function parseUpdateCreationFeeInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
+   TProgram extends string,
+   TAccountMetas extends readonly AccountMeta[],
 >(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedUpdateCreationFeeInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 2) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: { factoryConfig: getNextAccount(), admin: getNextAccount() },
-    data: getUpdateCreationFeeInstructionDataDecoder().decode(instruction.data),
-  };
+   if (instruction.accounts.length < 2) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: { factoryConfig: getNextAccount(), admin: getNextAccount() },
+      data: getUpdateCreationFeeInstructionDataDecoder().decode(instruction.data),
+   };
 }

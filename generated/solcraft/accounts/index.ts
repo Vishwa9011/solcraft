@@ -6,6 +6,6 @@
  * @see https://github.com/codama-idl/codama
  */
 
-export * from "./factoryConfig";
-export * from "./faucetConfig";
-export * from "./faucetRecipientData";
+export * from './factoryConfig';
+export * from './faucetConfig';
+export * from './faucetRecipientData';

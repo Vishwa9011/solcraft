@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["ws"],
+   serverExternalPackages: ['ws'],
 };
 
 export default nextConfig;

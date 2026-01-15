@@ -1,5 +1,5 @@
 export const queryKeys = {
-  factoryConfig: {
-    all: ["factory-config-pda"] as const,
-  },
+   factoryConfig: {
+      all: ['factory-config-pda'] as const,
+   },
 };

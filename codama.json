@@ -1,13 +1,11 @@
 {
-  "idl": "./anchor/target/idl/solcraft.json",
-  "scripts": {
-    "js": [
-      {
-        "from": "@codama/renderers-js",
-        "args": [
-          "./generated/solcraft"
-        ]
-      }
-    ]
-  }
+   "idl": "./anchor/target/idl/solcraft.json",
+   "scripts": {
+      "js": [
+         {
+            "from": "@codama/renderers-js",
+            "args": ["./generated/solcraft"]
+         }
+      ]
+   }
 }

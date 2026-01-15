@@ -6,287 +6,241 @@
  * @see https://github.com/codama-idl/codama
  */
 
+import { containsBytes, fixEncoderSize, getBytesEncoder, type Address, type ReadonlyUint8Array } from '@solana/kit';
 import {
-  containsBytes,
-  fixEncoderSize,
-  getBytesEncoder,
-  type Address,
-  type ReadonlyUint8Array,
-} from "@solana/kit";
-import {
-  type ParsedClaimFromFaucetInstruction,
-  type ParsedCreateTokenInstruction,
-  type ParsedDepositToFaucetInstruction,
-  type ParsedInitializeFactoryInstruction,
-  type ParsedInitializeFaucetInstruction,
-  type ParsedMintTokensInstruction,
-  type ParsedPauseFactoryInstruction,
-  type ParsedTransferFreezeAuthorityInstruction,
-  type ParsedTransferMintAuthorityInstruction,
-  type ParsedUnpauseFactoryInstruction,
-  type ParsedUpdateCreationFeeInstruction,
-  type ParsedWithdrawFeesInstruction,
-  type ParsedWithdrawFromFaucetInstruction,
-} from "../instructions";
+   type ParsedClaimFromFaucetInstruction,
+   type ParsedCreateTokenInstruction,
+   type ParsedDepositToFaucetInstruction,
+   type ParsedInitializeFactoryInstruction,
+   type ParsedInitializeFaucetInstruction,
+   type ParsedMintTokensInstruction,
+   type ParsedPauseFactoryInstruction,
+   type ParsedTransferFreezeAuthorityInstruction,
+   type ParsedTransferMintAuthorityInstruction,
+   type ParsedUnpauseFactoryInstruction,
+   type ParsedUpdateCreationFeeInstruction,
+   type ParsedWithdrawFeesInstruction,
+   type ParsedWithdrawFromFaucetInstruction,
+} from '../instructions';
 
 export const SOLCRAFT_PROGRAM_ADDRESS =
-  "FWsMJ3Ysc51jNMkeB4NwB1LaXj6seHTUkxekWYHQkc33" as Address<"FWsMJ3Ysc51jNMkeB4NwB1LaXj6seHTUkxekWYHQkc33">;
+   'FWsMJ3Ysc51jNMkeB4NwB1LaXj6seHTUkxekWYHQkc33' as Address<'FWsMJ3Ysc51jNMkeB4NwB1LaXj6seHTUkxekWYHQkc33'>;
 
 export enum SolcraftAccount {
-  FactoryConfig,
-  FaucetConfig,
-  FaucetRecipientData,
+   FactoryConfig,
+   FaucetConfig,
+   FaucetRecipientData,
 }
 
-export function identifySolcraftAccount(
-  account: { data: ReadonlyUint8Array } | ReadonlyUint8Array,
-): SolcraftAccount {
-  const data = "data" in account ? account.data : account;
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([29, 197, 255, 232, 22, 128, 67, 26]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftAccount.FactoryConfig;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([216, 31, 49, 154, 106, 125, 143, 142]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftAccount.FaucetConfig;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([68, 252, 12, 190, 26, 108, 164, 14]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftAccount.FaucetRecipientData;
-  }
-  throw new Error(
-    "The provided account could not be identified as a solcraft account.",
-  );
+export function identifySolcraftAccount(account: { data: ReadonlyUint8Array } | ReadonlyUint8Array): SolcraftAccount {
+   const data = 'data' in account ? account.data : account;
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([29, 197, 255, 232, 22, 128, 67, 26])),
+         0
+      )
+   ) {
+      return SolcraftAccount.FactoryConfig;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([216, 31, 49, 154, 106, 125, 143, 142])),
+         0
+      )
+   ) {
+      return SolcraftAccount.FaucetConfig;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([68, 252, 12, 190, 26, 108, 164, 14])),
+         0
+      )
+   ) {
+      return SolcraftAccount.FaucetRecipientData;
+   }
+   throw new Error('The provided account could not be identified as a solcraft account.');
 }
 
 export enum SolcraftInstruction {
-  ClaimFromFaucet,
-  CreateToken,
-  DepositToFaucet,
-  InitializeFactory,
-  InitializeFaucet,
-  MintTokens,
-  PauseFactory,
-  TransferFreezeAuthority,
-  TransferMintAuthority,
-  UnpauseFactory,
-  UpdateCreationFee,
-  WithdrawFees,
-  WithdrawFromFaucet,
+   ClaimFromFaucet,
+   CreateToken,
+   DepositToFaucet,
+   InitializeFactory,
+   InitializeFaucet,
+   MintTokens,
+   PauseFactory,
+   TransferFreezeAuthority,
+   TransferMintAuthority,
+   UnpauseFactory,
+   UpdateCreationFee,
+   WithdrawFees,
+   WithdrawFromFaucet,
 }
 
 export function identifySolcraftInstruction(
-  instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array,
+   instruction: { data: ReadonlyUint8Array } | ReadonlyUint8Array
 ): SolcraftInstruction {
-  const data = "data" in instruction ? instruction.data : instruction;
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([97, 161, 157, 131, 89, 237, 16, 168]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.ClaimFromFaucet;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([84, 52, 204, 228, 24, 140, 234, 75]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.CreateToken;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([50, 78, 95, 109, 105, 152, 187, 209]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.DepositToFaucet;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([179, 64, 75, 250, 39, 254, 240, 178]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.InitializeFactory;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([159, 109, 237, 214, 69, 231, 14, 60]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.InitializeFaucet;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([59, 132, 24, 246, 122, 39, 8, 243]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.MintTokens;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([11, 24, 20, 7, 66, 24, 202, 70]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.PauseFactory;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([235, 44, 91, 221, 224, 5, 187, 172]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.TransferFreezeAuthority;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([87, 237, 187, 84, 168, 175, 241, 75]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.TransferMintAuthority;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([30, 5, 208, 192, 1, 217, 141, 118]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.UnpauseFactory;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([61, 2, 124, 84, 182, 199, 38, 134]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.UpdateCreationFee;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([198, 212, 171, 109, 144, 215, 174, 89]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.WithdrawFees;
-  }
-  if (
-    containsBytes(
-      data,
-      fixEncoderSize(getBytesEncoder(), 8).encode(
-        new Uint8Array([210, 45, 219, 228, 136, 215, 104, 111]),
-      ),
-      0,
-    )
-  ) {
-    return SolcraftInstruction.WithdrawFromFaucet;
-  }
-  throw new Error(
-    "The provided instruction could not be identified as a solcraft instruction.",
-  );
+   const data = 'data' in instruction ? instruction.data : instruction;
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([97, 161, 157, 131, 89, 237, 16, 168])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.ClaimFromFaucet;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([84, 52, 204, 228, 24, 140, 234, 75])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.CreateToken;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([50, 78, 95, 109, 105, 152, 187, 209])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.DepositToFaucet;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([179, 64, 75, 250, 39, 254, 240, 178])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.InitializeFactory;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([159, 109, 237, 214, 69, 231, 14, 60])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.InitializeFaucet;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([59, 132, 24, 246, 122, 39, 8, 243])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.MintTokens;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([11, 24, 20, 7, 66, 24, 202, 70])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.PauseFactory;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([235, 44, 91, 221, 224, 5, 187, 172])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.TransferFreezeAuthority;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([87, 237, 187, 84, 168, 175, 241, 75])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.TransferMintAuthority;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([30, 5, 208, 192, 1, 217, 141, 118])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.UnpauseFactory;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([61, 2, 124, 84, 182, 199, 38, 134])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.UpdateCreationFee;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([198, 212, 171, 109, 144, 215, 174, 89])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.WithdrawFees;
+   }
+   if (
+      containsBytes(
+         data,
+         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([210, 45, 219, 228, 136, 215, 104, 111])),
+         0
+      )
+   ) {
+      return SolcraftInstruction.WithdrawFromFaucet;
+   }
+   throw new Error('The provided instruction could not be identified as a solcraft instruction.');
 }
 
-export type ParsedSolcraftInstruction<
-  TProgram extends string = "FWsMJ3Ysc51jNMkeB4NwB1LaXj6seHTUkxekWYHQkc33",
-> =
-  | ({
-      instructionType: SolcraftInstruction.ClaimFromFaucet;
-    } & ParsedClaimFromFaucetInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.CreateToken;
-    } & ParsedCreateTokenInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.DepositToFaucet;
-    } & ParsedDepositToFaucetInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.InitializeFactory;
-    } & ParsedInitializeFactoryInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.InitializeFaucet;
-    } & ParsedInitializeFaucetInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.MintTokens;
-    } & ParsedMintTokensInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.PauseFactory;
-    } & ParsedPauseFactoryInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.TransferFreezeAuthority;
-    } & ParsedTransferFreezeAuthorityInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.TransferMintAuthority;
-    } & ParsedTransferMintAuthorityInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.UnpauseFactory;
-    } & ParsedUnpauseFactoryInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.UpdateCreationFee;
-    } & ParsedUpdateCreationFeeInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.WithdrawFees;
-    } & ParsedWithdrawFeesInstruction<TProgram>)
-  | ({
-      instructionType: SolcraftInstruction.WithdrawFromFaucet;
-    } & ParsedWithdrawFromFaucetInstruction<TProgram>);
+export type ParsedSolcraftInstruction<TProgram extends string = 'FWsMJ3Ysc51jNMkeB4NwB1LaXj6seHTUkxekWYHQkc33'> =
+   | ({
+        instructionType: SolcraftInstruction.ClaimFromFaucet;
+     } & ParsedClaimFromFaucetInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.CreateToken;
+     } & ParsedCreateTokenInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.DepositToFaucet;
+     } & ParsedDepositToFaucetInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.InitializeFactory;
+     } & ParsedInitializeFactoryInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.InitializeFaucet;
+     } & ParsedInitializeFaucetInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.MintTokens;
+     } & ParsedMintTokensInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.PauseFactory;
+     } & ParsedPauseFactoryInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.TransferFreezeAuthority;
+     } & ParsedTransferFreezeAuthorityInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.TransferMintAuthority;
+     } & ParsedTransferMintAuthorityInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.UnpauseFactory;
+     } & ParsedUnpauseFactoryInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.UpdateCreationFee;
+     } & ParsedUpdateCreationFeeInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.WithdrawFees;
+     } & ParsedWithdrawFeesInstruction<TProgram>)
+   | ({
+        instructionType: SolcraftInstruction.WithdrawFromFaucet;
+     } & ParsedWithdrawFromFaucetInstruction<TProgram>);

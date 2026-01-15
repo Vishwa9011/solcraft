@@ -7,342 +7,306 @@
  */
 
 import {
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getBytesDecoder,
-  getBytesEncoder,
-  getProgramDerivedAddress,
-  getStructDecoder,
-  getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type ReadonlyAccount,
-  type ReadonlySignerAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import { getAccountMetaFactory, type ResolvedAccount } from "../shared";
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getBytesDecoder,
+   getBytesEncoder,
+   getProgramDerivedAddress,
+   getStructDecoder,
+   getStructEncoder,
+   getU64Decoder,
+   getU64Encoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type ReadonlyAccount,
+   type ReadonlySignerAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const DEPOSIT_TO_FAUCET_DISCRIMINATOR = new Uint8Array([
-  50, 78, 95, 109, 105, 152, 187, 209,
-]);
+export const DEPOSIT_TO_FAUCET_DISCRIMINATOR = new Uint8Array([50, 78, 95, 109, 105, 152, 187, 209]);
 
 export function getDepositToFaucetDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    DEPOSIT_TO_FAUCET_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(DEPOSIT_TO_FAUCET_DISCRIMINATOR);
 }
 
 export type DepositToFaucetInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountFaucetConfig extends string | AccountMeta<string> = string,
-  TAccountTreasuryAta extends string | AccountMeta<string> = string,
-  TAccountDepositorAta extends string | AccountMeta<string> = string,
-  TAccountDepositor extends string | AccountMeta<string> = string,
-  TAccountTokenProgram extends string | AccountMeta<string> =
-    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFaucetConfig extends string | AccountMeta<string> = string,
+   TAccountTreasuryAta extends string | AccountMeta<string> = string,
+   TAccountDepositorAta extends string | AccountMeta<string> = string,
+   TAccountDepositor extends string | AccountMeta<string> = string,
+   TAccountTokenProgram extends string | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountFaucetConfig extends string
-        ? WritableAccount<TAccountFaucetConfig>
-        : TAccountFaucetConfig,
-      TAccountTreasuryAta extends string
-        ? WritableAccount<TAccountTreasuryAta>
-        : TAccountTreasuryAta,
-      TAccountDepositorAta extends string
-        ? WritableAccount<TAccountDepositorAta>
-        : TAccountDepositorAta,
-      TAccountDepositor extends string
-        ? ReadonlySignerAccount<TAccountDepositor> &
-            AccountSignerMeta<TAccountDepositor>
-        : TAccountDepositor,
-      TAccountTokenProgram extends string
-        ? ReadonlyAccount<TAccountTokenProgram>
-        : TAccountTokenProgram,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountFaucetConfig extends string ? WritableAccount<TAccountFaucetConfig> : TAccountFaucetConfig,
+         TAccountTreasuryAta extends string ? WritableAccount<TAccountTreasuryAta> : TAccountTreasuryAta,
+         TAccountDepositorAta extends string ? WritableAccount<TAccountDepositorAta> : TAccountDepositorAta,
+         TAccountDepositor extends string
+            ? ReadonlySignerAccount<TAccountDepositor> & AccountSignerMeta<TAccountDepositor>
+            : TAccountDepositor,
+         TAccountTokenProgram extends string ? ReadonlyAccount<TAccountTokenProgram> : TAccountTokenProgram,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type DepositToFaucetInstructionData = {
-  discriminator: ReadonlyUint8Array;
-  amount: bigint;
+   discriminator: ReadonlyUint8Array;
+   amount: bigint;
 };
 
 export type DepositToFaucetInstructionDataArgs = { amount: number | bigint };
 
 export function getDepositToFaucetInstructionDataEncoder(): FixedSizeEncoder<DepositToFaucetInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["amount", getU64Encoder()],
-    ]),
-    (value) => ({ ...value, discriminator: DEPOSIT_TO_FAUCET_DISCRIMINATOR }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['amount', getU64Encoder()],
+      ]),
+      value => ({ ...value, discriminator: DEPOSIT_TO_FAUCET_DISCRIMINATOR })
+   );
 }
 
 export function getDepositToFaucetInstructionDataDecoder(): FixedSizeDecoder<DepositToFaucetInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["amount", getU64Decoder()],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['amount', getU64Decoder()],
+   ]);
 }
 
 export function getDepositToFaucetInstructionDataCodec(): FixedSizeCodec<
-  DepositToFaucetInstructionDataArgs,
-  DepositToFaucetInstructionData
+   DepositToFaucetInstructionDataArgs,
+   DepositToFaucetInstructionData
 > {
-  return combineCodec(
-    getDepositToFaucetInstructionDataEncoder(),
-    getDepositToFaucetInstructionDataDecoder(),
-  );
+   return combineCodec(getDepositToFaucetInstructionDataEncoder(), getDepositToFaucetInstructionDataDecoder());
 }
 
 export type DepositToFaucetAsyncInput<
-  TAccountFaucetConfig extends string = string,
-  TAccountTreasuryAta extends string = string,
-  TAccountDepositorAta extends string = string,
-  TAccountDepositor extends string = string,
-  TAccountTokenProgram extends string = string,
+   TAccountFaucetConfig extends string = string,
+   TAccountTreasuryAta extends string = string,
+   TAccountDepositorAta extends string = string,
+   TAccountDepositor extends string = string,
+   TAccountTokenProgram extends string = string,
 > = {
-  faucetConfig?: Address<TAccountFaucetConfig>;
-  treasuryAta: Address<TAccountTreasuryAta>;
-  depositorAta: Address<TAccountDepositorAta>;
-  depositor: TransactionSigner<TAccountDepositor>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  amount: DepositToFaucetInstructionDataArgs["amount"];
+   faucetConfig?: Address<TAccountFaucetConfig>;
+   treasuryAta: Address<TAccountTreasuryAta>;
+   depositorAta: Address<TAccountDepositorAta>;
+   depositor: TransactionSigner<TAccountDepositor>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   amount: DepositToFaucetInstructionDataArgs['amount'];
 };
 
 export async function getDepositToFaucetInstructionAsync<
-  TAccountFaucetConfig extends string,
-  TAccountTreasuryAta extends string,
-  TAccountDepositorAta extends string,
-  TAccountDepositor extends string,
-  TAccountTokenProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFaucetConfig extends string,
+   TAccountTreasuryAta extends string,
+   TAccountDepositorAta extends string,
+   TAccountDepositor extends string,
+   TAccountTokenProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: DepositToFaucetAsyncInput<
-    TAccountFaucetConfig,
-    TAccountTreasuryAta,
-    TAccountDepositorAta,
-    TAccountDepositor,
-    TAccountTokenProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: DepositToFaucetAsyncInput<
+      TAccountFaucetConfig,
+      TAccountTreasuryAta,
+      TAccountDepositorAta,
+      TAccountDepositor,
+      TAccountTokenProgram
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): Promise<
-  DepositToFaucetInstruction<
-    TProgramAddress,
-    TAccountFaucetConfig,
-    TAccountTreasuryAta,
-    TAccountDepositorAta,
-    TAccountDepositor,
-    TAccountTokenProgram
-  >
+   DepositToFaucetInstruction<
+      TProgramAddress,
+      TAccountFaucetConfig,
+      TAccountTreasuryAta,
+      TAccountDepositorAta,
+      TAccountDepositor,
+      TAccountTokenProgram
+   >
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
-    treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
-    depositorAta: { value: input.depositorAta ?? null, isWritable: true },
-    depositor: { value: input.depositor ?? null, isWritable: false },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
+      treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
+      depositorAta: { value: input.depositorAta ?? null, isWritable: true },
+      depositor: { value: input.depositor ?? null, isWritable: false },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.faucetConfig.value) {
-    accounts.faucetConfig.value = await getProgramDerivedAddress({
-      programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 117, 99, 101, 116, 95, 99, 111, 110, 102, 105, 103,
-          ]),
-        ),
+   // Resolve default values.
+   if (!accounts.faucetConfig.value) {
+      accounts.faucetConfig.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(new Uint8Array([102, 97, 117, 99, 101, 116, 95, 99, 111, 110, 102, 105, 103])),
+         ],
+      });
+   }
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
+
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.faucetConfig),
+         getAccountMeta(accounts.treasuryAta),
+         getAccountMeta(accounts.depositorAta),
+         getAccountMeta(accounts.depositor),
+         getAccountMeta(accounts.tokenProgram),
       ],
-    });
-  }
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
-
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.faucetConfig),
-      getAccountMeta(accounts.treasuryAta),
-      getAccountMeta(accounts.depositorAta),
-      getAccountMeta(accounts.depositor),
-      getAccountMeta(accounts.tokenProgram),
-    ],
-    data: getDepositToFaucetInstructionDataEncoder().encode(
-      args as DepositToFaucetInstructionDataArgs,
-    ),
-    programAddress,
-  } as DepositToFaucetInstruction<
-    TProgramAddress,
-    TAccountFaucetConfig,
-    TAccountTreasuryAta,
-    TAccountDepositorAta,
-    TAccountDepositor,
-    TAccountTokenProgram
-  >);
+      data: getDepositToFaucetInstructionDataEncoder().encode(args as DepositToFaucetInstructionDataArgs),
+      programAddress,
+   } as DepositToFaucetInstruction<
+      TProgramAddress,
+      TAccountFaucetConfig,
+      TAccountTreasuryAta,
+      TAccountDepositorAta,
+      TAccountDepositor,
+      TAccountTokenProgram
+   >);
 }
 
 export type DepositToFaucetInput<
-  TAccountFaucetConfig extends string = string,
-  TAccountTreasuryAta extends string = string,
-  TAccountDepositorAta extends string = string,
-  TAccountDepositor extends string = string,
-  TAccountTokenProgram extends string = string,
+   TAccountFaucetConfig extends string = string,
+   TAccountTreasuryAta extends string = string,
+   TAccountDepositorAta extends string = string,
+   TAccountDepositor extends string = string,
+   TAccountTokenProgram extends string = string,
 > = {
-  faucetConfig: Address<TAccountFaucetConfig>;
-  treasuryAta: Address<TAccountTreasuryAta>;
-  depositorAta: Address<TAccountDepositorAta>;
-  depositor: TransactionSigner<TAccountDepositor>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  amount: DepositToFaucetInstructionDataArgs["amount"];
+   faucetConfig: Address<TAccountFaucetConfig>;
+   treasuryAta: Address<TAccountTreasuryAta>;
+   depositorAta: Address<TAccountDepositorAta>;
+   depositor: TransactionSigner<TAccountDepositor>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   amount: DepositToFaucetInstructionDataArgs['amount'];
 };
 
 export function getDepositToFaucetInstruction<
-  TAccountFaucetConfig extends string,
-  TAccountTreasuryAta extends string,
-  TAccountDepositorAta extends string,
-  TAccountDepositor extends string,
-  TAccountTokenProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFaucetConfig extends string,
+   TAccountTreasuryAta extends string,
+   TAccountDepositorAta extends string,
+   TAccountDepositor extends string,
+   TAccountTokenProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: DepositToFaucetInput<
-    TAccountFaucetConfig,
-    TAccountTreasuryAta,
-    TAccountDepositorAta,
-    TAccountDepositor,
-    TAccountTokenProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: DepositToFaucetInput<
+      TAccountFaucetConfig,
+      TAccountTreasuryAta,
+      TAccountDepositorAta,
+      TAccountDepositor,
+      TAccountTokenProgram
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): DepositToFaucetInstruction<
-  TProgramAddress,
-  TAccountFaucetConfig,
-  TAccountTreasuryAta,
-  TAccountDepositorAta,
-  TAccountDepositor,
-  TAccountTokenProgram
+   TProgramAddress,
+   TAccountFaucetConfig,
+   TAccountTreasuryAta,
+   TAccountDepositorAta,
+   TAccountDepositor,
+   TAccountTokenProgram
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
-    treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
-    depositorAta: { value: input.depositorAta ?? null, isWritable: true },
-    depositor: { value: input.depositor ?? null, isWritable: false },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
+      treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
+      depositorAta: { value: input.depositorAta ?? null, isWritable: true },
+      depositor: { value: input.depositor ?? null, isWritable: false },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
+   // Resolve default values.
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.faucetConfig),
-      getAccountMeta(accounts.treasuryAta),
-      getAccountMeta(accounts.depositorAta),
-      getAccountMeta(accounts.depositor),
-      getAccountMeta(accounts.tokenProgram),
-    ],
-    data: getDepositToFaucetInstructionDataEncoder().encode(
-      args as DepositToFaucetInstructionDataArgs,
-    ),
-    programAddress,
-  } as DepositToFaucetInstruction<
-    TProgramAddress,
-    TAccountFaucetConfig,
-    TAccountTreasuryAta,
-    TAccountDepositorAta,
-    TAccountDepositor,
-    TAccountTokenProgram
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.faucetConfig),
+         getAccountMeta(accounts.treasuryAta),
+         getAccountMeta(accounts.depositorAta),
+         getAccountMeta(accounts.depositor),
+         getAccountMeta(accounts.tokenProgram),
+      ],
+      data: getDepositToFaucetInstructionDataEncoder().encode(args as DepositToFaucetInstructionDataArgs),
+      programAddress,
+   } as DepositToFaucetInstruction<
+      TProgramAddress,
+      TAccountFaucetConfig,
+      TAccountTreasuryAta,
+      TAccountDepositorAta,
+      TAccountDepositor,
+      TAccountTokenProgram
+   >);
 }
 
 export type ParsedDepositToFaucetInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    faucetConfig: TAccountMetas[0];
-    treasuryAta: TAccountMetas[1];
-    depositorAta: TAccountMetas[2];
-    depositor: TAccountMetas[3];
-    tokenProgram: TAccountMetas[4];
-  };
-  data: DepositToFaucetInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      faucetConfig: TAccountMetas[0];
+      treasuryAta: TAccountMetas[1];
+      depositorAta: TAccountMetas[2];
+      depositor: TAccountMetas[3];
+      tokenProgram: TAccountMetas[4];
+   };
+   data: DepositToFaucetInstructionData;
 };
 
-export function parseDepositToFaucetInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
->(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+export function parseDepositToFaucetInstruction<TProgram extends string, TAccountMetas extends readonly AccountMeta[]>(
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedDepositToFaucetInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 5) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: {
-      faucetConfig: getNextAccount(),
-      treasuryAta: getNextAccount(),
-      depositorAta: getNextAccount(),
-      depositor: getNextAccount(),
-      tokenProgram: getNextAccount(),
-    },
-    data: getDepositToFaucetInstructionDataDecoder().decode(instruction.data),
-  };
+   if (instruction.accounts.length < 5) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: {
+         faucetConfig: getNextAccount(),
+         treasuryAta: getNextAccount(),
+         depositorAta: getNextAccount(),
+         depositor: getNextAccount(),
+         tokenProgram: getNextAccount(),
+      },
+      data: getDepositToFaucetInstructionDataDecoder().decode(instruction.data),
+   };
 }

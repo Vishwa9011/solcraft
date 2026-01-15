@@ -7,157 +7,147 @@
  */
 
 import {
-  assertAccountExists,
-  assertAccountsExist,
-  combineCodec,
-  decodeAccount,
-  fetchEncodedAccount,
-  fetchEncodedAccounts,
-  fixDecoderSize,
-  fixEncoderSize,
-  getAddressDecoder,
-  getAddressEncoder,
-  getBytesDecoder,
-  getBytesEncoder,
-  getStructDecoder,
-  getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
-  getU8Decoder,
-  getU8Encoder,
-  transformEncoder,
-  type Account,
-  type Address,
-  type EncodedAccount,
-  type FetchAccountConfig,
-  type FetchAccountsConfig,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type MaybeAccount,
-  type MaybeEncodedAccount,
-  type ReadonlyUint8Array,
-} from "@solana/kit";
+   assertAccountExists,
+   assertAccountsExist,
+   combineCodec,
+   decodeAccount,
+   fetchEncodedAccount,
+   fetchEncodedAccounts,
+   fixDecoderSize,
+   fixEncoderSize,
+   getAddressDecoder,
+   getAddressEncoder,
+   getBytesDecoder,
+   getBytesEncoder,
+   getStructDecoder,
+   getStructEncoder,
+   getU64Decoder,
+   getU64Encoder,
+   getU8Decoder,
+   getU8Encoder,
+   transformEncoder,
+   type Account,
+   type Address,
+   type EncodedAccount,
+   type FetchAccountConfig,
+   type FetchAccountsConfig,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type MaybeAccount,
+   type MaybeEncodedAccount,
+   type ReadonlyUint8Array,
+} from '@solana/kit';
 
-export const FAUCET_CONFIG_DISCRIMINATOR = new Uint8Array([
-  216, 31, 49, 154, 106, 125, 143, 142,
-]);
+export const FAUCET_CONFIG_DISCRIMINATOR = new Uint8Array([216, 31, 49, 154, 106, 125, 143, 142]);
 
 export function getFaucetConfigDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    FAUCET_CONFIG_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(FAUCET_CONFIG_DISCRIMINATOR);
 }
 
 export type FaucetConfig = {
-  discriminator: ReadonlyUint8Array;
-  owner: Address;
-  mint: Address;
-  allowedClaimAmount: bigint;
-  treasuryAta: Address;
-  cooldownSeconds: bigint;
-  bump: number;
+   discriminator: ReadonlyUint8Array;
+   owner: Address;
+   mint: Address;
+   allowedClaimAmount: bigint;
+   treasuryAta: Address;
+   cooldownSeconds: bigint;
+   bump: number;
 };
 
 export type FaucetConfigArgs = {
-  owner: Address;
-  mint: Address;
-  allowedClaimAmount: number | bigint;
-  treasuryAta: Address;
-  cooldownSeconds: number | bigint;
-  bump: number;
+   owner: Address;
+   mint: Address;
+   allowedClaimAmount: number | bigint;
+   treasuryAta: Address;
+   cooldownSeconds: number | bigint;
+   bump: number;
 };
 
 /** Gets the encoder for {@link FaucetConfigArgs} account data. */
 export function getFaucetConfigEncoder(): FixedSizeEncoder<FaucetConfigArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["owner", getAddressEncoder()],
-      ["mint", getAddressEncoder()],
-      ["allowedClaimAmount", getU64Encoder()],
-      ["treasuryAta", getAddressEncoder()],
-      ["cooldownSeconds", getU64Encoder()],
-      ["bump", getU8Encoder()],
-    ]),
-    (value) => ({ ...value, discriminator: FAUCET_CONFIG_DISCRIMINATOR }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['owner', getAddressEncoder()],
+         ['mint', getAddressEncoder()],
+         ['allowedClaimAmount', getU64Encoder()],
+         ['treasuryAta', getAddressEncoder()],
+         ['cooldownSeconds', getU64Encoder()],
+         ['bump', getU8Encoder()],
+      ]),
+      value => ({ ...value, discriminator: FAUCET_CONFIG_DISCRIMINATOR })
+   );
 }
 
 /** Gets the decoder for {@link FaucetConfig} account data. */
 export function getFaucetConfigDecoder(): FixedSizeDecoder<FaucetConfig> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["owner", getAddressDecoder()],
-    ["mint", getAddressDecoder()],
-    ["allowedClaimAmount", getU64Decoder()],
-    ["treasuryAta", getAddressDecoder()],
-    ["cooldownSeconds", getU64Decoder()],
-    ["bump", getU8Decoder()],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['owner', getAddressDecoder()],
+      ['mint', getAddressDecoder()],
+      ['allowedClaimAmount', getU64Decoder()],
+      ['treasuryAta', getAddressDecoder()],
+      ['cooldownSeconds', getU64Decoder()],
+      ['bump', getU8Decoder()],
+   ]);
 }
 
 /** Gets the codec for {@link FaucetConfig} account data. */
-export function getFaucetConfigCodec(): FixedSizeCodec<
-  FaucetConfigArgs,
-  FaucetConfig
-> {
-  return combineCodec(getFaucetConfigEncoder(), getFaucetConfigDecoder());
+export function getFaucetConfigCodec(): FixedSizeCodec<FaucetConfigArgs, FaucetConfig> {
+   return combineCodec(getFaucetConfigEncoder(), getFaucetConfigDecoder());
 }
 
 export function decodeFaucetConfig<TAddress extends string = string>(
-  encodedAccount: EncodedAccount<TAddress>,
+   encodedAccount: EncodedAccount<TAddress>
 ): Account<FaucetConfig, TAddress>;
 export function decodeFaucetConfig<TAddress extends string = string>(
-  encodedAccount: MaybeEncodedAccount<TAddress>,
+   encodedAccount: MaybeEncodedAccount<TAddress>
 ): MaybeAccount<FaucetConfig, TAddress>;
 export function decodeFaucetConfig<TAddress extends string = string>(
-  encodedAccount: EncodedAccount<TAddress> | MaybeEncodedAccount<TAddress>,
+   encodedAccount: EncodedAccount<TAddress> | MaybeEncodedAccount<TAddress>
 ): Account<FaucetConfig, TAddress> | MaybeAccount<FaucetConfig, TAddress> {
-  return decodeAccount(
-    encodedAccount as MaybeEncodedAccount<TAddress>,
-    getFaucetConfigDecoder(),
-  );
+   return decodeAccount(encodedAccount as MaybeEncodedAccount<TAddress>, getFaucetConfigDecoder());
 }
 
 export async function fetchFaucetConfig<TAddress extends string = string>(
-  rpc: Parameters<typeof fetchEncodedAccount>[0],
-  address: Address<TAddress>,
-  config?: FetchAccountConfig,
+   rpc: Parameters<typeof fetchEncodedAccount>[0],
+   address: Address<TAddress>,
+   config?: FetchAccountConfig
 ): Promise<Account<FaucetConfig, TAddress>> {
-  const maybeAccount = await fetchMaybeFaucetConfig(rpc, address, config);
-  assertAccountExists(maybeAccount);
-  return maybeAccount;
+   const maybeAccount = await fetchMaybeFaucetConfig(rpc, address, config);
+   assertAccountExists(maybeAccount);
+   return maybeAccount;
 }
 
 export async function fetchMaybeFaucetConfig<TAddress extends string = string>(
-  rpc: Parameters<typeof fetchEncodedAccount>[0],
-  address: Address<TAddress>,
-  config?: FetchAccountConfig,
+   rpc: Parameters<typeof fetchEncodedAccount>[0],
+   address: Address<TAddress>,
+   config?: FetchAccountConfig
 ): Promise<MaybeAccount<FaucetConfig, TAddress>> {
-  const maybeAccount = await fetchEncodedAccount(rpc, address, config);
-  return decodeFaucetConfig(maybeAccount);
+   const maybeAccount = await fetchEncodedAccount(rpc, address, config);
+   return decodeFaucetConfig(maybeAccount);
 }
 
 export async function fetchAllFaucetConfig(
-  rpc: Parameters<typeof fetchEncodedAccounts>[0],
-  addresses: Array<Address>,
-  config?: FetchAccountsConfig,
+   rpc: Parameters<typeof fetchEncodedAccounts>[0],
+   addresses: Array<Address>,
+   config?: FetchAccountsConfig
 ): Promise<Account<FaucetConfig>[]> {
-  const maybeAccounts = await fetchAllMaybeFaucetConfig(rpc, addresses, config);
-  assertAccountsExist(maybeAccounts);
-  return maybeAccounts;
+   const maybeAccounts = await fetchAllMaybeFaucetConfig(rpc, addresses, config);
+   assertAccountsExist(maybeAccounts);
+   return maybeAccounts;
 }
 
 export async function fetchAllMaybeFaucetConfig(
-  rpc: Parameters<typeof fetchEncodedAccounts>[0],
-  addresses: Array<Address>,
-  config?: FetchAccountsConfig,
+   rpc: Parameters<typeof fetchEncodedAccounts>[0],
+   addresses: Array<Address>,
+   config?: FetchAccountsConfig
 ): Promise<MaybeAccount<FaucetConfig>[]> {
-  const maybeAccounts = await fetchEncodedAccounts(rpc, addresses, config);
-  return maybeAccounts.map((maybeAccount) => decodeFaucetConfig(maybeAccount));
+   const maybeAccounts = await fetchEncodedAccounts(rpc, addresses, config);
+   return maybeAccounts.map(maybeAccount => decodeFaucetConfig(maybeAccount));
 }
 
 export function getFaucetConfigSize(): number {
-  return 121;
+   return 121;
 }

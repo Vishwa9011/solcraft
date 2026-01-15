@@ -1,39 +1,36 @@
-import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
-import "./globals.css";
-import { Providers } from "./providers";
+import type { Metadata } from 'next';
+import { Geist_Mono, Inter } from 'next/font/google';
+import './globals.css';
+import { Providers } from './providers';
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
+   variable: '--font-inter',
+   subsets: ['latin'],
+   display: 'swap',
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+   variable: '--font-geist-mono',
+   subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Solcraft",
-  description: "Create and manage Solana tokens with ease.",
+   title: 'Solcraft',
+   description: 'Create and manage Solana tokens with ease.',
 };
 
 export default function RootLayout({
-  children,
+   children,
 }: Readonly<{
-  children: React.ReactNode;
+   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" className="dark">
-      <Providers>
-        <body
-          suppressHydrationWarning
-          className={`${inter.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </Providers>
-    </html>
-  );
+   return (
+      <html lang="en" className="dark">
+         <Providers>
+            <body suppressHydrationWarning className={`${inter.variable} ${geistMono.variable} antialiased`}>
+               {children}
+            </body>
+         </Providers>
+      </html>
+   );
 }

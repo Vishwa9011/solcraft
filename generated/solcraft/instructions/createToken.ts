@@ -7,605 +7,547 @@
  */
 
 import {
-  addDecoderSizePrefix,
-  addEncoderSizePrefix,
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getAddressEncoder,
-  getBytesDecoder,
-  getBytesEncoder,
-  getProgramDerivedAddress,
-  getStructDecoder,
-  getStructEncoder,
-  getU32Decoder,
-  getU32Encoder,
-  getU64Decoder,
-  getU64Encoder,
-  getU8Decoder,
-  getU8Encoder,
-  getUtf8Decoder,
-  getUtf8Encoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type Codec,
-  type Decoder,
-  type Encoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type ReadonlyAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-  type WritableSignerAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import {
-  expectAddress,
-  getAccountMetaFactory,
-  type ResolvedAccount,
-} from "../shared";
+   addDecoderSizePrefix,
+   addEncoderSizePrefix,
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getAddressEncoder,
+   getBytesDecoder,
+   getBytesEncoder,
+   getProgramDerivedAddress,
+   getStructDecoder,
+   getStructEncoder,
+   getU32Decoder,
+   getU32Encoder,
+   getU64Decoder,
+   getU64Encoder,
+   getU8Decoder,
+   getU8Encoder,
+   getUtf8Decoder,
+   getUtf8Encoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type Codec,
+   type Decoder,
+   type Encoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type ReadonlyAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+   type WritableSignerAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { expectAddress, getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const CREATE_TOKEN_DISCRIMINATOR = new Uint8Array([
-  84, 52, 204, 228, 24, 140, 234, 75,
-]);
+export const CREATE_TOKEN_DISCRIMINATOR = new Uint8Array([84, 52, 204, 228, 24, 140, 234, 75]);
 
 export function getCreateTokenDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    CREATE_TOKEN_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(CREATE_TOKEN_DISCRIMINATOR);
 }
 
 export type CreateTokenInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountFactoryConfig extends string | AccountMeta<string> = string,
-  TAccountTreasuryAccount extends string | AccountMeta<string> = string,
-  TAccountMint extends string | AccountMeta<string> = string,
-  TAccountPayerAta extends string | AccountMeta<string> = string,
-  TAccountMetadata extends string | AccountMeta<string> = string,
-  TAccountPayer extends string | AccountMeta<string> = string,
-  TAccountTokenProgram extends string | AccountMeta<string> =
-    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-  TAccountTokenMetadataProgram extends string | AccountMeta<string> =
-    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
-  TAccountAssociatedTokenProgram extends string | AccountMeta<string> =
-    "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
-  TAccountSystemProgram extends string | AccountMeta<string> =
-    "11111111111111111111111111111111",
-  TAccountRent extends string | AccountMeta<string> =
-    "SysvarRent111111111111111111111111111111111",
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string | AccountMeta<string> = string,
+   TAccountTreasuryAccount extends string | AccountMeta<string> = string,
+   TAccountMint extends string | AccountMeta<string> = string,
+   TAccountPayerAta extends string | AccountMeta<string> = string,
+   TAccountMetadata extends string | AccountMeta<string> = string,
+   TAccountPayer extends string | AccountMeta<string> = string,
+   TAccountTokenProgram extends string | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+   TAccountTokenMetadataProgram extends string | AccountMeta<string> = 'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s',
+   TAccountAssociatedTokenProgram extends string | AccountMeta<string> = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+   TAccountSystemProgram extends string | AccountMeta<string> = '11111111111111111111111111111111',
+   TAccountRent extends string | AccountMeta<string> = 'SysvarRent111111111111111111111111111111111',
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountFactoryConfig extends string
-        ? ReadonlyAccount<TAccountFactoryConfig>
-        : TAccountFactoryConfig,
-      TAccountTreasuryAccount extends string
-        ? WritableAccount<TAccountTreasuryAccount>
-        : TAccountTreasuryAccount,
-      TAccountMint extends string
-        ? WritableSignerAccount<TAccountMint> & AccountSignerMeta<TAccountMint>
-        : TAccountMint,
-      TAccountPayerAta extends string
-        ? WritableAccount<TAccountPayerAta>
-        : TAccountPayerAta,
-      TAccountMetadata extends string
-        ? WritableAccount<TAccountMetadata>
-        : TAccountMetadata,
-      TAccountPayer extends string
-        ? WritableSignerAccount<TAccountPayer> &
-            AccountSignerMeta<TAccountPayer>
-        : TAccountPayer,
-      TAccountTokenProgram extends string
-        ? ReadonlyAccount<TAccountTokenProgram>
-        : TAccountTokenProgram,
-      TAccountTokenMetadataProgram extends string
-        ? ReadonlyAccount<TAccountTokenMetadataProgram>
-        : TAccountTokenMetadataProgram,
-      TAccountAssociatedTokenProgram extends string
-        ? ReadonlyAccount<TAccountAssociatedTokenProgram>
-        : TAccountAssociatedTokenProgram,
-      TAccountSystemProgram extends string
-        ? ReadonlyAccount<TAccountSystemProgram>
-        : TAccountSystemProgram,
-      TAccountRent extends string
-        ? ReadonlyAccount<TAccountRent>
-        : TAccountRent,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountFactoryConfig extends string ? ReadonlyAccount<TAccountFactoryConfig> : TAccountFactoryConfig,
+         TAccountTreasuryAccount extends string ? WritableAccount<TAccountTreasuryAccount> : TAccountTreasuryAccount,
+         TAccountMint extends string
+            ? WritableSignerAccount<TAccountMint> & AccountSignerMeta<TAccountMint>
+            : TAccountMint,
+         TAccountPayerAta extends string ? WritableAccount<TAccountPayerAta> : TAccountPayerAta,
+         TAccountMetadata extends string ? WritableAccount<TAccountMetadata> : TAccountMetadata,
+         TAccountPayer extends string
+            ? WritableSignerAccount<TAccountPayer> & AccountSignerMeta<TAccountPayer>
+            : TAccountPayer,
+         TAccountTokenProgram extends string ? ReadonlyAccount<TAccountTokenProgram> : TAccountTokenProgram,
+         TAccountTokenMetadataProgram extends string
+            ? ReadonlyAccount<TAccountTokenMetadataProgram>
+            : TAccountTokenMetadataProgram,
+         TAccountAssociatedTokenProgram extends string
+            ? ReadonlyAccount<TAccountAssociatedTokenProgram>
+            : TAccountAssociatedTokenProgram,
+         TAccountSystemProgram extends string ? ReadonlyAccount<TAccountSystemProgram> : TAccountSystemProgram,
+         TAccountRent extends string ? ReadonlyAccount<TAccountRent> : TAccountRent,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type CreateTokenInstructionData = {
-  discriminator: ReadonlyUint8Array;
-  name: string;
-  symbol: string;
-  uri: string;
-  decimals: number;
-  supply: bigint;
+   discriminator: ReadonlyUint8Array;
+   name: string;
+   symbol: string;
+   uri: string;
+   decimals: number;
+   supply: bigint;
 };
 
 export type CreateTokenInstructionDataArgs = {
-  name: string;
-  symbol: string;
-  uri: string;
-  decimals: number;
-  supply: number | bigint;
+   name: string;
+   symbol: string;
+   uri: string;
+   decimals: number;
+   supply: number | bigint;
 };
 
 export function getCreateTokenInstructionDataEncoder(): Encoder<CreateTokenInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["name", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
-      ["symbol", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
-      ["uri", addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
-      ["decimals", getU8Encoder()],
-      ["supply", getU64Encoder()],
-    ]),
-    (value) => ({ ...value, discriminator: CREATE_TOKEN_DISCRIMINATOR }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['name', addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
+         ['symbol', addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
+         ['uri', addEncoderSizePrefix(getUtf8Encoder(), getU32Encoder())],
+         ['decimals', getU8Encoder()],
+         ['supply', getU64Encoder()],
+      ]),
+      value => ({ ...value, discriminator: CREATE_TOKEN_DISCRIMINATOR })
+   );
 }
 
 export function getCreateTokenInstructionDataDecoder(): Decoder<CreateTokenInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["name", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
-    ["symbol", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
-    ["uri", addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
-    ["decimals", getU8Decoder()],
-    ["supply", getU64Decoder()],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['name', addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
+      ['symbol', addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
+      ['uri', addDecoderSizePrefix(getUtf8Decoder(), getU32Decoder())],
+      ['decimals', getU8Decoder()],
+      ['supply', getU64Decoder()],
+   ]);
 }
 
 export function getCreateTokenInstructionDataCodec(): Codec<
-  CreateTokenInstructionDataArgs,
-  CreateTokenInstructionData
+   CreateTokenInstructionDataArgs,
+   CreateTokenInstructionData
 > {
-  return combineCodec(
-    getCreateTokenInstructionDataEncoder(),
-    getCreateTokenInstructionDataDecoder(),
-  );
+   return combineCodec(getCreateTokenInstructionDataEncoder(), getCreateTokenInstructionDataDecoder());
 }
 
 export type CreateTokenAsyncInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountTreasuryAccount extends string = string,
-  TAccountMint extends string = string,
-  TAccountPayerAta extends string = string,
-  TAccountMetadata extends string = string,
-  TAccountPayer extends string = string,
-  TAccountTokenProgram extends string = string,
-  TAccountTokenMetadataProgram extends string = string,
-  TAccountAssociatedTokenProgram extends string = string,
-  TAccountSystemProgram extends string = string,
-  TAccountRent extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountTreasuryAccount extends string = string,
+   TAccountMint extends string = string,
+   TAccountPayerAta extends string = string,
+   TAccountMetadata extends string = string,
+   TAccountPayer extends string = string,
+   TAccountTokenProgram extends string = string,
+   TAccountTokenMetadataProgram extends string = string,
+   TAccountAssociatedTokenProgram extends string = string,
+   TAccountSystemProgram extends string = string,
+   TAccountRent extends string = string,
 > = {
-  factoryConfig?: Address<TAccountFactoryConfig>;
-  treasuryAccount?: Address<TAccountTreasuryAccount>;
-  mint: TransactionSigner<TAccountMint>;
-  payerAta?: Address<TAccountPayerAta>;
-  metadata?: Address<TAccountMetadata>;
-  payer: TransactionSigner<TAccountPayer>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  tokenMetadataProgram?: Address<TAccountTokenMetadataProgram>;
-  associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
-  systemProgram?: Address<TAccountSystemProgram>;
-  rent?: Address<TAccountRent>;
-  name: CreateTokenInstructionDataArgs["name"];
-  symbol: CreateTokenInstructionDataArgs["symbol"];
-  uri: CreateTokenInstructionDataArgs["uri"];
-  decimals: CreateTokenInstructionDataArgs["decimals"];
-  supply: CreateTokenInstructionDataArgs["supply"];
+   factoryConfig?: Address<TAccountFactoryConfig>;
+   treasuryAccount?: Address<TAccountTreasuryAccount>;
+   mint: TransactionSigner<TAccountMint>;
+   payerAta?: Address<TAccountPayerAta>;
+   metadata?: Address<TAccountMetadata>;
+   payer: TransactionSigner<TAccountPayer>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   tokenMetadataProgram?: Address<TAccountTokenMetadataProgram>;
+   associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
+   systemProgram?: Address<TAccountSystemProgram>;
+   rent?: Address<TAccountRent>;
+   name: CreateTokenInstructionDataArgs['name'];
+   symbol: CreateTokenInstructionDataArgs['symbol'];
+   uri: CreateTokenInstructionDataArgs['uri'];
+   decimals: CreateTokenInstructionDataArgs['decimals'];
+   supply: CreateTokenInstructionDataArgs['supply'];
 };
 
 export async function getCreateTokenInstructionAsync<
-  TAccountFactoryConfig extends string,
-  TAccountTreasuryAccount extends string,
-  TAccountMint extends string,
-  TAccountPayerAta extends string,
-  TAccountMetadata extends string,
-  TAccountPayer extends string,
-  TAccountTokenProgram extends string,
-  TAccountTokenMetadataProgram extends string,
-  TAccountAssociatedTokenProgram extends string,
-  TAccountSystemProgram extends string,
-  TAccountRent extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountTreasuryAccount extends string,
+   TAccountMint extends string,
+   TAccountPayerAta extends string,
+   TAccountMetadata extends string,
+   TAccountPayer extends string,
+   TAccountTokenProgram extends string,
+   TAccountTokenMetadataProgram extends string,
+   TAccountAssociatedTokenProgram extends string,
+   TAccountSystemProgram extends string,
+   TAccountRent extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: CreateTokenAsyncInput<
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountMint,
-    TAccountPayerAta,
-    TAccountMetadata,
-    TAccountPayer,
-    TAccountTokenProgram,
-    TAccountTokenMetadataProgram,
-    TAccountAssociatedTokenProgram,
-    TAccountSystemProgram,
-    TAccountRent
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: CreateTokenAsyncInput<
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountMint,
+      TAccountPayerAta,
+      TAccountMetadata,
+      TAccountPayer,
+      TAccountTokenProgram,
+      TAccountTokenMetadataProgram,
+      TAccountAssociatedTokenProgram,
+      TAccountSystemProgram,
+      TAccountRent
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): Promise<
-  CreateTokenInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountMint,
-    TAccountPayerAta,
-    TAccountMetadata,
-    TAccountPayer,
-    TAccountTokenProgram,
-    TAccountTokenMetadataProgram,
-    TAccountAssociatedTokenProgram,
-    TAccountSystemProgram,
-    TAccountRent
-  >
+   CreateTokenInstruction<
+      TProgramAddress,
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountMint,
+      TAccountPayerAta,
+      TAccountMetadata,
+      TAccountPayer,
+      TAccountTokenProgram,
+      TAccountTokenMetadataProgram,
+      TAccountAssociatedTokenProgram,
+      TAccountSystemProgram,
+      TAccountRent
+   >
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: false },
-    treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
-    mint: { value: input.mint ?? null, isWritable: true },
-    payerAta: { value: input.payerAta ?? null, isWritable: true },
-    metadata: { value: input.metadata ?? null, isWritable: true },
-    payer: { value: input.payer ?? null, isWritable: true },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-    tokenMetadataProgram: {
-      value: input.tokenMetadataProgram ?? null,
-      isWritable: false,
-    },
-    associatedTokenProgram: {
-      value: input.associatedTokenProgram ?? null,
-      isWritable: false,
-    },
-    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
-    rent: { value: input.rent ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: false },
+      treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
+      mint: { value: input.mint ?? null, isWritable: true },
+      payerAta: { value: input.payerAta ?? null, isWritable: true },
+      metadata: { value: input.metadata ?? null, isWritable: true },
+      payer: { value: input.payer ?? null, isWritable: true },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+      tokenMetadataProgram: {
+         value: input.tokenMetadataProgram ?? null,
+         isWritable: false,
+      },
+      associatedTokenProgram: {
+         value: input.associatedTokenProgram ?? null,
+         isWritable: false,
+      },
+      systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+      rent: { value: input.rent ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.factoryConfig.value) {
-    accounts.factoryConfig.value = await getProgramDerivedAddress({
+   // Resolve default values.
+   if (!accounts.factoryConfig.value) {
+      accounts.factoryConfig.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103])
+            ),
+         ],
+      });
+   }
+   if (!accounts.treasuryAccount.value) {
+      accounts.treasuryAccount.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(
+               new Uint8Array([102, 97, 99, 116, 111, 114, 121, 95, 116, 114, 101, 97, 115, 117, 114, 121])
+            ),
+         ],
+      });
+   }
+   if (!accounts.payerAta.value) {
+      accounts.payerAta.value = await getProgramDerivedAddress({
+         programAddress:
+            'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>,
+         seeds: [
+            getAddressEncoder().encode(expectAddress(accounts.payer.value)),
+            getBytesEncoder().encode(
+               new Uint8Array([
+                  6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206, 235, 121, 172, 28, 180, 133, 237, 95,
+                  91, 55, 145, 58, 140, 245, 133, 126, 255, 0, 169,
+               ])
+            ),
+            getAddressEncoder().encode(expectAddress(accounts.mint.value)),
+         ],
+      });
+   }
+   if (!accounts.tokenMetadataProgram.value) {
+      accounts.tokenMetadataProgram.value =
+         'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s' as Address<'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'>;
+   }
+   if (!accounts.metadata.value) {
+      accounts.metadata.value = await getProgramDerivedAddress({
+         programAddress,
+         seeds: [
+            getBytesEncoder().encode(new Uint8Array([109, 101, 116, 97, 100, 97, 116, 97])),
+            getAddressEncoder().encode(expectAddress(accounts.tokenMetadataProgram.value)),
+            getAddressEncoder().encode(expectAddress(accounts.mint.value)),
+         ],
+      });
+   }
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
+   if (!accounts.associatedTokenProgram.value) {
+      accounts.associatedTokenProgram.value =
+         'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>;
+   }
+   if (!accounts.systemProgram.value) {
+      accounts.systemProgram.value = '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+   }
+   if (!accounts.rent.value) {
+      accounts.rent.value =
+         'SysvarRent111111111111111111111111111111111' as Address<'SysvarRent111111111111111111111111111111111'>;
+   }
+
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.factoryConfig),
+         getAccountMeta(accounts.treasuryAccount),
+         getAccountMeta(accounts.mint),
+         getAccountMeta(accounts.payerAta),
+         getAccountMeta(accounts.metadata),
+         getAccountMeta(accounts.payer),
+         getAccountMeta(accounts.tokenProgram),
+         getAccountMeta(accounts.tokenMetadataProgram),
+         getAccountMeta(accounts.associatedTokenProgram),
+         getAccountMeta(accounts.systemProgram),
+         getAccountMeta(accounts.rent),
+      ],
+      data: getCreateTokenInstructionDataEncoder().encode(args as CreateTokenInstructionDataArgs),
       programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 99, 116, 111, 114, 121, 95, 99, 111, 110, 102, 105, 103,
-          ]),
-        ),
-      ],
-    });
-  }
-  if (!accounts.treasuryAccount.value) {
-    accounts.treasuryAccount.value = await getProgramDerivedAddress({
-      programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([
-            102, 97, 99, 116, 111, 114, 121, 95, 116, 114, 101, 97, 115, 117,
-            114, 121,
-          ]),
-        ),
-      ],
-    });
-  }
-  if (!accounts.payerAta.value) {
-    accounts.payerAta.value = await getProgramDerivedAddress({
-      programAddress:
-        "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL" as Address<"ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL">,
-      seeds: [
-        getAddressEncoder().encode(expectAddress(accounts.payer.value)),
-        getBytesEncoder().encode(
-          new Uint8Array([
-            6, 221, 246, 225, 215, 101, 161, 147, 217, 203, 225, 70, 206, 235,
-            121, 172, 28, 180, 133, 237, 95, 91, 55, 145, 58, 140, 245, 133,
-            126, 255, 0, 169,
-          ]),
-        ),
-        getAddressEncoder().encode(expectAddress(accounts.mint.value)),
-      ],
-    });
-  }
-  if (!accounts.tokenMetadataProgram.value) {
-    accounts.tokenMetadataProgram.value =
-      "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s" as Address<"metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s">;
-  }
-  if (!accounts.metadata.value) {
-    accounts.metadata.value = await getProgramDerivedAddress({
-      programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([109, 101, 116, 97, 100, 97, 116, 97]),
-        ),
-        getAddressEncoder().encode(
-          expectAddress(accounts.tokenMetadataProgram.value),
-        ),
-        getAddressEncoder().encode(expectAddress(accounts.mint.value)),
-      ],
-    });
-  }
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
-  if (!accounts.associatedTokenProgram.value) {
-    accounts.associatedTokenProgram.value =
-      "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL" as Address<"ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL">;
-  }
-  if (!accounts.systemProgram.value) {
-    accounts.systemProgram.value =
-      "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
-  }
-  if (!accounts.rent.value) {
-    accounts.rent.value =
-      "SysvarRent111111111111111111111111111111111" as Address<"SysvarRent111111111111111111111111111111111">;
-  }
-
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.treasuryAccount),
-      getAccountMeta(accounts.mint),
-      getAccountMeta(accounts.payerAta),
-      getAccountMeta(accounts.metadata),
-      getAccountMeta(accounts.payer),
-      getAccountMeta(accounts.tokenProgram),
-      getAccountMeta(accounts.tokenMetadataProgram),
-      getAccountMeta(accounts.associatedTokenProgram),
-      getAccountMeta(accounts.systemProgram),
-      getAccountMeta(accounts.rent),
-    ],
-    data: getCreateTokenInstructionDataEncoder().encode(
-      args as CreateTokenInstructionDataArgs,
-    ),
-    programAddress,
-  } as CreateTokenInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountMint,
-    TAccountPayerAta,
-    TAccountMetadata,
-    TAccountPayer,
-    TAccountTokenProgram,
-    TAccountTokenMetadataProgram,
-    TAccountAssociatedTokenProgram,
-    TAccountSystemProgram,
-    TAccountRent
-  >);
+   } as CreateTokenInstruction<
+      TProgramAddress,
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountMint,
+      TAccountPayerAta,
+      TAccountMetadata,
+      TAccountPayer,
+      TAccountTokenProgram,
+      TAccountTokenMetadataProgram,
+      TAccountAssociatedTokenProgram,
+      TAccountSystemProgram,
+      TAccountRent
+   >);
 }
 
 export type CreateTokenInput<
-  TAccountFactoryConfig extends string = string,
-  TAccountTreasuryAccount extends string = string,
-  TAccountMint extends string = string,
-  TAccountPayerAta extends string = string,
-  TAccountMetadata extends string = string,
-  TAccountPayer extends string = string,
-  TAccountTokenProgram extends string = string,
-  TAccountTokenMetadataProgram extends string = string,
-  TAccountAssociatedTokenProgram extends string = string,
-  TAccountSystemProgram extends string = string,
-  TAccountRent extends string = string,
+   TAccountFactoryConfig extends string = string,
+   TAccountTreasuryAccount extends string = string,
+   TAccountMint extends string = string,
+   TAccountPayerAta extends string = string,
+   TAccountMetadata extends string = string,
+   TAccountPayer extends string = string,
+   TAccountTokenProgram extends string = string,
+   TAccountTokenMetadataProgram extends string = string,
+   TAccountAssociatedTokenProgram extends string = string,
+   TAccountSystemProgram extends string = string,
+   TAccountRent extends string = string,
 > = {
-  factoryConfig: Address<TAccountFactoryConfig>;
-  treasuryAccount: Address<TAccountTreasuryAccount>;
-  mint: TransactionSigner<TAccountMint>;
-  payerAta: Address<TAccountPayerAta>;
-  metadata: Address<TAccountMetadata>;
-  payer: TransactionSigner<TAccountPayer>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  tokenMetadataProgram?: Address<TAccountTokenMetadataProgram>;
-  associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
-  systemProgram?: Address<TAccountSystemProgram>;
-  rent?: Address<TAccountRent>;
-  name: CreateTokenInstructionDataArgs["name"];
-  symbol: CreateTokenInstructionDataArgs["symbol"];
-  uri: CreateTokenInstructionDataArgs["uri"];
-  decimals: CreateTokenInstructionDataArgs["decimals"];
-  supply: CreateTokenInstructionDataArgs["supply"];
+   factoryConfig: Address<TAccountFactoryConfig>;
+   treasuryAccount: Address<TAccountTreasuryAccount>;
+   mint: TransactionSigner<TAccountMint>;
+   payerAta: Address<TAccountPayerAta>;
+   metadata: Address<TAccountMetadata>;
+   payer: TransactionSigner<TAccountPayer>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   tokenMetadataProgram?: Address<TAccountTokenMetadataProgram>;
+   associatedTokenProgram?: Address<TAccountAssociatedTokenProgram>;
+   systemProgram?: Address<TAccountSystemProgram>;
+   rent?: Address<TAccountRent>;
+   name: CreateTokenInstructionDataArgs['name'];
+   symbol: CreateTokenInstructionDataArgs['symbol'];
+   uri: CreateTokenInstructionDataArgs['uri'];
+   decimals: CreateTokenInstructionDataArgs['decimals'];
+   supply: CreateTokenInstructionDataArgs['supply'];
 };
 
 export function getCreateTokenInstruction<
-  TAccountFactoryConfig extends string,
-  TAccountTreasuryAccount extends string,
-  TAccountMint extends string,
-  TAccountPayerAta extends string,
-  TAccountMetadata extends string,
-  TAccountPayer extends string,
-  TAccountTokenProgram extends string,
-  TAccountTokenMetadataProgram extends string,
-  TAccountAssociatedTokenProgram extends string,
-  TAccountSystemProgram extends string,
-  TAccountRent extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountFactoryConfig extends string,
+   TAccountTreasuryAccount extends string,
+   TAccountMint extends string,
+   TAccountPayerAta extends string,
+   TAccountMetadata extends string,
+   TAccountPayer extends string,
+   TAccountTokenProgram extends string,
+   TAccountTokenMetadataProgram extends string,
+   TAccountAssociatedTokenProgram extends string,
+   TAccountSystemProgram extends string,
+   TAccountRent extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: CreateTokenInput<
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountMint,
-    TAccountPayerAta,
-    TAccountMetadata,
-    TAccountPayer,
-    TAccountTokenProgram,
-    TAccountTokenMetadataProgram,
-    TAccountAssociatedTokenProgram,
-    TAccountSystemProgram,
-    TAccountRent
-  >,
-  config?: { programAddress?: TProgramAddress },
+   input: CreateTokenInput<
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountMint,
+      TAccountPayerAta,
+      TAccountMetadata,
+      TAccountPayer,
+      TAccountTokenProgram,
+      TAccountTokenMetadataProgram,
+      TAccountAssociatedTokenProgram,
+      TAccountSystemProgram,
+      TAccountRent
+   >,
+   config?: { programAddress?: TProgramAddress }
 ): CreateTokenInstruction<
-  TProgramAddress,
-  TAccountFactoryConfig,
-  TAccountTreasuryAccount,
-  TAccountMint,
-  TAccountPayerAta,
-  TAccountMetadata,
-  TAccountPayer,
-  TAccountTokenProgram,
-  TAccountTokenMetadataProgram,
-  TAccountAssociatedTokenProgram,
-  TAccountSystemProgram,
-  TAccountRent
+   TProgramAddress,
+   TAccountFactoryConfig,
+   TAccountTreasuryAccount,
+   TAccountMint,
+   TAccountPayerAta,
+   TAccountMetadata,
+   TAccountPayer,
+   TAccountTokenProgram,
+   TAccountTokenMetadataProgram,
+   TAccountAssociatedTokenProgram,
+   TAccountSystemProgram,
+   TAccountRent
 > {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    factoryConfig: { value: input.factoryConfig ?? null, isWritable: false },
-    treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
-    mint: { value: input.mint ?? null, isWritable: true },
-    payerAta: { value: input.payerAta ?? null, isWritable: true },
-    metadata: { value: input.metadata ?? null, isWritable: true },
-    payer: { value: input.payer ?? null, isWritable: true },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-    tokenMetadataProgram: {
-      value: input.tokenMetadataProgram ?? null,
-      isWritable: false,
-    },
-    associatedTokenProgram: {
-      value: input.associatedTokenProgram ?? null,
-      isWritable: false,
-    },
-    systemProgram: { value: input.systemProgram ?? null, isWritable: false },
-    rent: { value: input.rent ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      factoryConfig: { value: input.factoryConfig ?? null, isWritable: false },
+      treasuryAccount: { value: input.treasuryAccount ?? null, isWritable: true },
+      mint: { value: input.mint ?? null, isWritable: true },
+      payerAta: { value: input.payerAta ?? null, isWritable: true },
+      metadata: { value: input.metadata ?? null, isWritable: true },
+      payer: { value: input.payer ?? null, isWritable: true },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+      tokenMetadataProgram: {
+         value: input.tokenMetadataProgram ?? null,
+         isWritable: false,
+      },
+      associatedTokenProgram: {
+         value: input.associatedTokenProgram ?? null,
+         isWritable: false,
+      },
+      systemProgram: { value: input.systemProgram ?? null, isWritable: false },
+      rent: { value: input.rent ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.tokenMetadataProgram.value) {
-    accounts.tokenMetadataProgram.value =
-      "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s" as Address<"metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s">;
-  }
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
-  if (!accounts.associatedTokenProgram.value) {
-    accounts.associatedTokenProgram.value =
-      "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL" as Address<"ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL">;
-  }
-  if (!accounts.systemProgram.value) {
-    accounts.systemProgram.value =
-      "11111111111111111111111111111111" as Address<"11111111111111111111111111111111">;
-  }
-  if (!accounts.rent.value) {
-    accounts.rent.value =
-      "SysvarRent111111111111111111111111111111111" as Address<"SysvarRent111111111111111111111111111111111">;
-  }
+   // Resolve default values.
+   if (!accounts.tokenMetadataProgram.value) {
+      accounts.tokenMetadataProgram.value =
+         'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s' as Address<'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'>;
+   }
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
+   if (!accounts.associatedTokenProgram.value) {
+      accounts.associatedTokenProgram.value =
+         'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL' as Address<'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL'>;
+   }
+   if (!accounts.systemProgram.value) {
+      accounts.systemProgram.value = '11111111111111111111111111111111' as Address<'11111111111111111111111111111111'>;
+   }
+   if (!accounts.rent.value) {
+      accounts.rent.value =
+         'SysvarRent111111111111111111111111111111111' as Address<'SysvarRent111111111111111111111111111111111'>;
+   }
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.factoryConfig),
-      getAccountMeta(accounts.treasuryAccount),
-      getAccountMeta(accounts.mint),
-      getAccountMeta(accounts.payerAta),
-      getAccountMeta(accounts.metadata),
-      getAccountMeta(accounts.payer),
-      getAccountMeta(accounts.tokenProgram),
-      getAccountMeta(accounts.tokenMetadataProgram),
-      getAccountMeta(accounts.associatedTokenProgram),
-      getAccountMeta(accounts.systemProgram),
-      getAccountMeta(accounts.rent),
-    ],
-    data: getCreateTokenInstructionDataEncoder().encode(
-      args as CreateTokenInstructionDataArgs,
-    ),
-    programAddress,
-  } as CreateTokenInstruction<
-    TProgramAddress,
-    TAccountFactoryConfig,
-    TAccountTreasuryAccount,
-    TAccountMint,
-    TAccountPayerAta,
-    TAccountMetadata,
-    TAccountPayer,
-    TAccountTokenProgram,
-    TAccountTokenMetadataProgram,
-    TAccountAssociatedTokenProgram,
-    TAccountSystemProgram,
-    TAccountRent
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.factoryConfig),
+         getAccountMeta(accounts.treasuryAccount),
+         getAccountMeta(accounts.mint),
+         getAccountMeta(accounts.payerAta),
+         getAccountMeta(accounts.metadata),
+         getAccountMeta(accounts.payer),
+         getAccountMeta(accounts.tokenProgram),
+         getAccountMeta(accounts.tokenMetadataProgram),
+         getAccountMeta(accounts.associatedTokenProgram),
+         getAccountMeta(accounts.systemProgram),
+         getAccountMeta(accounts.rent),
+      ],
+      data: getCreateTokenInstructionDataEncoder().encode(args as CreateTokenInstructionDataArgs),
+      programAddress,
+   } as CreateTokenInstruction<
+      TProgramAddress,
+      TAccountFactoryConfig,
+      TAccountTreasuryAccount,
+      TAccountMint,
+      TAccountPayerAta,
+      TAccountMetadata,
+      TAccountPayer,
+      TAccountTokenProgram,
+      TAccountTokenMetadataProgram,
+      TAccountAssociatedTokenProgram,
+      TAccountSystemProgram,
+      TAccountRent
+   >);
 }
 
 export type ParsedCreateTokenInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    factoryConfig: TAccountMetas[0];
-    treasuryAccount: TAccountMetas[1];
-    mint: TAccountMetas[2];
-    payerAta: TAccountMetas[3];
-    metadata: TAccountMetas[4];
-    payer: TAccountMetas[5];
-    tokenProgram: TAccountMetas[6];
-    tokenMetadataProgram: TAccountMetas[7];
-    associatedTokenProgram: TAccountMetas[8];
-    systemProgram: TAccountMetas[9];
-    rent: TAccountMetas[10];
-  };
-  data: CreateTokenInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      factoryConfig: TAccountMetas[0];
+      treasuryAccount: TAccountMetas[1];
+      mint: TAccountMetas[2];
+      payerAta: TAccountMetas[3];
+      metadata: TAccountMetas[4];
+      payer: TAccountMetas[5];
+      tokenProgram: TAccountMetas[6];
+      tokenMetadataProgram: TAccountMetas[7];
+      associatedTokenProgram: TAccountMetas[8];
+      systemProgram: TAccountMetas[9];
+      rent: TAccountMetas[10];
+   };
+   data: CreateTokenInstructionData;
 };
 
-export function parseCreateTokenInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
->(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+export function parseCreateTokenInstruction<TProgram extends string, TAccountMetas extends readonly AccountMeta[]>(
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedCreateTokenInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 11) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: {
-      factoryConfig: getNextAccount(),
-      treasuryAccount: getNextAccount(),
-      mint: getNextAccount(),
-      payerAta: getNextAccount(),
-      metadata: getNextAccount(),
-      payer: getNextAccount(),
-      tokenProgram: getNextAccount(),
-      tokenMetadataProgram: getNextAccount(),
-      associatedTokenProgram: getNextAccount(),
-      systemProgram: getNextAccount(),
-      rent: getNextAccount(),
-    },
-    data: getCreateTokenInstructionDataDecoder().decode(instruction.data),
-  };
+   if (instruction.accounts.length < 11) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: {
+         factoryConfig: getNextAccount(),
+         treasuryAccount: getNextAccount(),
+         mint: getNextAccount(),
+         payerAta: getNextAccount(),
+         metadata: getNextAccount(),
+         payer: getNextAccount(),
+         tokenProgram: getNextAccount(),
+         tokenMetadataProgram: getNextAccount(),
+         associatedTokenProgram: getNextAccount(),
+         systemProgram: getNextAccount(),
+         rent: getNextAccount(),
+      },
+      data: getCreateTokenInstructionDataDecoder().decode(instruction.data),
+   };
 }

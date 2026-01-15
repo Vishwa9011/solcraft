@@ -7,226 +7,198 @@
  */
 
 import {
-  combineCodec,
-  fixDecoderSize,
-  fixEncoderSize,
-  getAddressDecoder,
-  getAddressEncoder,
-  getBytesDecoder,
-  getBytesEncoder,
-  getOptionDecoder,
-  getOptionEncoder,
-  getStructDecoder,
-  getStructEncoder,
-  transformEncoder,
-  type AccountMeta,
-  type AccountSignerMeta,
-  type Address,
-  type Codec,
-  type Decoder,
-  type Encoder,
-  type Instruction,
-  type InstructionWithAccounts,
-  type InstructionWithData,
-  type Option,
-  type OptionOrNullable,
-  type ReadonlyAccount,
-  type ReadonlyUint8Array,
-  type TransactionSigner,
-  type WritableAccount,
-  type WritableSignerAccount,
-} from "@solana/kit";
-import { SOLCRAFT_PROGRAM_ADDRESS } from "../programs";
-import { getAccountMetaFactory, type ResolvedAccount } from "../shared";
+   combineCodec,
+   fixDecoderSize,
+   fixEncoderSize,
+   getAddressDecoder,
+   getAddressEncoder,
+   getBytesDecoder,
+   getBytesEncoder,
+   getOptionDecoder,
+   getOptionEncoder,
+   getStructDecoder,
+   getStructEncoder,
+   transformEncoder,
+   type AccountMeta,
+   type AccountSignerMeta,
+   type Address,
+   type Codec,
+   type Decoder,
+   type Encoder,
+   type Instruction,
+   type InstructionWithAccounts,
+   type InstructionWithData,
+   type Option,
+   type OptionOrNullable,
+   type ReadonlyAccount,
+   type ReadonlyUint8Array,
+   type TransactionSigner,
+   type WritableAccount,
+   type WritableSignerAccount,
+} from '@solana/kit';
+import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
+import { getAccountMetaFactory, type ResolvedAccount } from '../shared';
 
-export const TRANSFER_MINT_AUTHORITY_DISCRIMINATOR = new Uint8Array([
-  87, 237, 187, 84, 168, 175, 241, 75,
-]);
+export const TRANSFER_MINT_AUTHORITY_DISCRIMINATOR = new Uint8Array([87, 237, 187, 84, 168, 175, 241, 75]);
 
 export function getTransferMintAuthorityDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    TRANSFER_MINT_AUTHORITY_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(TRANSFER_MINT_AUTHORITY_DISCRIMINATOR);
 }
 
 export type TransferMintAuthorityInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMint extends string | AccountMeta<string> = string,
-  TAccountCurrentAuthority extends string | AccountMeta<string> = string,
-  TAccountTokenProgram extends string | AccountMeta<string> =
-    "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
-  TRemainingAccounts extends readonly AccountMeta<string>[] = [],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMint extends string | AccountMeta<string> = string,
+   TAccountCurrentAuthority extends string | AccountMeta<string> = string,
+   TAccountTokenProgram extends string | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+   TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
-  InstructionWithData<ReadonlyUint8Array> &
-  InstructionWithAccounts<
-    [
-      TAccountMint extends string
-        ? WritableAccount<TAccountMint>
-        : TAccountMint,
-      TAccountCurrentAuthority extends string
-        ? WritableSignerAccount<TAccountCurrentAuthority> &
-            AccountSignerMeta<TAccountCurrentAuthority>
-        : TAccountCurrentAuthority,
-      TAccountTokenProgram extends string
-        ? ReadonlyAccount<TAccountTokenProgram>
-        : TAccountTokenProgram,
-      ...TRemainingAccounts,
-    ]
-  >;
+   InstructionWithData<ReadonlyUint8Array> &
+   InstructionWithAccounts<
+      [
+         TAccountMint extends string ? WritableAccount<TAccountMint> : TAccountMint,
+         TAccountCurrentAuthority extends string
+            ? WritableSignerAccount<TAccountCurrentAuthority> & AccountSignerMeta<TAccountCurrentAuthority>
+            : TAccountCurrentAuthority,
+         TAccountTokenProgram extends string ? ReadonlyAccount<TAccountTokenProgram> : TAccountTokenProgram,
+         ...TRemainingAccounts,
+      ]
+   >;
 
 export type TransferMintAuthorityInstructionData = {
-  discriminator: ReadonlyUint8Array;
-  newAuthority: Option<Address>;
+   discriminator: ReadonlyUint8Array;
+   newAuthority: Option<Address>;
 };
 
 export type TransferMintAuthorityInstructionDataArgs = {
-  newAuthority: OptionOrNullable<Address>;
+   newAuthority: OptionOrNullable<Address>;
 };
 
 export function getTransferMintAuthorityInstructionDataEncoder(): Encoder<TransferMintAuthorityInstructionDataArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["newAuthority", getOptionEncoder(getAddressEncoder())],
-    ]),
-    (value) => ({
-      ...value,
-      discriminator: TRANSFER_MINT_AUTHORITY_DISCRIMINATOR,
-    }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['newAuthority', getOptionEncoder(getAddressEncoder())],
+      ]),
+      value => ({
+         ...value,
+         discriminator: TRANSFER_MINT_AUTHORITY_DISCRIMINATOR,
+      })
+   );
 }
 
 export function getTransferMintAuthorityInstructionDataDecoder(): Decoder<TransferMintAuthorityInstructionData> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["newAuthority", getOptionDecoder(getAddressDecoder())],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['newAuthority', getOptionDecoder(getAddressDecoder())],
+   ]);
 }
 
 export function getTransferMintAuthorityInstructionDataCodec(): Codec<
-  TransferMintAuthorityInstructionDataArgs,
-  TransferMintAuthorityInstructionData
+   TransferMintAuthorityInstructionDataArgs,
+   TransferMintAuthorityInstructionData
 > {
-  return combineCodec(
-    getTransferMintAuthorityInstructionDataEncoder(),
-    getTransferMintAuthorityInstructionDataDecoder(),
-  );
+   return combineCodec(
+      getTransferMintAuthorityInstructionDataEncoder(),
+      getTransferMintAuthorityInstructionDataDecoder()
+   );
 }
 
 export type TransferMintAuthorityInput<
-  TAccountMint extends string = string,
-  TAccountCurrentAuthority extends string = string,
-  TAccountTokenProgram extends string = string,
+   TAccountMint extends string = string,
+   TAccountCurrentAuthority extends string = string,
+   TAccountTokenProgram extends string = string,
 > = {
-  mint: Address<TAccountMint>;
-  currentAuthority: TransactionSigner<TAccountCurrentAuthority>;
-  tokenProgram?: Address<TAccountTokenProgram>;
-  newAuthority: TransferMintAuthorityInstructionDataArgs["newAuthority"];
+   mint: Address<TAccountMint>;
+   currentAuthority: TransactionSigner<TAccountCurrentAuthority>;
+   tokenProgram?: Address<TAccountTokenProgram>;
+   newAuthority: TransferMintAuthorityInstructionDataArgs['newAuthority'];
 };
 
 export function getTransferMintAuthorityInstruction<
-  TAccountMint extends string,
-  TAccountCurrentAuthority extends string,
-  TAccountTokenProgram extends string,
-  TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMint extends string,
+   TAccountCurrentAuthority extends string,
+   TAccountTokenProgram extends string,
+   TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
-  input: TransferMintAuthorityInput<
-    TAccountMint,
-    TAccountCurrentAuthority,
-    TAccountTokenProgram
-  >,
-  config?: { programAddress?: TProgramAddress },
-): TransferMintAuthorityInstruction<
-  TProgramAddress,
-  TAccountMint,
-  TAccountCurrentAuthority,
-  TAccountTokenProgram
-> {
-  // Program address.
-  const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
+   input: TransferMintAuthorityInput<TAccountMint, TAccountCurrentAuthority, TAccountTokenProgram>,
+   config?: { programAddress?: TProgramAddress }
+): TransferMintAuthorityInstruction<TProgramAddress, TAccountMint, TAccountCurrentAuthority, TAccountTokenProgram> {
+   // Program address.
+   const programAddress = config?.programAddress ?? SOLCRAFT_PROGRAM_ADDRESS;
 
-  // Original accounts.
-  const originalAccounts = {
-    mint: { value: input.mint ?? null, isWritable: true },
-    currentAuthority: {
-      value: input.currentAuthority ?? null,
-      isWritable: true,
-    },
-    tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
-  };
-  const accounts = originalAccounts as Record<
-    keyof typeof originalAccounts,
-    ResolvedAccount
-  >;
+   // Original accounts.
+   const originalAccounts = {
+      mint: { value: input.mint ?? null, isWritable: true },
+      currentAuthority: {
+         value: input.currentAuthority ?? null,
+         isWritable: true,
+      },
+      tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
+   };
+   const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
 
-  // Original args.
-  const args = { ...input };
+   // Original args.
+   const args = { ...input };
 
-  // Resolve default values.
-  if (!accounts.tokenProgram.value) {
-    accounts.tokenProgram.value =
-      "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" as Address<"TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA">;
-  }
+   // Resolve default values.
+   if (!accounts.tokenProgram.value) {
+      accounts.tokenProgram.value =
+         'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' as Address<'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA'>;
+   }
 
-  const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
-  return Object.freeze({
-    accounts: [
-      getAccountMeta(accounts.mint),
-      getAccountMeta(accounts.currentAuthority),
-      getAccountMeta(accounts.tokenProgram),
-    ],
-    data: getTransferMintAuthorityInstructionDataEncoder().encode(
-      args as TransferMintAuthorityInstructionDataArgs,
-    ),
-    programAddress,
-  } as TransferMintAuthorityInstruction<
-    TProgramAddress,
-    TAccountMint,
-    TAccountCurrentAuthority,
-    TAccountTokenProgram
-  >);
+   const getAccountMeta = getAccountMetaFactory(programAddress, 'programId');
+   return Object.freeze({
+      accounts: [
+         getAccountMeta(accounts.mint),
+         getAccountMeta(accounts.currentAuthority),
+         getAccountMeta(accounts.tokenProgram),
+      ],
+      data: getTransferMintAuthorityInstructionDataEncoder().encode(args as TransferMintAuthorityInstructionDataArgs),
+      programAddress,
+   } as TransferMintAuthorityInstruction<
+      TProgramAddress,
+      TAccountMint,
+      TAccountCurrentAuthority,
+      TAccountTokenProgram
+   >);
 }
 
 export type ParsedTransferMintAuthorityInstruction<
-  TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
-  TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
+   TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
+   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
-  programAddress: Address<TProgram>;
-  accounts: {
-    mint: TAccountMetas[0];
-    currentAuthority: TAccountMetas[1];
-    tokenProgram: TAccountMetas[2];
-  };
-  data: TransferMintAuthorityInstructionData;
+   programAddress: Address<TProgram>;
+   accounts: {
+      mint: TAccountMetas[0];
+      currentAuthority: TAccountMetas[1];
+      tokenProgram: TAccountMetas[2];
+   };
+   data: TransferMintAuthorityInstructionData;
 };
 
 export function parseTransferMintAuthorityInstruction<
-  TProgram extends string,
-  TAccountMetas extends readonly AccountMeta[],
+   TProgram extends string,
+   TAccountMetas extends readonly AccountMeta[],
 >(
-  instruction: Instruction<TProgram> &
-    InstructionWithAccounts<TAccountMetas> &
-    InstructionWithData<ReadonlyUint8Array>,
+   instruction: Instruction<TProgram> & InstructionWithAccounts<TAccountMetas> & InstructionWithData<ReadonlyUint8Array>
 ): ParsedTransferMintAuthorityInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 3) {
-    // TODO: Coded error.
-    throw new Error("Not enough accounts");
-  }
-  let accountIndex = 0;
-  const getNextAccount = () => {
-    const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
-    accountIndex += 1;
-    return accountMeta;
-  };
-  return {
-    programAddress: instruction.programAddress,
-    accounts: {
-      mint: getNextAccount(),
-      currentAuthority: getNextAccount(),
-      tokenProgram: getNextAccount(),
-    },
-    data: getTransferMintAuthorityInstructionDataDecoder().decode(
-      instruction.data,
-    ),
-  };
+   if (instruction.accounts.length < 3) {
+      // TODO: Coded error.
+      throw new Error('Not enough accounts');
+   }
+   let accountIndex = 0;
+   const getNextAccount = () => {
+      const accountMeta = (instruction.accounts as TAccountMetas)[accountIndex]!;
+      accountIndex += 1;
+      return accountMeta;
+   };
+   return {
+      programAddress: instruction.programAddress,
+      accounts: {
+         mint: getNextAccount(),
+         currentAuthority: getNextAccount(),
+         tokenProgram: getNextAccount(),
+      },
+      data: getTransferMintAuthorityInstructionDataDecoder().decode(instruction.data),
+   };
 }

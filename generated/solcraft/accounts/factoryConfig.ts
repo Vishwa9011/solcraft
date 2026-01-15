@@ -7,163 +7,149 @@
  */
 
 import {
-  assertAccountExists,
-  assertAccountsExist,
-  combineCodec,
-  decodeAccount,
-  fetchEncodedAccount,
-  fetchEncodedAccounts,
-  fixDecoderSize,
-  fixEncoderSize,
-  getAddressDecoder,
-  getAddressEncoder,
-  getBooleanDecoder,
-  getBooleanEncoder,
-  getBytesDecoder,
-  getBytesEncoder,
-  getStructDecoder,
-  getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
-  getU8Decoder,
-  getU8Encoder,
-  transformEncoder,
-  type Account,
-  type Address,
-  type EncodedAccount,
-  type FetchAccountConfig,
-  type FetchAccountsConfig,
-  type FixedSizeCodec,
-  type FixedSizeDecoder,
-  type FixedSizeEncoder,
-  type MaybeAccount,
-  type MaybeEncodedAccount,
-  type ReadonlyUint8Array,
-} from "@solana/kit";
+   assertAccountExists,
+   assertAccountsExist,
+   combineCodec,
+   decodeAccount,
+   fetchEncodedAccount,
+   fetchEncodedAccounts,
+   fixDecoderSize,
+   fixEncoderSize,
+   getAddressDecoder,
+   getAddressEncoder,
+   getBooleanDecoder,
+   getBooleanEncoder,
+   getBytesDecoder,
+   getBytesEncoder,
+   getStructDecoder,
+   getStructEncoder,
+   getU64Decoder,
+   getU64Encoder,
+   getU8Decoder,
+   getU8Encoder,
+   transformEncoder,
+   type Account,
+   type Address,
+   type EncodedAccount,
+   type FetchAccountConfig,
+   type FetchAccountsConfig,
+   type FixedSizeCodec,
+   type FixedSizeDecoder,
+   type FixedSizeEncoder,
+   type MaybeAccount,
+   type MaybeEncodedAccount,
+   type ReadonlyUint8Array,
+} from '@solana/kit';
 
-export const FACTORY_CONFIG_DISCRIMINATOR = new Uint8Array([
-  29, 197, 255, 232, 22, 128, 67, 26,
-]);
+export const FACTORY_CONFIG_DISCRIMINATOR = new Uint8Array([29, 197, 255, 232, 22, 128, 67, 26]);
 
 export function getFactoryConfigDiscriminatorBytes() {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    FACTORY_CONFIG_DISCRIMINATOR,
-  );
+   return fixEncoderSize(getBytesEncoder(), 8).encode(FACTORY_CONFIG_DISCRIMINATOR);
 }
 
 export type FactoryConfig = {
-  discriminator: ReadonlyUint8Array;
-  admin: Address;
-  paused: boolean;
-  treasuryAccount: Address;
-  bump: number;
-  treasuryBump: number;
-  creationFeeLamports: bigint;
+   discriminator: ReadonlyUint8Array;
+   admin: Address;
+   paused: boolean;
+   treasuryAccount: Address;
+   bump: number;
+   treasuryBump: number;
+   creationFeeLamports: bigint;
 };
 
 export type FactoryConfigArgs = {
-  admin: Address;
-  paused: boolean;
-  treasuryAccount: Address;
-  bump: number;
-  treasuryBump: number;
-  creationFeeLamports: number | bigint;
+   admin: Address;
+   paused: boolean;
+   treasuryAccount: Address;
+   bump: number;
+   treasuryBump: number;
+   creationFeeLamports: number | bigint;
 };
 
 /** Gets the encoder for {@link FactoryConfigArgs} account data. */
 export function getFactoryConfigEncoder(): FixedSizeEncoder<FactoryConfigArgs> {
-  return transformEncoder(
-    getStructEncoder([
-      ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["admin", getAddressEncoder()],
-      ["paused", getBooleanEncoder()],
-      ["treasuryAccount", getAddressEncoder()],
-      ["bump", getU8Encoder()],
-      ["treasuryBump", getU8Encoder()],
-      ["creationFeeLamports", getU64Encoder()],
-    ]),
-    (value) => ({ ...value, discriminator: FACTORY_CONFIG_DISCRIMINATOR }),
-  );
+   return transformEncoder(
+      getStructEncoder([
+         ['discriminator', fixEncoderSize(getBytesEncoder(), 8)],
+         ['admin', getAddressEncoder()],
+         ['paused', getBooleanEncoder()],
+         ['treasuryAccount', getAddressEncoder()],
+         ['bump', getU8Encoder()],
+         ['treasuryBump', getU8Encoder()],
+         ['creationFeeLamports', getU64Encoder()],
+      ]),
+      value => ({ ...value, discriminator: FACTORY_CONFIG_DISCRIMINATOR })
+   );
 }
 
 /** Gets the decoder for {@link FactoryConfig} account data. */
 export function getFactoryConfigDecoder(): FixedSizeDecoder<FactoryConfig> {
-  return getStructDecoder([
-    ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["admin", getAddressDecoder()],
-    ["paused", getBooleanDecoder()],
-    ["treasuryAccount", getAddressDecoder()],
-    ["bump", getU8Decoder()],
-    ["treasuryBump", getU8Decoder()],
-    ["creationFeeLamports", getU64Decoder()],
-  ]);
+   return getStructDecoder([
+      ['discriminator', fixDecoderSize(getBytesDecoder(), 8)],
+      ['admin', getAddressDecoder()],
+      ['paused', getBooleanDecoder()],
+      ['treasuryAccount', getAddressDecoder()],
+      ['bump', getU8Decoder()],
+      ['treasuryBump', getU8Decoder()],
+      ['creationFeeLamports', getU64Decoder()],
+   ]);
 }
 
 /** Gets the codec for {@link FactoryConfig} account data. */
-export function getFactoryConfigCodec(): FixedSizeCodec<
-  FactoryConfigArgs,
-  FactoryConfig
-> {
-  return combineCodec(getFactoryConfigEncoder(), getFactoryConfigDecoder());
+export function getFactoryConfigCodec(): FixedSizeCodec<FactoryConfigArgs, FactoryConfig> {
+   return combineCodec(getFactoryConfigEncoder(), getFactoryConfigDecoder());
 }
 
 export function decodeFactoryConfig<TAddress extends string = string>(
-  encodedAccount: EncodedAccount<TAddress>,
+   encodedAccount: EncodedAccount<TAddress>
 ): Account<FactoryConfig, TAddress>;
 export function decodeFactoryConfig<TAddress extends string = string>(
-  encodedAccount: MaybeEncodedAccount<TAddress>,
+   encodedAccount: MaybeEncodedAccount<TAddress>
 ): MaybeAccount<FactoryConfig, TAddress>;
 export function decodeFactoryConfig<TAddress extends string = string>(
-  encodedAccount: EncodedAccount<TAddress> | MaybeEncodedAccount<TAddress>,
+   encodedAccount: EncodedAccount<TAddress> | MaybeEncodedAccount<TAddress>
 ): Account<FactoryConfig, TAddress> | MaybeAccount<FactoryConfig, TAddress> {
-  return decodeAccount(
-    encodedAccount as MaybeEncodedAccount<TAddress>,
-    getFactoryConfigDecoder(),
-  );
+   return decodeAccount(encodedAccount as MaybeEncodedAccount<TAddress>, getFactoryConfigDecoder());
 }
 
 export async function fetchFactoryConfig<TAddress extends string = string>(
-  rpc: Parameters<typeof fetchEncodedAccount>[0],
-  address: Address<TAddress>,
-  config?: FetchAccountConfig,
+   rpc: Parameters<typeof fetchEncodedAccount>[0],
+   address: Address<TAddress>,
+   config?: FetchAccountConfig
 ): Promise<Account<FactoryConfig, TAddress>> {
-  const maybeAccount = await fetchMaybeFactoryConfig(rpc, address, config);
-  assertAccountExists(maybeAccount);
-  return maybeAccount;
+   const maybeAccount = await fetchMaybeFactoryConfig(rpc, address, config);
+   assertAccountExists(maybeAccount);
+   return maybeAccount;
 }
 
 export async function fetchMaybeFactoryConfig<TAddress extends string = string>(
-  rpc: Parameters<typeof fetchEncodedAccount>[0],
-  address: Address<TAddress>,
-  config?: FetchAccountConfig,
+   rpc: Parameters<typeof fetchEncodedAccount>[0],
+   address: Address<TAddress>,
+   config?: FetchAccountConfig
 ): Promise<MaybeAccount<FactoryConfig, TAddress>> {
-  const maybeAccount = await fetchEncodedAccount(rpc, address, config);
-  return decodeFactoryConfig(maybeAccount);
+   const maybeAccount = await fetchEncodedAccount(rpc, address, config);
+   return decodeFactoryConfig(maybeAccount);
 }
 
 export async function fetchAllFactoryConfig(
-  rpc: Parameters<typeof fetchEncodedAccounts>[0],
-  addresses: Array<Address>,
-  config?: FetchAccountsConfig,
+   rpc: Parameters<typeof fetchEncodedAccounts>[0],
+   addresses: Array<Address>,
+   config?: FetchAccountsConfig
 ): Promise<Account<FactoryConfig>[]> {
-  const maybeAccounts = await fetchAllMaybeFactoryConfig(
-    rpc,
-    addresses,
-    config,
-  );
-  assertAccountsExist(maybeAccounts);
-  return maybeAccounts;
+   const maybeAccounts = await fetchAllMaybeFactoryConfig(rpc, addresses, config);
+   assertAccountsExist(maybeAccounts);
+   return maybeAccounts;
 }
 
 export async function fetchAllMaybeFactoryConfig(
-  rpc: Parameters<typeof fetchEncodedAccounts>[0],
-  addresses: Array<Address>,
-  config?: FetchAccountsConfig,
+   rpc: Parameters<typeof fetchEncodedAccounts>[0],
+   addresses: Array<Address>,
+   config?: FetchAccountsConfig
 ): Promise<MaybeAccount<FactoryConfig>[]> {
-  const maybeAccounts = await fetchEncodedAccounts(rpc, addresses, config);
-  return maybeAccounts.map((maybeAccount) => decodeFactoryConfig(maybeAccount));
+   const maybeAccounts = await fetchEncodedAccounts(rpc, addresses, config);
+   return maybeAccounts.map(maybeAccount => decodeFactoryConfig(maybeAccount));
 }
 
 export function getFactoryConfigSize(): number {
-  return 83;
+   return 83;
 }
