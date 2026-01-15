@@ -1,1 +1,1 @@
-export * from './use-factory-client';
+export * from './use-factory-actions';

@@ -3,6 +3,7 @@ import { JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { AppShell } from '@/components/shared/app-shell';
+import { Toaster } from '@/components/ui/sonner';
 
 const spaceGrotesk = Space_Grotesk({
    variable: '--font-space-grotesk',
@@ -29,11 +30,9 @@ export default function RootLayout({
    return (
       <html lang="en" className="dark">
          <Providers>
-            <body
-               suppressHydrationWarning
-               className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} antialiased`}
-            >
+            <body suppressHydrationWarning className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} antialiased`}>
                <AppShell>{children}</AppShell>
+               <Toaster position="top-right" />
             </body>
          </Providers>
       </html>

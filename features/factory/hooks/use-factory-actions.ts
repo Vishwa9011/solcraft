@@ -52,7 +52,7 @@ async function getFactoryPDA() {
    return pda;
 }
 
-export function useFactoryClient() {
+export function useFactoryActions() {
    const signer = useWalletSigner();
    const { send } = useSendTransaction();
 

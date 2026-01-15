@@ -6,6 +6,7 @@ const optionalText = z.union([
    z.literal(''),
    z.string().trim().max(280, 'Description must be 280 characters or less.'),
 ]);
+const optionalFile = z.custom<File | null>().nullable().optional();
 
 export const tokenFormSchema = z.object({
    name: z
@@ -25,6 +26,7 @@ export const tokenFormSchema = z.object({
    }, 'Decimals must be between 0 and 9.'),
    supply: numericString.refine(value => Number(value) > 0, 'Supply must be greater than 0.'),
    logoUrl: optionalUrl,
+   logoFile: optionalFile,
    description: optionalText,
    website: optionalUrl,
    twitter: optionalUrl,
@@ -40,6 +42,7 @@ export const tokenFormDefaults: TokenFormValues = {
    decimals: '9',
    supply: '',
    logoUrl: '',
+   logoFile: null,
    description: '',
    website: '',
    twitter: '',

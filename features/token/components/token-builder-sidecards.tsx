@@ -1,10 +1,16 @@
-import type { ReactNode } from 'react';
+'use client';
+import { useState, type ReactNode } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Coins, Shield } from 'lucide-react';
+import { useTokenActions } from '../hooks';
+import { address } from '@solana/kit';
+import { toast } from 'sonner';
+import { useSplToken } from '@solana/react-hooks';
+import { client } from '@/features/wallet';
 
 const cardShell = 'border-border/60 bg-card/80 shadow-sm rounded-2xl';
 const labelClass = 'text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground';
@@ -27,6 +33,74 @@ function FieldStack({ id, label, children }: FieldStackProps) {
 }
 
 export function TokenBuilderSidecards() {
+   const { mintTokens, transferOrRevokeFreezeAuthority, transferOrRevokeMintAuthority } = useTokenActions();
+   const [mintAddress, setMintAddress] = useState('');
+   const [mintAmount, setMintAmount] = useState('');
+   const [mintAuthorityAddress, setMintAuthorityAddress] = useState('');
+   const [mintAuthorityNew, setMintAuthorityNew] = useState('');
+   const [freezeAuthorityAddress, setFreezeAuthorityAddress] = useState('');
+   const [freezeAuthorityNew, setFreezeAuthorityNew] = useState('');
+
+   const parseAddress = (value: string, label: string) => {
+      const trimmed = value.trim();
+      if (!trimmed) {
+         toast.error(`Enter a ${label}.`);
+         return null;
+      }
+      try {
+         return address(trimmed);
+      } catch (error) {
+         toast.error(error instanceof Error ? error.message : `Invalid ${label}.`);
+         return null;
+      }
+   };
+
+   const parseAmount = (value: string) => {
+      const amount = Number(value);
+      if (!Number.isFinite(amount) || amount <= 0) {
+         toast.error('Enter a valid amount.');
+         return null;
+      }
+      return amount;
+   };
+
+   const handleMintTokens = async () => {
+      const mint = parseAddress(mintAddress, 'mint address');
+      const amount = parseAmount(mintAmount);
+      if (!mint || amount === null) return;
+
+      await mintTokens.mutateAsync({ mint, amount: BigInt(amount) });
+   };
+
+   const handleTransferMintAuthority = async (revoke: boolean) => {
+      const mint = parseAddress(mintAuthorityAddress, 'mint address');
+      if (!mint) return;
+      if (revoke) {
+         await transferOrRevokeMintAuthority.mutateAsync({ mint, newAuthority: null });
+      }
+      const newAuthority = parseAddress(mintAuthorityNew, 'new authority address');
+      if (!newAuthority) return;
+      await transferOrRevokeMintAuthority.mutateAsync({ mint, newAuthority });
+   };
+
+   const handleTransferFreezeAuthority = async (revoke: boolean) => {
+      const mint = parseAddress(freezeAuthorityAddress, 'mint address');
+      if (!mint) return;
+      if (revoke) {
+         await transferOrRevokeFreezeAuthority.mutateAsync({ mint, newAuthority: null });
+      }
+      const newAuthority = parseAddress(freezeAuthorityNew, 'new authority address');
+      if (!newAuthority) return;
+      await transferOrRevokeFreezeAuthority.mutateAsync({ mint, newAuthority });
+   };
+
+   const hasMintAddress = Boolean(mintAddress.trim());
+   const hasMintAmount = Boolean(mintAmount.trim());
+   const hasMintAuthorityAddress = Boolean(mintAuthorityAddress.trim());
+   const hasMintAuthorityNew = Boolean(mintAuthorityNew.trim());
+   const hasFreezeAuthorityAddress = Boolean(freezeAuthorityAddress.trim());
+   const hasFreezeAuthorityNew = Boolean(freezeAuthorityNew.trim());
+
    return (
       <div className="space-y-8">
          <Card className={cardShell}>
@@ -36,13 +110,30 @@ export function TokenBuilderSidecards() {
             </CardHeader>
             <CardContent className="space-y-4">
                <FieldStack id="mint-desk-address" label="Mint address">
-                  <Input id="mint-desk-address" placeholder="Mint public key" />
+                  <Input
+                     id="mint-desk-address"
+                     placeholder="Mint public key"
+                     value={mintAddress}
+                     onChange={event => setMintAddress(event.target.value)}
+                  />
                </FieldStack>
                <FieldStack id="mint-desk-amount" label="Amount">
-                  <Input id="mint-desk-amount" type="number" min={0} placeholder="250,000" />
+                  <Input
+                     id="mint-desk-amount"
+                     type="number"
+                     min={0}
+                     placeholder="250000"
+                     value={mintAmount}
+                     onChange={event => setMintAmount(event.target.value)}
+                  />
                </FieldStack>
-               <Button type="button" className="w-full">
-                  Mint tokens
+               <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => void handleMintTokens()}
+                  disabled={!hasMintAddress || !hasMintAmount || mintTokens.isPending}
+               >
+                  {mintTokens.isPending ? 'Minting...' : 'Mint tokens'}
                </Button>
                <p className="text-muted-foreground text-xs">Requires mint authority on the token.</p>
             </CardContent>
@@ -65,17 +156,41 @@ export function TokenBuilderSidecards() {
                      Mint authority
                   </div>
                   <FieldStack id="authority-mint-address" label="Mint address">
-                     <Input id="authority-mint-address" placeholder="Mint address" />
+                     <Input
+                        id="authority-mint-address"
+                        placeholder="Mint address"
+                        value={mintAuthorityAddress}
+                        onChange={event => setMintAuthorityAddress(event.target.value)}
+                     />
                   </FieldStack>
                   <FieldStack id="authority-mint-new" label="New authority">
-                     <Input id="authority-mint-new" placeholder="New authority address or leave empty to revoke" />
+                     <Input
+                        id="authority-mint-new"
+                        placeholder="New authority address or leave empty to revoke"
+                        value={mintAuthorityNew}
+                        onChange={event => setMintAuthorityNew(event.target.value)}
+                     />
                   </FieldStack>
                   <div className="flex gap-2">
-                     <Button type="button" variant="secondary" className="flex-1">
-                        Transfer
+                     <Button
+                        type="button"
+                        variant="secondary"
+                        className="flex-1"
+                        onClick={() => void handleTransferMintAuthority(false)}
+                        disabled={
+                           !hasMintAuthorityAddress || !hasMintAuthorityNew || transferOrRevokeMintAuthority.isPending
+                        }
+                     >
+                        {transferOrRevokeMintAuthority.isPending ? 'Transferring...' : 'Transfer'}
                      </Button>
-                     <Button type="button" variant="outline" className="flex-1">
-                        Revoke
+                     <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => void handleTransferMintAuthority(true)}
+                        disabled={!hasMintAuthorityAddress || transferOrRevokeMintAuthority.isPending}
+                     >
+                        {transferOrRevokeMintAuthority.isPending ? 'Revoking...' : 'Revoke'}
                      </Button>
                   </div>
                </div>
@@ -86,20 +201,43 @@ export function TokenBuilderSidecards() {
                      Freeze authority
                   </div>
                   <FieldStack id="authority-freeze-address" label="Mint address">
-                     <Input id="authority-freeze-address" placeholder="Mint address" />
+                     <Input
+                        id="authority-freeze-address"
+                        placeholder="Mint address"
+                        value={freezeAuthorityAddress}
+                        onChange={event => setFreezeAuthorityAddress(event.target.value)}
+                     />
                   </FieldStack>
                   <FieldStack id="authority-freeze-new" label="New authority">
                      <Input
                         id="authority-freeze-new"
                         placeholder="New authority address or leave empty to revoke"
+                        value={freezeAuthorityNew}
+                        onChange={event => setFreezeAuthorityNew(event.target.value)}
                      />
                   </FieldStack>
                   <div className="flex gap-2">
-                     <Button type="button" variant="secondary" className="flex-1">
-                        Transfer
+                     <Button
+                        type="button"
+                        variant="secondary"
+                        className="flex-1"
+                        onClick={() => void handleTransferFreezeAuthority(false)}
+                        disabled={
+                           !hasFreezeAuthorityAddress ||
+                           !hasFreezeAuthorityNew ||
+                           transferOrRevokeFreezeAuthority.isPending
+                        }
+                     >
+                        {transferOrRevokeFreezeAuthority.isPending ? 'Transferring...' : 'Transfer'}
                      </Button>
-                     <Button type="button" variant="outline" className="flex-1">
-                        Revoke
+                     <Button
+                        type="button"
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => void handleTransferFreezeAuthority(true)}
+                        disabled={!hasFreezeAuthorityAddress || transferOrRevokeFreezeAuthority.isPending}
+                     >
+                        {transferOrRevokeFreezeAuthority.isPending ? 'Revoking...' : 'Revoke'}
                      </Button>
                   </div>
                </div>

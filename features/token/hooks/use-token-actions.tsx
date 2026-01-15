@@ -1,8 +1,10 @@
 'use client';
 
 import { toast } from 'sonner';
-import { useWalletSigner } from '@/features/wallet';
-import { type TransactionSigner } from '@solana/kit';
+
+import { rpc, useWalletSigner } from '@/features/wallet';
+import { address, type TransactionSigner } from '@solana/kit';
+
 import { useSendTransaction } from '@solana/react-hooks';
 import { useMutation } from '@tanstack/react-query';
 import {
@@ -14,6 +16,7 @@ import {
    type MintTokensParams,
    type TransferAuthorityParams,
 } from '@/features/token/lib';
+import { findAssociatedTokenPda, TOKEN_PROGRAM_ADDRESS, fetchMint } from '@solana-program/token';
 
 const WALLET_REQUIRED_MESSAGE = 'Connect a wallet to initialize the factory.';
 
@@ -53,9 +56,11 @@ export function useTokenActions() {
    const mintTokens = useMutation({
       mutationFn: async ({ mint, amount }: MintTokensParams) => {
          const walletSigner = requireSigner(signer);
+         const mintInfo = await fetchMint(rpc, address(mint));
+
          const instructions = await buildMintTokensInstruction(walletSigner, {
             mint,
-            amount,
+            amount: BigInt(amount) * BigInt(10 ** mintInfo.data.decimals),
          });
 
          return await send({
@@ -65,6 +70,7 @@ export function useTokenActions() {
          });
       },
       onSuccess: data => {
+         console.log('data: ', data);
          toast.success(`Tokens minted successfully. Tx: ${data}`);
       },
       onError: error => {

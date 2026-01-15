@@ -20,7 +20,7 @@ const TOKEN_METADATA_PROGRAM_ADDRESS =
 
 export type MintTokensParams = {
    mint: Address<string>;
-   amount: number;
+   amount: bigint;
 };
 
 export type TransferAuthorityParams = {
