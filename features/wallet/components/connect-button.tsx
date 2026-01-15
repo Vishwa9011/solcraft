@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   useConnectWallet,
   useDisconnectWallet,
@@ -18,6 +18,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 function truncate(address: string) {
@@ -31,37 +36,11 @@ export function ConnectButton() {
   const disconnectWallet = useDisconnectWallet();
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
   const isConnected = wallet.status === "connected";
   const address = isConnected
     ? wallet.session.account.address.toString()
     : null;
-
-  useEffect(() => {
-    if (!open) return;
-
-    function handlePointerDown(event: PointerEvent) {
-      const target = event.target as Node;
-      if (containerRef.current && !containerRef.current.contains(target)) {
-        setOpen(false);
-      }
-    }
-
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    }
-
-    document.addEventListener("pointerdown", handlePointerDown, true);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown, true);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
 
   async function handleConnect(connectorId: string) {
     setError(null);
@@ -87,52 +66,54 @@ export function ConnectButton() {
   const connectionLabel = address ? truncate(address) : "Connect wallet";
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-sm">
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-controls={menuId}
-        className={cn(
-          "group relative h-14 w-full justify-between overflow-hidden rounded-2xl border-border/60 bg-card/50 px-4 text-left shadow-sm transition hover:border-border/80 hover:bg-card/80",
-          isConnected ? "ring-1 ring-primary/30" : "ring-1 ring-border/50"
-        )}
-      >
-        <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
-        <span className="relative flex items-center gap-3">
-          <span
-            className={cn(
-              "flex size-10 items-center justify-center rounded-xl border border-border/50 bg-background/70 text-muted-foreground transition group-hover:border-border/80",
-              isConnected && "text-primary"
-            )}
-          >
-            <Wallet className="size-4" />
-          </span>
-          <span className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">
-              {connectionLabel}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {isConnected ? "Wallet connected" : "Solana Devnet"}
-            </span>
-          </span>
-        </span>
-        <span className="relative flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-          {isConnected ? "Manage" : "Select"}
-          {open ? (
-            <ChevronUp className="size-4" />
-          ) : (
-            <ChevronDown className="size-4" />
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          aria-expanded={open}
+          aria-controls={menuId}
+          className={cn(
+            "group relative h-14 w-full max-w-sm justify-between overflow-hidden rounded-2xl border-border/60 bg-card/50 px-4 text-left shadow-sm transition hover:border-border/80 hover:bg-card/80",
+            isConnected ? "ring-1 ring-primary/30" : "ring-1 ring-border/50"
           )}
-        </span>
-      </Button>
-
-      {open ? (
-        <Card
-          id={menuId}
-          className="absolute left-0 right-0 z-20 mt-3 w-full min-w-[260px] border-border/60 bg-popover/95 shadow-xl backdrop-blur"
         >
+          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
+          <span className="relative flex items-center gap-3">
+            <span
+              className={cn(
+                "flex size-10 items-center justify-center rounded-xl border border-border/50 bg-background/70 text-muted-foreground transition group-hover:border-border/80",
+                isConnected && "text-primary"
+              )}
+            >
+              <Wallet className="size-4" />
+            </span>
+            <span className="flex flex-col">
+              <span className="text-sm font-semibold text-foreground">
+                {connectionLabel}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {isConnected ? "Wallet connected" : "Solana Devnet"}
+              </span>
+            </span>
+          </span>
+          <span className="relative flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+            {isConnected ? "Manage" : "Select"}
+            {open ? (
+              <ChevronUp className="size-4" />
+            ) : (
+              <ChevronDown className="size-4" />
+            )}
+          </span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        id={menuId}
+        align="start"
+        sideOffset={12}
+        className="w-[var(--radix-popper-anchor-width)] min-w-[260px] max-w-[calc(100vw-2rem)] border-border/60 bg-popover/95 p-0 shadow-xl backdrop-blur"
+      >
+        <Card className="border-0 bg-transparent shadow-none">
           <CardHeader className="space-y-2">
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2 text-sm">
@@ -216,7 +197,7 @@ export function ConnectButton() {
             ) : null}
           </CardContent>
         </Card>
-      ) : null}
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 }
