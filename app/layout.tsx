@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
-import { Geist_Mono, Inter } from 'next/font/google';
+import { JetBrains_Mono, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
+import { AppShell } from '@/components/shared/app-shell';
 
-const inter = Inter({
-   variable: '--font-inter',
+const spaceGrotesk = Space_Grotesk({
+   variable: '--font-space-grotesk',
    subsets: ['latin'],
    display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-   variable: '--font-geist-mono',
+const jetBrainsMono = JetBrains_Mono({
+   variable: '--font-jetbrains-mono',
    subsets: ['latin'],
+   display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -27,8 +29,11 @@ export default function RootLayout({
    return (
       <html lang="en" className="dark">
          <Providers>
-            <body suppressHydrationWarning className={`${inter.variable} ${geistMono.variable} antialiased`}>
-               {children}
+            <body
+               suppressHydrationWarning
+               className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} antialiased`}
+            >
+               <AppShell>{children}</AppShell>
             </body>
          </Providers>
       </html>
