@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { createWalletSigner } from '../lib';
 import { useWalletSession } from '@solana/react-hooks';
+import { createWalletTransactionSigner } from '@solana/client';
 
 export function useWalletSigner() {
    const session = useWalletSession();
@@ -8,7 +8,9 @@ export function useWalletSigner() {
    const signer = useMemo(() => {
       if (!session) return null;
 
-      return createWalletSigner(session);
+      return createWalletTransactionSigner(session, {
+         commitment: 'confirmed',
+      }).signer;
    }, [session]);
 
    return signer;
