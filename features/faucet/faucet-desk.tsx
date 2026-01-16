@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 import { useWalletSigner } from '@/features/wallet';
-import { ConnectButton } from '@/features/wallet/components/connect-button';
 import { useFaucetActions } from './hooks/use-faucet-actions';
+import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { ConnectButton } from '@/features/wallet/components/connect-button';
 
 function formatRemaining(seconds: number | null) {
    if (seconds === null) {

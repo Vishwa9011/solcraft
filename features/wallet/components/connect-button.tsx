@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useConnectWallet, useDisconnectWallet, useWallet, useWalletConnection } from '@solana/react-hooks';
+import { useState } from 'react';
+import { lamportsToSolString } from '@solana/client';
+import { useBalance, useConnectWallet, useDisconnectWallet, useWallet, useWalletConnection } from '@solana/react-hooks';
 import copy from 'copy-to-clipboard';
 
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -13,7 +14,8 @@ import {
    type WalletConnector,
    WalletTriggerButton,
 } from '@/features/wallet/components/connect';
-import { DEFAULT_SOLANA_NETWORK, SOLANA_NETWORKS, type SolanaNetworkId } from '@/lib/solana/networks';
+import { useWalletNetwork } from '@/features/wallet/hooks';
+import { SOLANA_NETWORKS, type SolanaNetworkId } from '@/lib/solana/networks';
 
 const COPY_RESET_MS = 1500;
 const MENU_ID = 'wallet-menu';
@@ -24,36 +26,41 @@ function truncate(address: string) {
 
 export function ConnectButton() {
    const wallet = useWallet();
-   const { connectors } = useWalletConnection();
+   const { connectors, isReady } = useWalletConnection();
    const connectWallet = useConnectWallet();
    const disconnectWallet = useDisconnectWallet();
+   const { selectedNetwork, switchNetwork } = useWalletNetwork();
    const [error, setError] = useState<string | null>(null);
    const [open, setOpen] = useState(false);
    const [dialogOpen, setDialogOpen] = useState(false);
    const [copied, setCopied] = useState(false);
+   const [connectingId, setConnectingId] = useState<string | null>(null);
    const [networkDialogOpen, setNetworkDialogOpen] = useState(false);
-   const [selectedNetworkId, setSelectedNetworkId] = useState<SolanaNetworkId>(DEFAULT_SOLANA_NETWORK.id);
 
    const isConnected = wallet.status === 'connected';
    const address = isConnected ? wallet.session.account.address.toString() : null;
+   const { lamports, fetching: balanceFetching } = useBalance(address ?? undefined, { watch: true });
+   const connectedConnector = isConnected ? wallet.session.connector : null;
 
-   const selectedNetwork = useMemo(
-      () => SOLANA_NETWORKS.find(network => network.id === selectedNetworkId) ?? DEFAULT_SOLANA_NETWORK,
-      [selectedNetworkId]
-   );
-
-   const connectionLabel = address ? truncate(address) : 'Connect wallet';
+   const isConnecting = wallet.status === 'connecting' || connectingId !== null;
+   const connectionLabel = isConnected ? truncate(address ?? '') : isConnecting ? 'Connecting...' : 'Connect wallet';
    const displayAddress = address ? truncate(address) : '';
    const expanded = isConnected ? open : dialogOpen;
+   const activeConnectingId = wallet.status === 'connecting' ? wallet.connectorId : connectingId;
+   const balanceLabel =
+      lamports !== null ? lamportsToSolString(lamports, { minimumFractionDigits: 2, trimTrailingZeros: true }) : null;
 
    async function handleConnect(connectorId: string) {
       setError(null);
+      setConnectingId(connectorId);
       try {
          await connectWallet(connectorId, { autoConnect: true });
          setOpen(false);
          setDialogOpen(false);
       } catch (err) {
          setError(err instanceof Error ? err.message : 'Unable to connect');
+      } finally {
+         setConnectingId(null);
       }
    }
 
@@ -91,9 +98,14 @@ export function ConnectButton() {
       setNetworkDialogOpen(true);
    }
 
-   function handleNetworkSelect(networkId: SolanaNetworkId) {
-      setSelectedNetworkId(networkId);
-      setNetworkDialogOpen(false);
+   async function handleNetworkSelect(networkId: SolanaNetworkId) {
+      setError(null);
+      try {
+         await switchNetwork(networkId);
+         setNetworkDialogOpen(false);
+      } catch (err) {
+         setError(err instanceof Error ? err.message : 'Unable to switch network');
+      }
    }
 
    const triggerButton = (
@@ -102,6 +114,7 @@ export function ConnectButton() {
          controlsId={isConnected ? MENU_ID : undefined}
          isConnected={isConnected}
          connectionLabel={connectionLabel}
+         isConnecting={isConnecting}
       />
    );
 
@@ -117,11 +130,13 @@ export function ConnectButton() {
             }}
          >
             {!isConnected ? <DialogTrigger asChild>{triggerButton}</DialogTrigger> : null}
-            <DialogContent className="border-border/60 bg-popover/95 p-0 shadow-2xl sm:max-w-md">
+            <DialogContent className="border-border/60 bg-background/95 rounded-2xl p-0 shadow-2xl sm:max-w-md">
                <ConnectDialogContent
                   connectors={connectors as readonly WalletConnector[]}
                   onConnect={connectorId => void handleConnect(connectorId)}
                   error={error}
+                  connectingId={activeConnectingId}
+                  isReady={isReady}
                />
             </DialogContent>
          </Dialog>
@@ -141,7 +156,7 @@ export function ConnectButton() {
                   id={MENU_ID}
                   align="start"
                   sideOffset={12}
-                  className="border-border/60 bg-background/90 w-[320px] p-4 shadow-2xl backdrop-blur"
+                  className="border-border/60 bg-background/95 w-[320px] rounded-2xl p-4 shadow-2xl backdrop-blur"
                >
                   <ConnectedWalletContent
                      address={address ?? ''}
@@ -153,6 +168,10 @@ export function ConnectButton() {
                      network={selectedNetwork}
                      onChangeNetwork={handleRequestChangeNetwork}
                      onChangeWallet={handleRequestChangeWallet}
+                     walletIcon={connectedConnector?.icon ?? null}
+                     walletName={connectedConnector?.name ?? null}
+                     balance={balanceLabel}
+                     balanceLoading={balanceFetching}
                   />
                </PopoverContent>
             </Popover>
@@ -160,7 +179,7 @@ export function ConnectButton() {
          <NetworkSelectorDialog
             open={networkDialogOpen}
             onOpenChange={setNetworkDialogOpen}
-            selectedNetworkId={selectedNetworkId}
+            selectedNetworkId={selectedNetwork.id}
             onSelectNetwork={handleNetworkSelect}
             networks={SOLANA_NETWORKS}
          />

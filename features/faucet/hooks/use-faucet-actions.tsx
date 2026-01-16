@@ -1,5 +1,5 @@
 import { queryClient } from '@/app/providers';
-import { useWalletSigner, rpc } from '@/features/wallet';
+import { useWalletSigner, client } from '@/features/wallet';
 import {
    fetchMaybeFaucetConfig,
    fetchMaybeFaucetRecipientData,
@@ -140,7 +140,7 @@ export function useFaucetActions() {
       queryKey: queryKeys.faucetConfig.all,
       queryFn: async () => {
          const pda = await getFaucetConfigPda();
-         return await fetchMaybeFaucetConfig(rpc, pda);
+         return await fetchMaybeFaucetConfig(client.config.rpcClient?.rpc!, pda);
       },
    });
 
@@ -149,7 +149,7 @@ export function useFaucetActions() {
       enabled: Boolean(signer),
       queryFn: async () => {
          const pda = await getRecipientDataPda(requireSigner(signer).address);
-         return await fetchMaybeFaucetRecipientData(rpc, pda);
+         return await fetchMaybeFaucetRecipientData(client.config.rpcClient?.rpc!, pda);
       },
    });
 
@@ -159,7 +159,7 @@ export function useFaucetActions() {
       queryFn: async () => {
          if (!faucetConfig.data?.exists) return null;
          const mintAddress = faucetConfig.data.data.mint;
-         return await fetchMint(rpc, mintAddress);
+         return await fetchMint(client.config.rpcClient?.rpc!, mintAddress);
       },
    });
 
@@ -194,7 +194,7 @@ export function useFaucetActions() {
       mutationFn: async ({ amount }: FaucetAmountParams) => {
          const walletSigner = requireSigner(signer);
          const config = getConfigOrThrow();
-         const mintInfo = await fetchMint(rpc, config.mint);
+         const mintInfo = await fetchMint(client.config.rpcClient?.rpc!, config.mint);
          const amountInBaseUnits = parseTokenAmount(amount, mintInfo.data.decimals);
 
          if (amountInBaseUnits <= 0n) {
@@ -238,7 +238,7 @@ export function useFaucetActions() {
       mutationFn: async ({ amount }: FaucetAmountParams) => {
          const walletSigner = requireSigner(signer);
          const config = getConfigOrThrow();
-         const mintInfo = await fetchMint(rpc, config.mint);
+         const mintInfo = await fetchMint(client.config.rpcClient?.rpc!, config.mint);
          const amountInBaseUnits = parseTokenAmount(amount, mintInfo.data.decimals);
 
          if (amountInBaseUnits <= 0n) {

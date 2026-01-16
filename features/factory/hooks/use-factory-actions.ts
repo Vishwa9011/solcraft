@@ -13,7 +13,7 @@ import { getProgramDerivedAddress, type TransactionSigner } from '@solana/kit';
 import { useSendTransaction } from '@solana/react-hooks';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/app/providers';
-import { rpc, useWalletSigner } from '@/features/wallet';
+import { client, useWalletSigner } from '@/features/wallet';
 import { queryKeys } from '@/lib';
 
 const FACTORY_SEED = 'factory_config';
@@ -80,7 +80,7 @@ export function useFactoryActions() {
       queryKey: queryKeys.factoryConfig.all,
       queryFn: async () => {
          const pda = await getFactoryPDA();
-         return await fetchMaybeFactoryConfig(rpc, pda);
+         return await fetchMaybeFactoryConfig(client.config.rpcClient?.rpc!, pda);
       },
    });
 

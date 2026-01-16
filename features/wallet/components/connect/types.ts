@@ -1,4 +1,3 @@
-export type WalletConnector = {
-   id: string;
-   name: string;
-};
+import type { WalletConnectorMetadata } from '@solana/client';
+
+export type WalletConnector = WalletConnectorMetadata;

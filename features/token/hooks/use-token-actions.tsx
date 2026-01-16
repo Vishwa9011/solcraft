@@ -2,7 +2,7 @@
 
 import { toast } from 'sonner';
 
-import { rpc, useWalletSigner } from '@/features/wallet';
+import { client, useWalletSigner } from '@/features/wallet';
 import { address, type TransactionSigner } from '@solana/kit';
 
 import { useSendTransaction } from '@solana/react-hooks';
@@ -16,7 +16,7 @@ import {
    type MintTokensParams,
    type TransferAuthorityParams,
 } from '@/features/token/lib';
-import { findAssociatedTokenPda, TOKEN_PROGRAM_ADDRESS, fetchMint } from '@solana-program/token';
+import { fetchMint } from '@solana-program/token';
 
 const WALLET_REQUIRED_MESSAGE = 'Connect a wallet to initialize the factory.';
 
@@ -56,7 +56,7 @@ export function useTokenActions() {
    const mintTokens = useMutation({
       mutationFn: async ({ mint, amount }: MintTokensParams) => {
          const walletSigner = requireSigner(signer);
-         const mintInfo = await fetchMint(rpc, address(mint));
+         const mintInfo = await fetchMint(client.config.rpcClient?.rpc!, address(mint));
 
          const instructions = await buildMintTokensInstruction(walletSigner, {
             mint,

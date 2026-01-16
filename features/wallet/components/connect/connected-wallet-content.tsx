@@ -3,6 +3,7 @@
 import { Check, Copy, Globe2, LogOut, Repeat } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ErrorMessage } from '@/features/wallet/components/connect/error-message';
 import type { SolanaNetwork } from '@/lib/solana/networks';
@@ -17,6 +18,10 @@ type ConnectedWalletContentProps = {
    network: SolanaNetwork;
    onChangeNetwork: () => void;
    onChangeWallet: () => void;
+   walletIcon?: string | null;
+   walletName?: string | null;
+   balance?: string | null;
+   balanceLoading?: boolean;
 };
 
 export function ConnectedWalletContent({
@@ -29,50 +34,72 @@ export function ConnectedWalletContent({
    network,
    onChangeNetwork,
    onChangeWallet,
+   walletIcon = null,
+   walletName = null,
+   balance = null,
+   balanceLoading = false,
 }: ConnectedWalletContentProps) {
+   const balanceValue = balance ? `${balance} SOL` : '—';
+   const balanceDisplay = balanceLoading && !balance ? '...' : balanceValue;
+
    return (
       <div className="space-y-4">
-         <div className="border-border/50 bg-card/70 space-y-3 rounded-3xl border p-4 shadow-[0_15px_40px_-20px_rgba(15,23,42,0.8)]">
-            <div className="flex items-start justify-between gap-3">
-               <div className="flex items-center gap-3">
-                  <span
-                     className={cn(
-                        'flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br text-xs font-semibold tracking-[0.3em] uppercase shadow-[0_10px_30px_rgba(0,0,0,0.35)]',
-                        network.accent
-                     )}
-                  >
-                     SOL
-                  </span>
-                  <div>
-                     <div className="flex items-center gap-1">
-                        <p className="text-foreground text-sm font-semibold" title={address}>
+         <div className="border-border/60 bg-card/70 rounded-2xl border p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-5">
+               <div className="flex min-w-0 flex-1 items-start">
+                  <div className="min-w-0 space-y-2">
+                     <div className="flex min-w-0 items-center gap-2">
+                        <p className="text-foreground truncate text-sm font-semibold" title={address}>
                            {displayAddress}
                         </p>
                         <Button
                            variant="ghost"
                            size="icon-sm"
                            onClick={onCopy}
-                           className="size-6 cursor-pointer border p-0"
+                           aria-label="Copy address"
+                           className="border-border/50 size-7 rounded-full border p-0"
                         >
                            {copied ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
                         </Button>
                      </div>
-                     <p className="text-muted-foreground text-xs">{network.label}</p>
+                     <Badge className="border-border/60 bg-background/80 text-muted-foreground w-fit rounded-2xl text-[10px] leading-none tracking-[0.2em] uppercase">
+                        {network.cluster}
+                     </Badge>
                   </div>
+               </div>
+               <div className="flex flex-col items-end gap-1 text-right">
+                  <p className="text-muted-foreground text-[10px] leading-none font-semibold tracking-[0.2em] uppercase">
+                     Balance
+                  </p>
+                  <p
+                     className={cn(
+                        'text-foreground text-sm leading-none font-semibold tabular-nums',
+                        balanceLoading ? 'opacity-60' : null
+                     )}
+                     title={balanceValue}
+                  >
+                     {balanceDisplay}
+                  </p>
                </div>
             </div>
          </div>
-         <div className="border-border/40 bg-background/80 space-y-2 rounded-3xl border p-3">
-            <Button onClick={onChangeWallet} className="w-full justify-start" variant={'outline'}>
+         <div className="border-border/40 bg-background/80 space-y-1 rounded-2xl border p-2">
+            <Button onClick={onChangeWallet} className="w-full justify-start rounded-2xl px-3 py-2" variant="ghost">
                <Repeat className="text-muted-foreground size-4" />
                <span>Change wallet</span>
             </Button>
-            <Button onClick={onChangeNetwork} className="w-full justify-start" variant={'outline'}>
+            <Button onClick={onChangeNetwork} className="w-full justify-start rounded-2xl px-3 py-2" variant="ghost">
                <Globe2 className="text-muted-foreground size-4" />
-               <span className="text-xs">Network</span>
-               <span className="text-muted-foreground ml-auto text-xs tracking-[0.3em]">{network.cluster}</span>
+               <span>Network</span>
+               <span className="text-muted-foreground ml-auto text-xs font-semibold tracking-[0.2em] uppercase">
+                  {network.cluster}
+               </span>
             </Button>
-            <Button variant="destructive" onClick={onDisconnect} className="w-full flex-1 justify-start gap-2">
+            <Button
+               variant="ghost"
+               onClick={onDisconnect}
+               className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start gap-2 rounded-2xl px-3 py-2"
+            >
                <LogOut className="size-4" />
                Disconnect
             </Button>
