@@ -1,11 +1,10 @@
 'use client';
 
-import { ChevronRight } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage } from '@/features/wallet/components/connect/error-message';
 import type { WalletConnector } from '@/features/wallet/components/connect/types';
+import { cn } from '@/lib/utils';
 
 type ConnectDialogContentProps = {
    connectors: readonly WalletConnector[];
@@ -15,37 +14,52 @@ type ConnectDialogContentProps = {
 
 export function ConnectDialogContent({ connectors, onConnect, error }: ConnectDialogContentProps) {
    return (
-      <>
-         <DialogHeader className="space-y-1 px-6 pt-6 pb-2 text-left">
-            <DialogTitle className="text-base font-semibold">Connect wallet</DialogTitle>
-            <DialogDescription className="text-xs">Choose a wallet provider to continue.</DialogDescription>
+      <div className="space-y-6 px-6 pt-5 pb-6 text-left">
+         <DialogHeader className="space-y-2">
+            <DialogTitle className="text-foreground text-xl font-semibold">Connect a wallet</DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm leading-relaxed">
+               Choose a wallet provider on Solana to continue. Detected wallets are highlighted below.
+            </DialogDescription>
          </DialogHeader>
-         <div className="space-y-1.5 px-6 pt-2 pb-6">
+         <div className="space-y-3">
             {connectors.length ? (
-               connectors.map(connector => (
-                  <Button
-                     key={connector.id}
-                     type="button"
-                     variant="outline"
-                     onClick={() => onConnect(connector.id)}
-                     className="border-border/60 bg-background/60 hover:bg-accent/15 h-10 w-full justify-between rounded-lg px-3"
-                  >
-                     <span className="flex items-center gap-3">
-                        <span className="border-border/50 bg-muted text-muted-foreground grid size-8 place-items-center rounded-md border text-xs font-semibold uppercase">
-                           {connector.name.slice(0, 1)}
+               connectors.map(connector => {
+                  const isDetected = Boolean(connector.ready);
+                  return (
+                     <Button
+                        key={connector.id}
+                        type="button"
+                        variant="ghost"
+                        onClick={() => onConnect(connector.id)}
+                        className={cn(
+                           'group flex w-full items-center justify-between rounded-2xl border px-4 py-3 shadow-sm transition',
+                           isDetected
+                              ? 'border-border/60 bg-background/80 hover:border-primary/50 hover:bg-primary/5'
+                              : 'border-border/40 bg-card/50 hover:border-border/80 hover:bg-card/60 opacity-60'
+                        )}
+                     >
+                        <span className="flex items-center gap-3">
+                           <span className="border-border/40 bg-muted/20 text-muted-foreground grid h-10 w-10 place-items-center rounded-2xl border text-xs font-semibold uppercase">
+                              {connector.name.slice(0, 1)}
+                           </span>
+                           <div className="text-left">
+                              <p className="text-foreground text-sm font-semibold">{connector.name}</p>
+                              <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
+                                 {isDetected ? 'Detected' : 'Not detected'}
+                              </p>
+                           </div>
                         </span>
-                        <span className="text-foreground text-sm font-semibold">{connector.name}</span>
-                     </span>
-                     <ChevronRight className="text-muted-foreground size-4" />
-                  </Button>
-               ))
+                        <span className="text-muted-foreground text-xs font-semibold">Connect</span>
+                     </Button>
+                  );
+               })
             ) : (
-               <div className="border-border/60 bg-muted/30 text-muted-foreground rounded-xl border border-dashed px-4 py-3 text-xs">
+               <div className="border-border/40 bg-card/40 text-muted-foreground rounded-2xl border border-dashed px-4 py-3 text-sm">
                   No wallets detected. Install a wallet extension to continue.
                </div>
             )}
-            <ErrorMessage error={error} />
          </div>
-      </>
+         <ErrorMessage error={error} />
+      </div>
    );
 }

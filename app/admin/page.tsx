@@ -172,7 +172,9 @@ export default function Admin() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                      <span className="text-muted-foreground">Creation fee</span>
-                     <span className="text-foreground font-semibold">{formatLamports(configData?.creationFeeLamports)}</span>
+                     <span className="text-foreground font-semibold">
+                        {formatLamports(configData?.creationFeeLamports)}
+                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                      <span className="text-muted-foreground">Treasury</span>
