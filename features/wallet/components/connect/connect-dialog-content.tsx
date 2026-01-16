@@ -1,10 +1,10 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ErrorMessage } from '@/features/wallet/components/connect/error-message';
 import type { WalletConnector } from '@/features/wallet/components/connect/types';
-import { cn } from '@/lib/utils';
 
 type ConnectDialogContentProps = {
    connectors: readonly WalletConnector[];
@@ -24,7 +24,6 @@ export function ConnectDialogContent({ connectors, onConnect, error }: ConnectDi
          <div className="space-y-3">
             {connectors.length ? (
                connectors.map(connector => {
-                  const isDetected = Boolean(connector.ready);
                   return (
                      <Button
                         key={connector.id}
@@ -32,10 +31,7 @@ export function ConnectDialogContent({ connectors, onConnect, error }: ConnectDi
                         variant="ghost"
                         onClick={() => onConnect(connector.id)}
                         className={cn(
-                           'group flex w-full items-center justify-between rounded-2xl border px-4 py-3 shadow-sm transition',
-                           isDetected
-                              ? 'border-border/60 bg-background/80 hover:border-primary/50 hover:bg-primary/5'
-                              : 'border-border/40 bg-card/50 hover:border-border/80 hover:bg-card/60 opacity-60'
+                           'group flex h-auto w-full items-center justify-between rounded-2xl border px-4 py-3 shadow-sm transition'
                         )}
                      >
                         <span className="flex items-center gap-3">
@@ -44,9 +40,6 @@ export function ConnectDialogContent({ connectors, onConnect, error }: ConnectDi
                            </span>
                            <div className="text-left">
                               <p className="text-foreground text-sm font-semibold">{connector.name}</p>
-                              <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">
-                                 {isDetected ? 'Detected' : 'Not detected'}
-                              </p>
                            </div>
                         </span>
                         <span className="text-muted-foreground text-xs font-semibold">Connect</span>

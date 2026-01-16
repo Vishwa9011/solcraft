@@ -48,7 +48,7 @@ export function NetworkSelectorDialog({
                         <div className="flex items-center gap-3">
                            <span
                               className={cn(
-                                 'flex h-14 w-14 items-center justify-center rounded-[24px] bg-gradient-to-br text-sm font-semibold tracking-[0.4em] uppercase',
+                                 'flex h-14 w-14 items-center justify-center rounded-[24px] bg-linear-to-br text-sm font-semibold tracking-[0.4em] uppercase',
                                  network.accent
                               )}
                            >

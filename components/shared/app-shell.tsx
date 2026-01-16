@@ -54,13 +54,8 @@ export function AppShell({ children }: AppShellProps) {
                         <p className="text-muted-foreground text-sm text-pretty">{current.subtitle}</p>
                      </div>
                   </div>
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
-                     <Badge variant="secondary" className="w-fit">
-                        Localnet
-                     </Badge>
-                     <div className={cn('w-full sm:w-52')}>
-                        <ConnectButton />
-                     </div>
+                  <div className={cn('w-full sm:w-52')}>
+                     <ConnectButton />
                   </div>
                </header>
                <div className="flex-1 pt-8 pb-12">
