@@ -2,14 +2,7 @@
 
 import type { ReactNode } from 'react';
 import type { Control, FieldPath, FieldValues, ControllerRenderProps } from 'react-hook-form';
-import {
-   FormControl,
-   FormDescription,
-   FormField,
-   FormItem,
-   FormLabel,
-   FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 const labelClass = 'text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground';
 

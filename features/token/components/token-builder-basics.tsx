@@ -40,9 +40,7 @@ export function TokenBuilderBasics() {
             label="Decimals"
             required
             description="Standard SPL tokens use 9 decimals."
-            render={field => (
-               <Input type="number" min={0} max={9} inputMode="numeric" placeholder="9" {...field} />
-            )}
+            render={field => <Input type="number" min={0} max={9} inputMode="numeric" placeholder="9" {...field} />}
          />
          <TokenFormField
             control={control}
@@ -50,9 +48,7 @@ export function TokenBuilderBasics() {
             label="Supply"
             required
             description="Initial supply minted to your wallet."
-            render={field => (
-               <Input type="number" min={1} inputMode="numeric" placeholder="1000000" {...field} />
-            )}
+            render={field => <Input type="number" min={1} inputMode="numeric" placeholder="1000000" {...field} />}
          />
       </div>
    );

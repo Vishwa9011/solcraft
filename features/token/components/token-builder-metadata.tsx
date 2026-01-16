@@ -124,7 +124,9 @@ export function TokenBuilderMetadata() {
                         <div className="flex-1 space-y-1">
                            <p className="text-sm font-semibold">{file ? 'Logo ready' : 'Upload token logo'}</p>
                            <p className="text-muted-foreground text-xs">
-                              {file ? `${file.name} - ${formatBytes(file.size)}` : 'Square logo works best for wallets.'}
+                              {file
+                                 ? `${file.name} - ${formatBytes(file.size)}`
+                                 : 'Square logo works best for wallets.'}
                            </p>
                         </div>
                         <div className="flex items-center gap-2">

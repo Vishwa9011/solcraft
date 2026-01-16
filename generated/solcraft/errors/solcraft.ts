@@ -24,12 +24,15 @@ export const SOLCRAFT_ERROR__UNAUTHORIZED = 0x1772; // 6002
 export const SOLCRAFT_ERROR__INVALID_TREASURY_ATA = 0x1773; // 6003
 /** ExceedsMaxDecimals: The provided decimals exceed the maximum allowed. */
 export const SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS = 0x1774; // 6004
+/** NumericalOverflow: Numerical overflow. */
+export const SOLCRAFT_ERROR__NUMERICAL_OVERFLOW = 0x1775; // 6005
 
 export type SolcraftError =
    | typeof SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED
    | typeof SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS
    | typeof SOLCRAFT_ERROR__INSUFFICIENT_FUNDS
    | typeof SOLCRAFT_ERROR__INVALID_TREASURY_ATA
+   | typeof SOLCRAFT_ERROR__NUMERICAL_OVERFLOW
    | typeof SOLCRAFT_ERROR__UNAUTHORIZED;
 
 let solcraftErrorMessages: Record<SolcraftError, string> | undefined;
@@ -39,6 +42,7 @@ if (process.env.NODE_ENV !== 'production') {
       [SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS]: `The provided decimals exceed the maximum allowed.`,
       [SOLCRAFT_ERROR__INSUFFICIENT_FUNDS]: `Insufficient funds in the depositor's account.`,
       [SOLCRAFT_ERROR__INVALID_TREASURY_ATA]: `The provided treasury ATA does not match the faucet configuration.`,
+      [SOLCRAFT_ERROR__NUMERICAL_OVERFLOW]: `Numerical overflow.`,
       [SOLCRAFT_ERROR__UNAUTHORIZED]: `Unauthorized action attempted.`,
    };
 }

@@ -41,7 +41,7 @@ export function ConnectedWalletContent({
                   variant="ghost"
                   size="sm"
                   onClick={onDisconnect}
-                  className="justify-start text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive justify-start"
                >
                   <LogOut className="size-4" />
                   Disconnect

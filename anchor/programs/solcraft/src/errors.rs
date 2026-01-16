@@ -40,4 +40,7 @@ pub enum FaucetError {
 
     #[msg("The provided decimals exceed the maximum allowed.")]
     ExceedsMaxDecimals,
+
+    #[msg("Numerical overflow.")]
+    NumericalOverflow,
 }

@@ -84,6 +84,19 @@ pub fn claim(ctx: Context<Claim>) -> Result<()> {
         claim_amount,
     )?;
 
+    ctx.accounts.faucet_config.total_claimed_amount = ctx
+        .accounts
+        .faucet_config
+        .total_claimed_amount
+        .checked_add(claim_amount)
+        .ok_or(FaucetError::NumericalOverflow)?;
+
+    ctx.accounts.faucet_config.total_claims = ctx
+        .accounts
+        .faucet_config
+        .total_claims
+        .checked_add(1)
+        .ok_or(FaucetError::NumericalOverflow)?;
     ctx.accounts.recipient_data.last_claimed_at = Clock::get()?.unix_timestamp;
 
     Ok(())

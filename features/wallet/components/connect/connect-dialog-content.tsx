@@ -16,11 +16,11 @@ type ConnectDialogContentProps = {
 export function ConnectDialogContent({ connectors, onConnect, error }: ConnectDialogContentProps) {
    return (
       <>
-         <DialogHeader className="space-y-1 px-6 pb-2 pt-6 text-left">
+         <DialogHeader className="space-y-1 px-6 pt-6 pb-2 text-left">
             <DialogTitle className="text-base font-semibold">Connect wallet</DialogTitle>
             <DialogDescription className="text-xs">Choose a wallet provider to continue.</DialogDescription>
          </DialogHeader>
-         <div className="space-y-1.5 px-6 pb-6 pt-2">
+         <div className="space-y-1.5 px-6 pt-2 pb-6">
             {connectors.length ? (
                connectors.map(connector => (
                   <Button

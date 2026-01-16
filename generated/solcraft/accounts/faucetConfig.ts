@@ -51,6 +51,8 @@ export type FaucetConfig = {
    mint: Address;
    allowedClaimAmount: bigint;
    treasuryAta: Address;
+   totalClaimedAmount: bigint;
+   totalClaims: bigint;
    cooldownSeconds: bigint;
    bump: number;
 };
@@ -60,6 +62,8 @@ export type FaucetConfigArgs = {
    mint: Address;
    allowedClaimAmount: number | bigint;
    treasuryAta: Address;
+   totalClaimedAmount: number | bigint;
+   totalClaims: number | bigint;
    cooldownSeconds: number | bigint;
    bump: number;
 };
@@ -73,6 +77,8 @@ export function getFaucetConfigEncoder(): FixedSizeEncoder<FaucetConfigArgs> {
          ['mint', getAddressEncoder()],
          ['allowedClaimAmount', getU64Encoder()],
          ['treasuryAta', getAddressEncoder()],
+         ['totalClaimedAmount', getU64Encoder()],
+         ['totalClaims', getU64Encoder()],
          ['cooldownSeconds', getU64Encoder()],
          ['bump', getU8Encoder()],
       ]),
@@ -88,6 +94,8 @@ export function getFaucetConfigDecoder(): FixedSizeDecoder<FaucetConfig> {
       ['mint', getAddressDecoder()],
       ['allowedClaimAmount', getU64Decoder()],
       ['treasuryAta', getAddressDecoder()],
+      ['totalClaimedAmount', getU64Decoder()],
+      ['totalClaims', getU64Decoder()],
       ['cooldownSeconds', getU64Decoder()],
       ['bump', getU8Decoder()],
    ]);
@@ -149,5 +157,5 @@ export async function fetchAllMaybeFaucetConfig(
 }
 
 export function getFaucetConfigSize(): number {
-   return 121;
+   return 137;
 }

@@ -15,16 +15,7 @@ type WalletTriggerButtonProps = Omit<React.ComponentPropsWithoutRef<typeof Butto
 
 export const WalletTriggerButton = React.forwardRef<HTMLButtonElement, WalletTriggerButtonProps>(
    (
-      {
-         expanded,
-         controlsId,
-         isConnected,
-         connectionLabel,
-         className,
-         variant = 'outline',
-         type = 'button',
-         ...props
-      },
+      { expanded, controlsId, isConnected, connectionLabel, className, variant = 'outline', type = 'button', ...props },
       ref
    ) => (
       <Button

@@ -157,8 +157,7 @@
          radial-gradient(1200px 520px at 8% -10%, var(--bg-spot-1) 0%, transparent 60%),
          radial-gradient(980px 520px at 92% 0%, var(--bg-spot-2) 0%, transparent 62%),
          radial-gradient(700px 420px at 40% 100%, var(--bg-spot-3) 0%, transparent 65%),
-         linear-gradient(180deg, var(--bg-veil) 0%, transparent 55%),
-         linear-gradient(var(--grid) 1px, transparent 1px),
+         linear-gradient(180deg, var(--bg-veil) 0%, transparent 55%), linear-gradient(var(--grid) 1px, transparent 1px),
          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
       background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, repeat, repeat;
       background-attachment: fixed;
@@ -180,10 +179,10 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+   * {
+      @apply border-border outline-ring/50;
    }
-  body {
-    @apply bg-background text-foreground;
+   body {
+      @apply bg-background text-foreground;
    }
 }

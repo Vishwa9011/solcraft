@@ -46,8 +46,8 @@ export type WithdrawFromFaucetInstruction<
    TProgram extends string = typeof SOLCRAFT_PROGRAM_ADDRESS,
    TAccountFaucetConfig extends string | AccountMeta<string> = string,
    TAccountTreasuryAta extends string | AccountMeta<string> = string,
-   TAccountRecipientAta extends string | AccountMeta<string> = string,
-   TAccountRecipient extends string | AccountMeta<string> = string,
+   TAccountOwnerAta extends string | AccountMeta<string> = string,
+   TAccountOwner extends string | AccountMeta<string> = string,
    TAccountTokenProgram extends string | AccountMeta<string> = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
    TRemainingAccounts extends readonly AccountMeta<string>[] = [],
 > = Instruction<TProgram> &
@@ -56,10 +56,10 @@ export type WithdrawFromFaucetInstruction<
       [
          TAccountFaucetConfig extends string ? WritableAccount<TAccountFaucetConfig> : TAccountFaucetConfig,
          TAccountTreasuryAta extends string ? WritableAccount<TAccountTreasuryAta> : TAccountTreasuryAta,
-         TAccountRecipientAta extends string ? WritableAccount<TAccountRecipientAta> : TAccountRecipientAta,
-         TAccountRecipient extends string
-            ? ReadonlySignerAccount<TAccountRecipient> & AccountSignerMeta<TAccountRecipient>
-            : TAccountRecipient,
+         TAccountOwnerAta extends string ? WritableAccount<TAccountOwnerAta> : TAccountOwnerAta,
+         TAccountOwner extends string
+            ? ReadonlySignerAccount<TAccountOwner> & AccountSignerMeta<TAccountOwner>
+            : TAccountOwner,
          TAccountTokenProgram extends string ? ReadonlyAccount<TAccountTokenProgram> : TAccountTokenProgram,
          ...TRemainingAccounts,
       ]
@@ -102,14 +102,14 @@ export function getWithdrawFromFaucetInstructionDataCodec(): FixedSizeCodec<
 export type WithdrawFromFaucetAsyncInput<
    TAccountFaucetConfig extends string = string,
    TAccountTreasuryAta extends string = string,
-   TAccountRecipientAta extends string = string,
-   TAccountRecipient extends string = string,
+   TAccountOwnerAta extends string = string,
+   TAccountOwner extends string = string,
    TAccountTokenProgram extends string = string,
 > = {
    faucetConfig?: Address<TAccountFaucetConfig>;
    treasuryAta: Address<TAccountTreasuryAta>;
-   recipientAta: Address<TAccountRecipientAta>;
-   recipient: TransactionSigner<TAccountRecipient>;
+   ownerAta: Address<TAccountOwnerAta>;
+   owner: TransactionSigner<TAccountOwner>;
    tokenProgram?: Address<TAccountTokenProgram>;
    amount: WithdrawFromFaucetInstructionDataArgs['amount'];
 };
@@ -117,16 +117,16 @@ export type WithdrawFromFaucetAsyncInput<
 export async function getWithdrawFromFaucetInstructionAsync<
    TAccountFaucetConfig extends string,
    TAccountTreasuryAta extends string,
-   TAccountRecipientAta extends string,
-   TAccountRecipient extends string,
+   TAccountOwnerAta extends string,
+   TAccountOwner extends string,
    TAccountTokenProgram extends string,
    TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
    input: WithdrawFromFaucetAsyncInput<
       TAccountFaucetConfig,
       TAccountTreasuryAta,
-      TAccountRecipientAta,
-      TAccountRecipient,
+      TAccountOwnerAta,
+      TAccountOwner,
       TAccountTokenProgram
    >,
    config?: { programAddress?: TProgramAddress }
@@ -135,8 +135,8 @@ export async function getWithdrawFromFaucetInstructionAsync<
       TProgramAddress,
       TAccountFaucetConfig,
       TAccountTreasuryAta,
-      TAccountRecipientAta,
-      TAccountRecipient,
+      TAccountOwnerAta,
+      TAccountOwner,
       TAccountTokenProgram
    >
 > {
@@ -147,8 +147,8 @@ export async function getWithdrawFromFaucetInstructionAsync<
    const originalAccounts = {
       faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
       treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
-      recipientAta: { value: input.recipientAta ?? null, isWritable: true },
-      recipient: { value: input.recipient ?? null, isWritable: false },
+      ownerAta: { value: input.ownerAta ?? null, isWritable: true },
+      owner: { value: input.owner ?? null, isWritable: false },
       tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
    };
    const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
@@ -175,8 +175,8 @@ export async function getWithdrawFromFaucetInstructionAsync<
       accounts: [
          getAccountMeta(accounts.faucetConfig),
          getAccountMeta(accounts.treasuryAta),
-         getAccountMeta(accounts.recipientAta),
-         getAccountMeta(accounts.recipient),
+         getAccountMeta(accounts.ownerAta),
+         getAccountMeta(accounts.owner),
          getAccountMeta(accounts.tokenProgram),
       ],
       data: getWithdrawFromFaucetInstructionDataEncoder().encode(args as WithdrawFromFaucetInstructionDataArgs),
@@ -185,8 +185,8 @@ export async function getWithdrawFromFaucetInstructionAsync<
       TProgramAddress,
       TAccountFaucetConfig,
       TAccountTreasuryAta,
-      TAccountRecipientAta,
-      TAccountRecipient,
+      TAccountOwnerAta,
+      TAccountOwner,
       TAccountTokenProgram
    >);
 }
@@ -194,14 +194,14 @@ export async function getWithdrawFromFaucetInstructionAsync<
 export type WithdrawFromFaucetInput<
    TAccountFaucetConfig extends string = string,
    TAccountTreasuryAta extends string = string,
-   TAccountRecipientAta extends string = string,
-   TAccountRecipient extends string = string,
+   TAccountOwnerAta extends string = string,
+   TAccountOwner extends string = string,
    TAccountTokenProgram extends string = string,
 > = {
    faucetConfig: Address<TAccountFaucetConfig>;
    treasuryAta: Address<TAccountTreasuryAta>;
-   recipientAta: Address<TAccountRecipientAta>;
-   recipient: TransactionSigner<TAccountRecipient>;
+   ownerAta: Address<TAccountOwnerAta>;
+   owner: TransactionSigner<TAccountOwner>;
    tokenProgram?: Address<TAccountTokenProgram>;
    amount: WithdrawFromFaucetInstructionDataArgs['amount'];
 };
@@ -209,16 +209,16 @@ export type WithdrawFromFaucetInput<
 export function getWithdrawFromFaucetInstruction<
    TAccountFaucetConfig extends string,
    TAccountTreasuryAta extends string,
-   TAccountRecipientAta extends string,
-   TAccountRecipient extends string,
+   TAccountOwnerAta extends string,
+   TAccountOwner extends string,
    TAccountTokenProgram extends string,
    TProgramAddress extends Address = typeof SOLCRAFT_PROGRAM_ADDRESS,
 >(
    input: WithdrawFromFaucetInput<
       TAccountFaucetConfig,
       TAccountTreasuryAta,
-      TAccountRecipientAta,
-      TAccountRecipient,
+      TAccountOwnerAta,
+      TAccountOwner,
       TAccountTokenProgram
    >,
    config?: { programAddress?: TProgramAddress }
@@ -226,8 +226,8 @@ export function getWithdrawFromFaucetInstruction<
    TProgramAddress,
    TAccountFaucetConfig,
    TAccountTreasuryAta,
-   TAccountRecipientAta,
-   TAccountRecipient,
+   TAccountOwnerAta,
+   TAccountOwner,
    TAccountTokenProgram
 > {
    // Program address.
@@ -237,8 +237,8 @@ export function getWithdrawFromFaucetInstruction<
    const originalAccounts = {
       faucetConfig: { value: input.faucetConfig ?? null, isWritable: true },
       treasuryAta: { value: input.treasuryAta ?? null, isWritable: true },
-      recipientAta: { value: input.recipientAta ?? null, isWritable: true },
-      recipient: { value: input.recipient ?? null, isWritable: false },
+      ownerAta: { value: input.ownerAta ?? null, isWritable: true },
+      owner: { value: input.owner ?? null, isWritable: false },
       tokenProgram: { value: input.tokenProgram ?? null, isWritable: false },
    };
    const accounts = originalAccounts as Record<keyof typeof originalAccounts, ResolvedAccount>;
@@ -257,8 +257,8 @@ export function getWithdrawFromFaucetInstruction<
       accounts: [
          getAccountMeta(accounts.faucetConfig),
          getAccountMeta(accounts.treasuryAta),
-         getAccountMeta(accounts.recipientAta),
-         getAccountMeta(accounts.recipient),
+         getAccountMeta(accounts.ownerAta),
+         getAccountMeta(accounts.owner),
          getAccountMeta(accounts.tokenProgram),
       ],
       data: getWithdrawFromFaucetInstructionDataEncoder().encode(args as WithdrawFromFaucetInstructionDataArgs),
@@ -267,8 +267,8 @@ export function getWithdrawFromFaucetInstruction<
       TProgramAddress,
       TAccountFaucetConfig,
       TAccountTreasuryAta,
-      TAccountRecipientAta,
-      TAccountRecipient,
+      TAccountOwnerAta,
+      TAccountOwner,
       TAccountTokenProgram
    >);
 }
@@ -281,8 +281,8 @@ export type ParsedWithdrawFromFaucetInstruction<
    accounts: {
       faucetConfig: TAccountMetas[0];
       treasuryAta: TAccountMetas[1];
-      recipientAta: TAccountMetas[2];
-      recipient: TAccountMetas[3];
+      ownerAta: TAccountMetas[2];
+      owner: TAccountMetas[3];
       tokenProgram: TAccountMetas[4];
    };
    data: WithdrawFromFaucetInstructionData;
@@ -309,8 +309,8 @@ export function parseWithdrawFromFaucetInstruction<
       accounts: {
          faucetConfig: getNextAccount(),
          treasuryAta: getNextAccount(),
-         recipientAta: getNextAccount(),
-         recipient: getNextAccount(),
+         ownerAta: getNextAccount(),
+         owner: getNextAccount(),
          tokenProgram: getNextAccount(),
       },
       data: getWithdrawFromFaucetInstructionDataDecoder().decode(instruction.data),

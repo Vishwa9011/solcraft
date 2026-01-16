@@ -196,7 +196,9 @@ export function TokenBuilderForm() {
          return { label: 'In progress', variant: 'default' as const };
       }
       const complete = Object.values(stepStatus).every(status => status === 'success' || status === 'skipped');
-      return complete ? { label: 'Complete', variant: 'secondary' as const } : { label: 'Ready', variant: 'outline' as const };
+      return complete
+         ? { label: 'Complete', variant: 'secondary' as const }
+         : { label: 'Ready', variant: 'outline' as const };
    })();
 
    return (

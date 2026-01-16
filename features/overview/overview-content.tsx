@@ -86,7 +86,7 @@ export function OverviewContent() {
                         <item.icon className="size-5" />
                      </div>
                      <div className="space-y-1">
-                        <p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">{item.label}</p>
+                        <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">{item.label}</p>
                         <p className="text-foreground text-lg font-semibold">{item.value}</p>
                         <p className="text-muted-foreground text-xs">{item.detail}</p>
                      </div>
@@ -130,12 +130,12 @@ export function OverviewContent() {
                   <CardDescription>Reserved for upcoming analytics.</CardDescription>
                </CardHeader>
                <CardContent className="space-y-4 text-sm">
-                  <div className="rounded-xl border border-dashed border-border/70 p-4 text-muted-foreground">
+                  <div className="border-border/70 text-muted-foreground rounded-xl border border-dashed p-4">
                      We will surface mint counts, claimed faucet amounts, and authority changes here once the tracking
                      plan is finalized.
                   </div>
                   <div className="space-y-2">
-                     <p className="text-muted-foreground text-xs uppercase tracking-[0.2em]">Next focus</p>
+                     <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Next focus</p>
                      <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary">Mint KPIs</Badge>
                         <Badge variant="secondary">Faucet velocity</Badge>

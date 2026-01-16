@@ -7,6 +7,8 @@ pub struct FaucetConfig {
     pub mint: Pubkey,
     pub allowed_claim_amount: u64,
     pub treasury_ata: Pubkey,
+    pub total_claimed_amount: u64,
+    pub total_claims: u64,
     pub cooldown_seconds: u64,
     pub bump: u8,
 }

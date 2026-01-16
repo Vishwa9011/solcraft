@@ -13,7 +13,7 @@ pub struct Withdraw<'info> {
       mut,
       seeds = [FAUCET_CONFIG_SEEDS.as_bytes()],
       bump = faucet_config.bump,
-      constraint = recipient.key() == faucet_config.owner @ FaucetError::Unauthorized,
+        constraint = owner.key() == faucet_config.owner @ FaucetError::Unauthorized,
    )]
     pub faucet_config: Account<'info, FaucetConfig>,
 
@@ -28,11 +28,11 @@ pub struct Withdraw<'info> {
     #[account(
         mut,
         associated_token::mint = faucet_config.mint,
-        associated_token::authority = recipient,
+        associated_token::authority = owner,
     )]
-    pub recipient_ata: InterfaceAccount<'info, TokenAccount>,
+    pub owner_ata: InterfaceAccount<'info, TokenAccount>,
 
-    pub recipient: Signer<'info>,
+    pub owner: Signer<'info>,
 
     pub token_program: Interface<'info, TokenInterface>,
 }
@@ -51,7 +51,7 @@ pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
             ctx.accounts.token_program.to_account_info(),
             Transfer {
                 from: ctx.accounts.treasury_ata.to_account_info(),
-                to: ctx.accounts.recipient_ata.to_account_info(),
+                to: ctx.accounts.owner_ata.to_account_info(),
                 authority: ctx.accounts.faucet_config.to_account_info(),
             },
             &[seeds],

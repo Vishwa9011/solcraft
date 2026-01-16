@@ -245,29 +245,23 @@ export function useFaucetActions() {
             throw new Error('Amount must be greater than zero.');
          }
 
-         const [recipientAta] = await findAssociatedTokenPda({
+         const [ownerAta] = await findAssociatedTokenPda({
             owner: walletSigner.address,
             mint: config.mint,
             tokenProgram: TOKEN_PROGRAM_ADDRESS,
          });
 
          const faucetConfigPda = await getFaucetConfigPda();
-         const createRecipientAta = await getCreateAssociatedTokenIdempotentInstructionAsync({
-            payer: walletSigner,
-            ata: recipientAta,
-            owner: walletSigner.address,
-            mint: config.mint,
-         });
 
          const withdrawIx = await getWithdrawFromFaucetInstructionAsync({
             faucetConfig: faucetConfigPda,
             treasuryAta: config.treasuryAta,
-            recipientAta,
-            recipient: walletSigner,
             amount: amountInBaseUnits,
+            owner: walletSigner,
+            ownerAta,
          });
 
-         return await sendInstructions(async () => [createRecipientAta, withdrawIx]);
+         return await sendInstructions(async () => [withdrawIx]);
       },
       onError: error => {
          toast.error(resolveErrorMessage(error, 'Failed to withdraw tokens'));
