@@ -105,7 +105,7 @@ export function TokenBuilderMetadata() {
                render={field => {
                   const file = field.value as File | null;
                   return (
-                     <div className="border-border/60 bg-muted/20 flex flex-col gap-4 rounded-2xl border border-dashed p-4 md:flex-row md:items-center">
+                     <div className="border-border/40 bg-background/20 rounded-2xl border border-dashed p-4">
                         <Input
                            ref={node => {
                               fileInputRef.current = node;
@@ -118,41 +118,45 @@ export function TokenBuilderMetadata() {
                            onBlur={field.onBlur}
                            onChange={event => handleFileChange(event, field.onChange)}
                         />
-                        <div className="bg-secondary text-secondary-foreground flex size-14 items-center justify-center rounded-2xl">
-                           <UploadCloud className="size-5" />
-                        </div>
-                        <div className="flex-1 space-y-1">
-                           <p className="text-sm font-semibold">{file ? 'Logo ready' : 'Upload token logo'}</p>
-                           <p className="text-muted-foreground text-xs">
-                              {file
-                                 ? `${file.name} - ${formatBytes(file.size)}`
-                                 : 'Square logo works best for wallets.'}
-                           </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                           <Button
-                              type="button"
-                              variant="secondary"
-                              size="sm"
-                              onClick={() => fileInputRef.current?.click()}
-                           >
-                              {file ? 'Replace file' : 'Select file'}
-                           </Button>
-                           {file ? (
+                        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                           <div className="border-border/40 flex h-14 w-14 items-center justify-center rounded-2xl border">
+                              <UploadCloud className="text-muted-foreground size-5" />
+                           </div>
+                           <div className="flex-1 space-y-1">
+                              <p className="text-foreground text-sm font-semibold">
+                                 {file ? 'Logo ready' : 'Upload token logo'}
+                              </p>
+                              <p className="text-muted-foreground text-xs">
+                                 {file
+                                    ? `${file.name} · ${formatBytes(file.size)}`
+                                    : 'SVG, PNG, or WEBP · max 2MB · square preferred.'}
+                              </p>
+                           </div>
+                           <div className="flex flex-wrap gap-2">
                               <Button
                                  type="button"
-                                 variant="ghost"
+                                 variant="secondary"
                                  size="sm"
-                                 onClick={() => {
-                                    field.onChange(null);
-                                    if (fileInputRef.current) {
-                                       fileInputRef.current.value = '';
-                                    }
-                                 }}
+                                 onClick={() => fileInputRef.current?.click()}
                               >
-                                 Remove
+                                 {file ? 'Replace file' : 'Select file'}
                               </Button>
-                           ) : null}
+                              {file ? (
+                                 <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                       field.onChange(null);
+                                       if (fileInputRef.current) {
+                                          fileInputRef.current.value = '';
+                                       }
+                                    }}
+                                 >
+                                    Remove
+                                 </Button>
+                              ) : null}
+                           </div>
                         </div>
                      </div>
                   );

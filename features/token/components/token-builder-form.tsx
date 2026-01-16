@@ -211,7 +211,6 @@ export function TokenBuilderForm() {
                         <CardTitle>Token Builder</CardTitle>
                         <CardDescription>Create an SPL token with metadata and supply controls.</CardDescription>
                      </div>
-                     <Badge variant="secondary">Step 1</Badge>
                   </div>
                </CardHeader>
                <CardContent className="space-y-6">

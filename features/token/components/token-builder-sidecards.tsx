@@ -9,11 +9,9 @@ import { Coins, Shield } from 'lucide-react';
 import { useTokenActions } from '../hooks';
 import { address } from '@solana/kit';
 import { toast } from 'sonner';
-import { useSplToken } from '@solana/react-hooks';
-import { client } from '@/features/wallet';
 
 const cardShell = 'border-border/60 bg-card/80 shadow-sm rounded-2xl';
-const labelClass = 'text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground';
+const labelClass = 'text-[11px] font-semibold text-muted-foreground';
 
 type FieldStackProps = {
    id: string;
@@ -23,7 +21,7 @@ type FieldStackProps = {
 
 function FieldStack({ id, label, children }: FieldStackProps) {
    return (
-      <div className="space-y-2">
+      <div className="flex flex-col gap-1.5">
          <label className={labelClass} htmlFor={id}>
             {label}
          </label>
@@ -149,7 +147,7 @@ export function TokenBuilderSidecards() {
                   <Badge variant="outline">Critical</Badge>
                </div>
             </CardHeader>
-            <CardContent className="space-y-5">
+            <CardContent className="space-y-4">
                <div className="space-y-3">
                   <div className="flex items-center gap-2 text-sm font-semibold">
                      <Coins className="text-primary size-4" />

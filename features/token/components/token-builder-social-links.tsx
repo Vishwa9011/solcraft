@@ -48,28 +48,24 @@ export function TokenBuilderSocialLinks() {
                   control={control}
                   name="website"
                   label="Website"
-                  description="Main landing page."
                   render={field => <Input type="url" placeholder="https://mytoken.io" {...field} />}
                />
                <TokenFormField
                   control={control}
                   name="twitter"
                   label="Twitter or X"
-                  description="Public updates and releases."
                   render={field => <Input type="url" placeholder="https://x.com/mytoken" {...field} />}
                />
                <TokenFormField
                   control={control}
                   name="telegram"
                   label="Telegram"
-                  description="Community support."
                   render={field => <Input type="url" placeholder="https://t.me/mytoken" {...field} />}
                />
                <TokenFormField
                   control={control}
                   name="discord"
                   label="Discord"
-                  description="Core community hub."
                   render={field => <Input type="url" placeholder="https://discord.gg/mytoken" {...field} />}
                />
             </div>

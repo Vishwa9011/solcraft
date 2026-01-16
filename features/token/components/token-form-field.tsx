@@ -2,9 +2,10 @@
 
 import type { ReactNode } from 'react';
 import type { Control, FieldPath, FieldValues, ControllerRenderProps } from 'react-hook-form';
+import { cn } from '@/lib/utils';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
-const labelClass = 'text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground';
+const labelClass = 'text-[11px] font-semibold text-muted-foreground';
 
 type TokenFormFieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> = {
    control: Control<TFieldValues>;
@@ -31,27 +32,24 @@ export function TokenFormField<TFieldValues extends FieldValues, TName extends F
       <FormField
          control={control}
          name={name}
-         render={({ field, fieldState }) => (
-            <FormItem className={className}>
-               {actions ? (
+         render={({ field, fieldState }) => {
+            const helperText = description;
+            return (
+               <FormItem className={cn('flex flex-col gap-2', className)}>
                   <div className="flex items-center justify-between gap-3">
                      <FormLabel className={labelClass}>
                         {label} {required ? <span className="text-primary">*</span> : null}
                      </FormLabel>
-                     <div className="flex items-center gap-2">{actions}</div>
+                     {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
                   </div>
-               ) : (
-                  <FormLabel className={labelClass}>
-                     {label} {required ? <span className="text-primary">*</span> : null}
-                  </FormLabel>
-               )}
-               <FormControl>{render(field)}</FormControl>
-               {description && !fieldState.error ? (
-                  <FormDescription className="text-xs">{description}</FormDescription>
-               ) : null}
-               <FormMessage className="text-xs" />
-            </FormItem>
-         )}
+                  <FormControl>{render(field)}</FormControl>
+                  {helperText && !fieldState.error ? (
+                     <FormDescription className="text-muted-foreground text-xs">{helperText}</FormDescription>
+                  ) : null}
+                  <FormMessage className="text-xs" />
+               </FormItem>
+            );
+         }}
       />
    );
 }

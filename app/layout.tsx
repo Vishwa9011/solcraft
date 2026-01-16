@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { JetBrains_Mono, Space_Grotesk } from 'next/font/google';
+import { JetBrains_Mono, Space_Grotesk, Sora } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { AppShell } from '@/components/shared/app-shell';
@@ -17,6 +17,13 @@ const jetBrainsMono = JetBrains_Mono({
    display: 'swap',
 });
 
+const sora = Sora({
+   variable: '--font-sora',
+   subsets: ['latin'],
+   weight: ['400', '500', '600'],
+   display: 'swap',
+});
+
 export const metadata: Metadata = {
    title: 'Solcraft',
    description: 'Create and manage Solana tokens with ease.',
@@ -30,7 +37,10 @@ export default function RootLayout({
    return (
       <html lang="en" className="dark">
          <Providers>
-            <body suppressHydrationWarning className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} antialiased`}>
+            <body
+               suppressHydrationWarning
+               className={`${sora.variable} ${spaceGrotesk.variable} ${jetBrainsMono.variable} antialiased`}
+            >
                <AppShell>{children}</AppShell>
                <Toaster position="top-right" />
             </body>

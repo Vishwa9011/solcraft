@@ -9,25 +9,23 @@ export function TokenBuilderBasics() {
    const { control } = useFormContext<TokenFormValues>();
 
    return (
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="align-items-start grid gap-4 md:grid-cols-2">
          <TokenFormField
             control={control}
             name="name"
-            label="Token name"
+            label="Token name (max 30)"
             required
-            description="Max 30 characters."
             render={field => <Input placeholder="My awesome token" {...field} />}
          />
          <TokenFormField
             control={control}
             name="symbol"
-            label="Token symbol"
+            label="Token symbol (max 10)"
             required
-            description="Uppercase, max 10 characters."
             render={field => (
                <Input
                   placeholder="AWESOME"
-                  className="tracking-[0.2em] uppercase"
+                  className="tracking-[0.2em]"
                   autoCapitalize="characters"
                   {...field}
                   onChange={event => field.onChange(event.target.value.toUpperCase())}
