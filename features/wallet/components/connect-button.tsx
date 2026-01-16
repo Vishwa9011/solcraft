@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { lamportsToSolString } from '@solana/client';
-import { useBalance, useConnectWallet, useDisconnectWallet, useWallet, useWalletConnection } from '@solana/react-hooks';
 import copy from 'copy-to-clipboard';
+import { useCallback, useState } from 'react';
+import { useBalance, useConnectWallet, useDisconnectWallet, useWallet, useWalletConnection } from '@solana/react-hooks';
 
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,18 +13,17 @@ import {
    type WalletConnector,
    WalletTriggerButton,
 } from '@/features/wallet/components/connect';
+import { formatAddress, formatSolBalance } from '@/features/wallet/lib';
 import { useWalletNetwork } from '@/features/wallet/hooks';
-import { SOLANA_NETWORKS, type SolanaNetworkId } from '@/lib/solana/networks';
+import { SOLANA_NETWORKS, type SolanaNetworkId } from '@/features/wallet/lib/networks';
+import { useQueryClient } from '@tanstack/react-query';
 
 const COPY_RESET_MS = 1500;
 const MENU_ID = 'wallet-menu';
 
-function truncate(address: string) {
-   return `${address.slice(0, 4)}…${address.slice(-4)}`;
-}
-
 export function ConnectButton() {
    const wallet = useWallet();
+   const queryClient = useQueryClient();
    const { connectors, isReady } = useWalletConnection();
    const connectWallet = useConnectWallet();
    const disconnectWallet = useDisconnectWallet();
@@ -40,15 +38,43 @@ export function ConnectButton() {
    const isConnected = wallet.status === 'connected';
    const address = isConnected ? wallet.session.account.address.toString() : null;
    const { lamports, fetching: balanceFetching } = useBalance(address ?? undefined, { watch: true });
-   const connectedConnector = isConnected ? wallet.session.connector : null;
 
    const isConnecting = wallet.status === 'connecting' || connectingId !== null;
-   const connectionLabel = isConnected ? truncate(address ?? '') : isConnecting ? 'Connecting...' : 'Connect wallet';
-   const displayAddress = address ? truncate(address) : '';
+   const connectionLabel = isConnected
+      ? formatAddress(address ?? '')
+      : isConnecting
+        ? 'Connecting...'
+        : 'Connect wallet';
    const expanded = isConnected ? open : dialogOpen;
    const activeConnectingId = wallet.status === 'connecting' ? wallet.connectorId : connectingId;
-   const balanceLabel =
-      lamports !== null ? lamportsToSolString(lamports, { minimumFractionDigits: 2, trimTrailingZeros: true }) : null;
+   const balanceLabel = formatSolBalance(lamports);
+
+   const handleDialogOpenChange = useCallback((next: boolean) => {
+      setDialogOpen(next);
+      if (next) {
+         setError(null);
+      }
+   }, []);
+
+   const handlePopoverOpenChange = useCallback((next: boolean) => {
+      setOpen(next);
+      if (next) {
+         setError(null);
+         setCopied(false);
+      }
+   }, []);
+
+   const handleError = useCallback((err: unknown, fallback: string) => {
+      if (err instanceof Error) {
+         setError(err.message);
+         return;
+      }
+      if (typeof err === 'string' && err.trim().length > 0) {
+         setError(err);
+         return;
+      }
+      setError(fallback);
+   }, []);
 
    async function handleConnect(connectorId: string) {
       setError(null);
@@ -58,7 +84,7 @@ export function ConnectButton() {
          setOpen(false);
          setDialogOpen(false);
       } catch (err) {
-         setError(err instanceof Error ? err.message : 'Unable to connect');
+         handleError(err, 'Unable to connect');
       } finally {
          setConnectingId(null);
       }
@@ -70,7 +96,7 @@ export function ConnectButton() {
          await disconnectWallet();
          setOpen(false);
       } catch (err) {
-         setError(err instanceof Error ? err.message : 'Unable to disconnect');
+         handleError(err, 'Unable to disconnect');
       }
    }
 
@@ -84,7 +110,7 @@ export function ConnectButton() {
          setCopied(true);
          window.setTimeout(() => setCopied(false), COPY_RESET_MS);
       } catch (err) {
-         setError(err instanceof Error ? err.message : 'Unable to copy address');
+         handleError(err, 'Unable to copy address');
       }
    }
 
@@ -103,8 +129,9 @@ export function ConnectButton() {
       try {
          await switchNetwork(networkId);
          setNetworkDialogOpen(false);
+         queryClient.clear(); // Clear cached queries to refetch data for the new network
       } catch (err) {
-         setError(err instanceof Error ? err.message : 'Unable to switch network');
+         handleError(err, 'Unable to switch network');
       }
    }
 
@@ -120,15 +147,7 @@ export function ConnectButton() {
 
    return (
       <>
-         <Dialog
-            open={dialogOpen}
-            onOpenChange={next => {
-               setDialogOpen(next);
-               if (next) {
-                  setError(null);
-               }
-            }}
-         >
+         <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
             {!isConnected ? <DialogTrigger asChild>{triggerButton}</DialogTrigger> : null}
             <DialogContent className="border-border/60 bg-background/95 rounded-2xl p-0 shadow-2xl sm:max-w-md">
                <ConnectDialogContent
@@ -141,16 +160,7 @@ export function ConnectButton() {
             </DialogContent>
          </Dialog>
          {isConnected ? (
-            <Popover
-               open={open}
-               onOpenChange={next => {
-                  setOpen(next);
-                  if (next) {
-                     setError(null);
-                     setCopied(false);
-                  }
-               }}
-            >
+            <Popover open={open} onOpenChange={handlePopoverOpenChange}>
                <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
                <PopoverContent
                   id={MENU_ID}
@@ -160,7 +170,6 @@ export function ConnectButton() {
                >
                   <ConnectedWalletContent
                      address={address ?? ''}
-                     displayAddress={displayAddress}
                      copied={copied}
                      onCopy={() => void handleCopy()}
                      onDisconnect={() => void handleDisconnect()}
@@ -168,8 +177,6 @@ export function ConnectButton() {
                      network={selectedNetwork}
                      onChangeNetwork={handleRequestChangeNetwork}
                      onChangeWallet={handleRequestChangeWallet}
-                     walletIcon={connectedConnector?.icon ?? null}
-                     walletName={connectedConnector?.name ?? null}
                      balance={balanceLabel}
                      balanceLoading={balanceFetching}
                   />

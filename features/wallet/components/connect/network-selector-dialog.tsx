@@ -1,10 +1,22 @@
 'use client';
 
-import { Check } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
+import { Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import type { SolanaNetwork, SolanaNetworkId } from '@/lib/solana/networks';
+import type { SolanaNetwork, SolanaNetworkId } from '@/features/wallet/lib/networks';
+
+const NETWORK_DETAILS: Record<SolanaNetworkId, { badge: string; description: string; accent: string }> = {
+   'solana-localnet': {
+      badge: 'LOC',
+      description: 'Local validator for fast iteration.',
+      accent: 'from-[#00ffa3] via-[#4c1d95] to-[#38bdf8]',
+   },
+   'solana-devnet': {
+      badge: 'DEV',
+      description: 'Test cluster with dev tokens.',
+      accent: 'from-[#8b5cf6] via-[#2563eb] to-[#38bdf8]',
+   },
+};
 
 type NetworkSelectorDialogProps = {
    open: boolean;
@@ -33,6 +45,7 @@ export function NetworkSelectorDialog({
             <div className="mt-5 space-y-3">
                {networks.map(network => {
                   const isSelected = network.id === selectedNetworkId;
+                  const details = NETWORK_DETAILS[network.id];
                   return (
                      <button
                         key={network.id}
@@ -50,14 +63,14 @@ export function NetworkSelectorDialog({
                            <span
                               className={cn(
                                  'flex h-12 w-12 items-center justify-center rounded-[20px] bg-linear-to-br text-xs font-semibold tracking-[0.3em] text-white uppercase',
-                                 network.accent
+                                 details.accent
                               )}
                            >
-                              {network.id === 'solana-devnet' ? 'DEV' : 'LOC'}
+                              {details.badge}
                            </span>
                            <div>
                               <p className="text-foreground text-sm font-semibold">{network.label}</p>
-                              <p className="text-muted-foreground text-xs">{network.description}</p>
+                              <p className="text-muted-foreground text-xs">{details.description}</p>
                            </div>
                         </div>
                         <span
@@ -67,7 +80,7 @@ export function NetworkSelectorDialog({
                            )}
                         >
                            {isSelected ? <Check className="size-4" /> : null}
-                           {isSelected ? network.statusLabel : 'Switch'}
+                           {isSelected ? 'Connected' : 'Switch'}
                         </span>
                      </button>
                   );

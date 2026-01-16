@@ -6,7 +6,7 @@ import {
    SOLANA_NETWORKS,
    type SolanaNetwork,
    type SolanaNetworkId,
-} from '@/lib/solana/networks';
+} from '@/features/wallet/lib/networks';
 
 type UseWalletNetworkResult = {
    selectedNetwork: SolanaNetwork;
