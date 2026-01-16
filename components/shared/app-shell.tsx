@@ -58,7 +58,7 @@ export function AppShell({ children }: AppShellProps) {
                      <Badge variant="secondary" className="w-fit">
                         Localnet
                      </Badge>
-                     <div className={cn('w-full sm:w-56')}>
+                     <div className={cn('w-full sm:w-52')}>
                         <ConnectButton />
                      </div>
                   </div>

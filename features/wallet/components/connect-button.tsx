@@ -87,7 +87,7 @@ export function ConnectButton() {
             </DialogTrigger>
             <DialogContent className="border-border/60 bg-popover/95 p-0 shadow-xl sm:max-w-md">
                <ConnectDialogContent
-                  connectors={connectors as WalletConnector[]}
+                  connectors={connectors as readonly WalletConnector[]}
                   onConnect={(connectorId: string) => void handleConnect(connectorId)}
                   error={error}
                />

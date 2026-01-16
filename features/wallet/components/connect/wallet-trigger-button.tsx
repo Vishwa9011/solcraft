@@ -25,13 +25,13 @@ export const WalletTriggerButton = React.forwardRef<HTMLButtonElement, WalletTri
          aria-expanded={expanded}
          aria-controls={controlsId}
          className={cn(
-            'group border-border/60 bg-card/60 hover:border-border/80 hover:bg-card/80 relative h-10 w-full max-w-sm overflow-hidden rounded-xl px-3 text-left shadow-sm transition',
+            'group border-border/60 bg-card/60 hover:border-border/80 hover:bg-card/80 relative h-10 w-full overflow-hidden rounded-xl px-3 text-left shadow-sm transition',
             isConnected ? 'justify-between' : 'justify-start',
             className
          )}
          {...props}
       >
-         <span className="relative flex items-center gap-3">
+         <span className="relative flex flex-1 items-center justify-center gap-3">
             <span
                className={cn(
                   'border-border/50 bg-background/70 text-muted-foreground group-hover:border-border/80 flex size-8 items-center justify-center rounded-lg border transition',
