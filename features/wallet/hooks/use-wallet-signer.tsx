@@ -7,6 +7,7 @@ export function useWalletSigner() {
 
    const signer = useMemo(() => {
       if (!session) return null;
+
       return createWalletSigner(session);
    }, [session]);
 
