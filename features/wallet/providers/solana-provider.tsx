@@ -1,14 +1,15 @@
 'use client';
 
-import { SolanaProvider as SolanaProviderLib } from '@solana/react-hooks';
 import { PropsWithChildren } from 'react';
+import { SolanaProvider as SolanaProviderLib } from '@solana/react-hooks';
 
 import { autoDiscover, createClient } from '@solana/client';
+import { DEFAULT_SOLANA_NETWORK } from '@/features/wallet/lib/networks';
 
 export const client = createClient({
-   cluster: 'localnet',
-   endpoint: 'http://127.0.0.1:8899',
-   // endpoint: "https://api.devnet.solana.com",
+   cluster: DEFAULT_SOLANA_NETWORK.cluster,
+   endpoint: DEFAULT_SOLANA_NETWORK.endpoint,
+   websocketEndpoint: DEFAULT_SOLANA_NETWORK.websocketEndpoint,
    walletConnectors: autoDiscover(),
 });
 

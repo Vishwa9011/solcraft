@@ -80,7 +80,7 @@ export function useFactoryActions() {
       queryKey: queryKeys.factoryConfig.all,
       queryFn: async () => {
          const pda = await getFactoryPDA();
-         return await fetchMaybeFactoryConfig(client.config.rpcClient?.rpc!, pda);
+         return await fetchMaybeFactoryConfig(client.runtime.rpc, pda);
       },
    });
 

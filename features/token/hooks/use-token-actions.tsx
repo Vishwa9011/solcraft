@@ -56,7 +56,7 @@ export function useTokenActions() {
    const mintTokens = useMutation({
       mutationFn: async ({ mint, amount }: MintTokensParams) => {
          const walletSigner = requireSigner(signer);
-         const mintInfo = await fetchMint(client.config.rpcClient?.rpc!, address(mint));
+         const mintInfo = await fetchMint(client.runtime.rpc, address(mint));
 
          const instructions = await buildMintTokensInstruction(walletSigner, {
             mint,

@@ -1,9 +1,11 @@
+import { ClusterMoniker } from '@solana/client';
+
 export type SolanaNetworkId = 'solana-localnet' | 'solana-devnet';
 
 export type SolanaNetwork = {
    id: SolanaNetworkId;
    label: string;
-   cluster: string;
+   cluster: ClusterMoniker;
    endpoint: string;
    websocketEndpoint: string;
 };
