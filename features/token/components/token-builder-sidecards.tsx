@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Coins, Shield } from 'lucide-react';
+import { Coins } from 'lucide-react';
 import { useTokenActions } from '../hooks';
 import { address } from '@solana/kit';
 import { toast } from 'sonner';
@@ -73,6 +73,7 @@ export function TokenBuilderSidecards() {
       if (!mint) return;
       if (revoke) {
          await transferOrRevokeMintAuthority.mutateAsync({ mint, newAuthority: null });
+         return;
       }
       const newAuthority = parseAddress(mintAuthorityNew, 'new authority address');
       if (!newAuthority) return;

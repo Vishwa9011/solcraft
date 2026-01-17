@@ -5,6 +5,7 @@ import { useFormContext } from 'react-hook-form';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { TokenBuilderSection } from '@/features/token/components/token-builder-section';
 import { TokenFormField } from '@/features/token/components/token-form-field';
 import { type TokenFormValues } from '@/features/token/lib/token-builder-schema';
 import { cn } from '@/lib/utils';
@@ -16,32 +17,29 @@ export function TokenBuilderSocialLinks() {
    const [website, twitter, telegram, discord] = watch(['website', 'twitter', 'telegram', 'discord']);
    const socialCount = [website, twitter, telegram, discord].filter(Boolean).length;
 
+   const actions = (
+      <>
+         <Badge variant="secondary">{socialCount}/4 linked</Badge>
+         <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAdvanced(value => !value)}
+            className="text-muted-foreground"
+         >
+            {showAdvanced ? 'Hide' : 'Add'} links
+            {showAdvanced ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+         </Button>
+      </>
+   );
+
    return (
-      <div
-         className={cn(
-            'border-border/60 bg-muted/20 space-y-4 rounded-2xl border p-4',
-            showAdvanced && 'border-primary/40'
-         )}
+      <TokenBuilderSection
+         title="Social links"
+         description="Optional links that show up in explorers."
+         actions={actions}
+         className={cn(showAdvanced && 'border-border/40 bg-muted/10 rounded-2xl border p-4')}
       >
-         <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="space-y-1">
-               <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Social links</p>
-               <p className="text-muted-foreground text-sm">Optional links that show up in explorers.</p>
-            </div>
-            <div className="flex items-center gap-2">
-               <Badge variant="secondary">{socialCount}/4 linked</Badge>
-               <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAdvanced(value => !value)}
-                  className="text-muted-foreground"
-               >
-                  {showAdvanced ? 'Hide' : 'Add'} links
-                  {showAdvanced ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-               </Button>
-            </div>
-         </div>
          {showAdvanced ? (
             <div className="animate-in fade-in slide-in-from-top-2 grid gap-4 duration-200 md:grid-cols-2">
                <TokenFormField
@@ -74,6 +72,6 @@ export function TokenBuilderSocialLinks() {
                Add optional website, social, and community links for visibility across explorers.
             </p>
          )}
-      </div>
+      </TokenBuilderSection>
    );
 }

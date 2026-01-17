@@ -31,6 +31,8 @@ const pageMeta: Record<string, { title: string; subtitle: string }> = {
    },
 };
 
+const contentShell = 'mx-auto w-full max-w-6xl';
+
 export function AppShell({ children }: AppShellProps) {
    const pathname = usePathname();
    const current = pageMeta[pathname] ?? {
@@ -43,7 +45,12 @@ export function AppShell({ children }: AppShellProps) {
          <AppSidebar pathname={pathname} />
          <SidebarInset className="bg-transparent">
             <div className="flex min-h-svh flex-col md:min-h-[calc(100svh-1rem)] md:p-2">
-               <header className="border-border/60 bg-background/65 supports-backdrop-filter:bg-background/55 flex flex-col gap-3 border-b px-4 py-4 backdrop-blur md:flex-row md:items-center md:justify-between md:rounded-2xl md:border md:border-b-0 md:px-5 md:py-4 md:shadow-sm">
+               <header
+                  className={cn(
+                     'border-border/60 bg-background/65 supports-backdrop-filter:bg-background/55 flex flex-col gap-3 border-b px-4 py-4 backdrop-blur md:flex-row md:items-center md:justify-between md:rounded-2xl md:border md:border-b-0 md:px-5 md:py-4 md:shadow-sm',
+                     contentShell
+                  )}
+               >
                   <div className="flex items-start gap-3 md:items-center">
                      <SidebarTrigger className="md:hidden" />
                      <div className="max-w-xl space-y-1">
@@ -62,7 +69,7 @@ export function AppShell({ children }: AppShellProps) {
                   </div>
                </header>
                <div className="flex-1 pt-8 pb-12">
-                  <div className="mx-auto w-full">{children}</div>
+                  <div className={contentShell}>{children}</div>
                </div>
             </div>
          </SidebarInset>

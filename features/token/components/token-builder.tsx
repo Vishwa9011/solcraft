@@ -3,8 +3,8 @@ import { TokenBuilderSidecards } from '@/features/token/components/token-builder
 
 export function TokenBuilder() {
    return (
-      <div className="space-y-12">
-         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="w-full space-y-10">
+         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
             <TokenBuilderForm />
             <TokenBuilderSidecards />
          </section>
