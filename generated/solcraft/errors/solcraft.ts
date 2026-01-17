@@ -14,23 +14,35 @@ import {
 } from '@solana/kit';
 import { SOLCRAFT_PROGRAM_ADDRESS } from '../programs';
 
-/** InsufficientFunds: Insufficient funds in the depositor's account. */
-export const SOLCRAFT_ERROR__INSUFFICIENT_FUNDS = 0x1770; // 6000
-/** CooldownNotElapsed: Cooldown period has not yet elapsed. */
-export const SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED = 0x1771; // 6001
+/** FactoryPaused: The factory is currently paused. */
+export const SOLCRAFT_ERROR__FACTORY_PAUSED = 0x1770; // 6000
+/** InsufficientCreationFee: Insufficient funds to cover the creation fee. */
+export const SOLCRAFT_ERROR__INSUFFICIENT_CREATION_FEE = 0x1771; // 6001
 /** Unauthorized: Unauthorized action attempted. */
 export const SOLCRAFT_ERROR__UNAUTHORIZED = 0x1772; // 6002
-/** InvalidTreasuryAta: The provided treasury ATA does not match the faucet configuration. */
-export const SOLCRAFT_ERROR__INVALID_TREASURY_ATA = 0x1773; // 6003
+/** InsufficientFundsToWithdraw: No funds available to withdraw. */
+export const SOLCRAFT_ERROR__INSUFFICIENT_FUNDS_TO_WITHDRAW = 0x1773; // 6003
 /** ExceedsMaxDecimals: The provided decimals exceed the maximum allowed. */
 export const SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS = 0x1774; // 6004
+/** InvalidInputStringLength: The provided string length is invalid. */
+export const SOLCRAFT_ERROR__INVALID_INPUT_STRING_LENGTH = 0x1775; // 6005
+/** InsufficientFunds: Insufficient funds in the depositor's account. */
+export const SOLCRAFT_ERROR__INSUFFICIENT_FUNDS = 0x1776; // 6006
+/** CooldownNotElapsed: Cooldown period has not yet elapsed. */
+export const SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED = 0x1777; // 6007
+/** InvalidTreasuryAta: The provided treasury ATA does not match the faucet configuration. */
+export const SOLCRAFT_ERROR__INVALID_TREASURY_ATA = 0x1778; // 6008
 /** NumericalOverflow: Numerical overflow. */
-export const SOLCRAFT_ERROR__NUMERICAL_OVERFLOW = 0x1775; // 6005
+export const SOLCRAFT_ERROR__NUMERICAL_OVERFLOW = 0x1779; // 6009
 
 export type SolcraftError =
    | typeof SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED
    | typeof SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS
+   | typeof SOLCRAFT_ERROR__FACTORY_PAUSED
+   | typeof SOLCRAFT_ERROR__INSUFFICIENT_CREATION_FEE
    | typeof SOLCRAFT_ERROR__INSUFFICIENT_FUNDS
+   | typeof SOLCRAFT_ERROR__INSUFFICIENT_FUNDS_TO_WITHDRAW
+   | typeof SOLCRAFT_ERROR__INVALID_INPUT_STRING_LENGTH
    | typeof SOLCRAFT_ERROR__INVALID_TREASURY_ATA
    | typeof SOLCRAFT_ERROR__NUMERICAL_OVERFLOW
    | typeof SOLCRAFT_ERROR__UNAUTHORIZED;
@@ -40,7 +52,11 @@ if (process.env.NODE_ENV !== 'production') {
    solcraftErrorMessages = {
       [SOLCRAFT_ERROR__COOLDOWN_NOT_ELAPSED]: `Cooldown period has not yet elapsed.`,
       [SOLCRAFT_ERROR__EXCEEDS_MAX_DECIMALS]: `The provided decimals exceed the maximum allowed.`,
+      [SOLCRAFT_ERROR__FACTORY_PAUSED]: `The factory is currently paused.`,
+      [SOLCRAFT_ERROR__INSUFFICIENT_CREATION_FEE]: `Insufficient funds to cover the creation fee.`,
       [SOLCRAFT_ERROR__INSUFFICIENT_FUNDS]: `Insufficient funds in the depositor's account.`,
+      [SOLCRAFT_ERROR__INSUFFICIENT_FUNDS_TO_WITHDRAW]: `No funds available to withdraw.`,
+      [SOLCRAFT_ERROR__INVALID_INPUT_STRING_LENGTH]: `The provided string length is invalid.`,
       [SOLCRAFT_ERROR__INVALID_TREASURY_ATA]: `The provided treasury ATA does not match the faucet configuration.`,
       [SOLCRAFT_ERROR__NUMERICAL_OVERFLOW]: `Numerical overflow.`,
       [SOLCRAFT_ERROR__UNAUTHORIZED]: `Unauthorized action attempted.`,

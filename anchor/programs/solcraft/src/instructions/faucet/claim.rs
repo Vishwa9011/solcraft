@@ -3,7 +3,7 @@ use anchor_spl::token::{transfer, Transfer};
 use anchor_spl::token_interface::{TokenAccount, TokenInterface};
 
 use crate::constants::{DISCRIMINATOR, FAUCET_CONFIG_SEEDS, FAUCET_RECIPIENT_SEEDS};
-use crate::errors::FaucetError;
+use crate::errors::SolcraftError;
 use crate::states::{FaucetConfig, FaucetRecipientData};
 
 #[derive(Accounts)]
@@ -28,7 +28,7 @@ pub struct Claim<'info> {
         mut,
         associated_token::mint = faucet_config.mint,
         associated_token::authority = faucet_config,
-        constraint = faucet_config.treasury_ata == treasury_ata.key() @ FaucetError::InvalidTreasuryAta,
+        constraint = faucet_config.treasury_ata == treasury_ata.key() @ SolcraftError::InvalidTreasuryAta,
     )]
     pub treasury_ata: InterfaceAccount<'info, TokenAccount>,
 
@@ -53,7 +53,7 @@ pub fn claim(ctx: Context<Claim>) -> Result<()> {
     let treasury_balance = ctx.accounts.treasury_ata.amount.clone();
     require!(
         treasury_balance >= claim_amount,
-        FaucetError::InsufficientFunds
+        SolcraftError::InsufficientFunds
     );
 
     let last_claimed_at = ctx.accounts.recipient_data.last_claimed_at;
@@ -62,7 +62,7 @@ pub fn claim(ctx: Context<Claim>) -> Result<()> {
         let current_timestamp = Clock::get()?.unix_timestamp;
         require!(
             current_timestamp - last_claimed_at >= faucet_config.cooldown_seconds as i64,
-            FaucetError::CooldownNotElapsed
+            SolcraftError::CooldownNotElapsed
         );
     }
 
@@ -89,14 +89,14 @@ pub fn claim(ctx: Context<Claim>) -> Result<()> {
         .faucet_config
         .total_claimed_amount
         .checked_add(claim_amount)
-        .ok_or(FaucetError::NumericalOverflow)?;
+        .ok_or(SolcraftError::NumericalOverflow)?;
 
     ctx.accounts.faucet_config.total_claims = ctx
         .accounts
         .faucet_config
         .total_claims
         .checked_add(1)
-        .ok_or(FaucetError::NumericalOverflow)?;
+        .ok_or(SolcraftError::NumericalOverflow)?;
     ctx.accounts.recipient_data.last_claimed_at = Clock::get()?.unix_timestamp;
 
     Ok(())

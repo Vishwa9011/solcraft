@@ -10,21 +10,24 @@ export type SolanaNetwork = {
    websocketEndpoint: string;
 };
 
-export const SOLANA_NETWORKS: SolanaNetwork[] = [
-   {
-      id: 'solana-localnet',
-      label: 'Solana (Localnet)',
-      cluster: 'localnet',
-      endpoint: 'http://127.0.0.1:8899',
-      websocketEndpoint: 'ws://127.0.0.1:8900',
-   },
-   {
-      id: 'solana-devnet',
-      label: 'Solana (Devnet)',
-      cluster: 'devnet',
-      endpoint: 'https://api.devnet.solana.com',
-      websocketEndpoint: 'wss://api.devnet.solana.com',
-   },
-];
+const LOCALNET_NETWORK: SolanaNetwork = {
+   id: 'solana-localnet',
+   label: 'Solana (Localnet)',
+   cluster: 'localnet',
+   endpoint: 'http://127.0.0.1:8899',
+   websocketEndpoint: 'ws://127.0.0.1:8900',
+};
 
-export const DEFAULT_SOLANA_NETWORK = SOLANA_NETWORKS[process.env.NODE_ENV === 'development' ? 0 : 1];
+const DEVNET_NETWORK: SolanaNetwork = {
+   id: 'solana-devnet',
+   label: 'Solana (Devnet)',
+   cluster: 'devnet',
+   endpoint: 'https://api.devnet.solana.com',
+   websocketEndpoint: 'wss://api.devnet.solana.com',
+};
+
+const IS_DEV = process.env.NODE_ENV === 'development';
+
+export const SOLANA_NETWORKS: SolanaNetwork[] = IS_DEV ? [LOCALNET_NETWORK, DEVNET_NETWORK] : [DEVNET_NETWORK];
+
+export const DEFAULT_SOLANA_NETWORK = SOLANA_NETWORKS[0];

@@ -3,7 +3,7 @@ use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{Mint, TokenAccount, TokenInterface};
 
 use crate::constants::{DISCRIMINATOR, FAUCET_CONFIG_SEEDS, MAX_DECIMALS};
-use crate::errors::FaucetError;
+use crate::errors::SolcraftError;
 use crate::states::FaucetConfig;
 
 #[derive(Accounts)]
@@ -38,7 +38,7 @@ pub struct InitializeFaucet<'info> {
 pub fn initialize(ctx: Context<InitializeFaucet>) -> Result<()> {
     let faucet_config = &mut ctx.accounts.faucet_config;
     let decimals = ctx.accounts.mint.decimals;
-    require!(decimals <= MAX_DECIMALS, FaucetError::ExceedsMaxDecimals);
+    require!(decimals <= MAX_DECIMALS, SolcraftError::ExceedsMaxDecimals);
 
     faucet_config.owner = ctx.accounts.owner.key();
     faucet_config.mint = ctx.accounts.mint.key();

@@ -1,5 +1,5 @@
 import { queryClient } from '@/app/providers';
-import { useWalletSigner, client } from '@/features/wallet';
+import { client, useTransactionToast, useWalletSigner } from '@/features/wallet';
 import {
    fetchMaybeFaucetConfig,
    fetchMaybeFaucetRecipientData,
@@ -107,6 +107,7 @@ function parseTokenAmount(input: string, decimals: number) {
 export function useFaucetActions() {
    const { send } = useSendTransaction();
    const signer = useWalletSigner();
+   const { notifySuccess } = useTransactionToast();
 
    type SendArgs = Parameters<typeof send>[0];
    type Instruction = SendArgs['instructions'][number];
@@ -185,7 +186,7 @@ export function useFaucetActions() {
          toast.error(resolveErrorMessage(error, 'Failed to initialize faucet'));
       },
       onSuccess: signature => {
-         toast.success(`Faucet initialized. Tx: ${signature}`);
+         notifySuccess({ title: 'Faucet initialized', signature });
          refreshFaucetConfig();
       },
    });
@@ -229,7 +230,7 @@ export function useFaucetActions() {
          toast.error(resolveErrorMessage(error, 'Failed to deposit tokens'));
       },
       onSuccess: signature => {
-         toast.success(`Deposit sent. Tx: ${signature}`);
+         notifySuccess({ title: 'Deposit confirmed', signature });
          refreshFaucetConfig();
       },
    });
@@ -267,7 +268,7 @@ export function useFaucetActions() {
          toast.error(resolveErrorMessage(error, 'Failed to withdraw tokens'));
       },
       onSuccess: signature => {
-         toast.success(`Withdraw sent. Tx: ${signature}`);
+         notifySuccess({ title: 'Withdraw confirmed', signature });
          refreshFaucetConfig();
       },
    });
@@ -303,7 +304,7 @@ export function useFaucetActions() {
          toast.error(resolveErrorMessage(error, 'Failed to claim tokens'));
       },
       onSuccess: signature => {
-         toast.success(`Tokens claimed. Tx: ${signature}`);
+         notifySuccess({ title: 'Tokens claimed', signature });
          refreshFaucetConfig();
          refreshRecipientData(signer?.address?.toString());
       },

@@ -1,7 +1,7 @@
 use anchor_lang::{prelude::*, system_program};
 
 use crate::constants::*;
-use crate::errors::FactoryError;
+use crate::errors::SolcraftError;
 use crate::states::FactoryConfig;
 
 #[derive(Accounts)]
@@ -9,7 +9,7 @@ pub struct WithdrawFees<'info> {
     #[account(
         seeds = [FACTORY_CONFIG_SEEDS.as_bytes()],
         bump = factory_config.bump,
-        has_one = admin @ FactoryError::Unauthorized,
+        has_one = admin @ SolcraftError::Unauthorized,
     )]
     pub factory_config: Account<'info, FactoryConfig>,
 

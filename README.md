@@ -23,11 +23,13 @@ Solcraft is a production-ready SPL token operations suite that combines a token 
 ## Quick Start (Local)
 
 Prerequisites:
+
 - Node.js 18+
 - npm
 - A Solana wallet (Phantom or Backpack) set to devnet
 
 Steps:
+
 1. Copy the env file and fill in your credentials:
    ```bash
    cp .example.env .env
@@ -46,28 +48,28 @@ Steps:
 
 Solcraft validates env vars at runtime. The token builder requires Cloudinary and Pinata credentials.
 
-| Name | Purpose |
-| --- | --- |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary account name for image uploads |
-| `CLOUDINARY_API_KEY` | Cloudinary API key |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
-| `PINATA_JWT_TOKEN` | Pinata JWT for uploads |
+| Name                             | Purpose                                       |
+| -------------------------------- | --------------------------------------------- |
+| `CLOUDINARY_CLOUD_NAME`          | Cloudinary account name for image uploads     |
+| `CLOUDINARY_API_KEY`             | Cloudinary API key                            |
+| `CLOUDINARY_API_SECRET`          | Cloudinary API secret                         |
+| `PINATA_JWT_TOKEN`               | Pinata JWT for uploads                        |
 | `NEXT_PUBLIC_PINATA_GATEWAY_URL` | Gateway base URL for fetching pinned metadata |
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run dev` | Start the Next.js dev server |
-| `npm run build` | Build the production bundle |
-| `npm run start` | Start the production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format files with Prettier |
-| `npm run format:check` | Check formatting |
-| `npm run anchor-build` | Build the Anchor program |
-| `npm run anchor-test` | Run Anchor tests (skip deploy) |
-| `npm run codama:js` | Regenerate the client from the IDL |
-| `npm run setup` | Build Anchor and regenerate the client |
+| Command                | Description                            |
+| ---------------------- | -------------------------------------- |
+| `npm run dev`          | Start the Next.js dev server           |
+| `npm run build`        | Build the production bundle            |
+| `npm run start`        | Start the production server            |
+| `npm run lint`         | Run ESLint                             |
+| `npm run format`       | Format files with Prettier             |
+| `npm run format:check` | Check formatting                       |
+| `npm run anchor-build` | Build the Anchor program               |
+| `npm run anchor-test`  | Run Anchor tests (skip deploy)         |
+| `npm run codama:js`    | Regenerate the client from the IDL     |
+| `npm run setup`        | Build Anchor and regenerate the client |
 
 ## Project Structure
 
@@ -85,9 +87,9 @@ public/             Static assets
 - The Anchor workspace lives in `anchor/`.
 - Client code is generated in `generated/` using Codama.
 - After changing on-chain programs, run:
-  ```bash
-  npm run setup
-  ```
+   ```bash
+   npm run setup
+   ```
 
 ## Deployment Notes
 

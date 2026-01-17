@@ -13,7 +13,7 @@ import { getProgramDerivedAddress, type TransactionSigner } from '@solana/kit';
 import { useSendTransaction } from '@solana/react-hooks';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/app/providers';
-import { client, useWalletSigner } from '@/features/wallet';
+import { client, useTransactionToast, useWalletSigner } from '@/features/wallet';
 import { queryKeys } from '@/lib';
 
 const FACTORY_SEED = 'factory_config';
@@ -55,6 +55,7 @@ async function getFactoryPDA() {
 export function useFactoryActions() {
    const signer = useWalletSigner();
    const { send } = useSendTransaction();
+   const { notifySuccess } = useTransactionToast();
 
    type SendArgs = Parameters<typeof send>[0];
    type Instruction = SendArgs['instructions'][number];
@@ -96,7 +97,7 @@ export function useFactoryActions() {
          toast.error(resolveErrorMessage(error, 'Failed to initialize factory'));
       },
       onSuccess: signature => {
-         toast.success(`Factory initialized. Tx: ${signature}`);
+         notifySuccess({ title: 'Factory initialized', signature });
          refreshFactoryConfig();
       },
    });
@@ -112,7 +113,7 @@ export function useFactoryActions() {
          toast.error(resolveErrorMessage(error, 'Failed to pause factory'));
       },
       onSuccess: signature => {
-         toast.success(`Factory paused. Tx: ${signature}`);
+         notifySuccess({ title: 'Factory paused', signature });
          refreshFactoryConfig();
       },
    });
@@ -128,7 +129,7 @@ export function useFactoryActions() {
          toast.error(resolveErrorMessage(error, 'Failed to unpause factory'));
       },
       onSuccess: signature => {
-         toast.success(`Factory unpaused. Tx: ${signature}`);
+         notifySuccess({ title: 'Factory unpaused', signature });
          refreshFactoryConfig();
       },
    });
@@ -145,7 +146,7 @@ export function useFactoryActions() {
          toast.error(resolveErrorMessage(error, 'Failed to update creation fee'));
       },
       onSuccess: signature => {
-         toast.success(`Creation fee updated. Tx: ${signature}`);
+         notifySuccess({ title: 'Creation fee updated', signature });
          refreshFactoryConfig();
       },
    });
@@ -161,7 +162,7 @@ export function useFactoryActions() {
          toast.error(resolveErrorMessage(error, 'Failed to withdraw fees'));
       },
       onSuccess: signature => {
-         toast.success(`Fees withdrawn. Tx: ${signature}`);
+         notifySuccess({ title: 'Fees withdrawn', signature });
          refreshFactoryConfig();
       },
    });

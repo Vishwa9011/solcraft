@@ -2,7 +2,7 @@
 
 import { toast } from 'sonner';
 
-import { client, useWalletSigner } from '@/features/wallet';
+import { client, useTransactionToast, useWalletSigner } from '@/features/wallet';
 import { address, type TransactionSigner } from '@solana/kit';
 
 import { useSendTransaction } from '@solana/react-hooks';
@@ -16,6 +16,7 @@ import {
    type TransferAuthorityParams,
 } from '@/features/token/lib';
 import { fetchMint } from '@solana-program/token';
+import { handleProgramError, resolveProgramError } from '@/lib/errors';
 
 const WALLET_REQUIRED_MESSAGE = 'Connect a wallet to initialize the factory.';
 
@@ -30,6 +31,7 @@ function requireSigner(signer: TransactionSigner | null) {
 export function useTokenActions() {
    const signer = useWalletSigner();
    const { send } = useSendTransaction();
+   const { notifySuccess } = useTransactionToast();
 
    const createToken = useMutation({
       mutationFn: async (params: CreateTokenParams) => {
@@ -43,13 +45,11 @@ export function useTokenActions() {
          });
       },
 
-      onSuccess: data => {
-         console.log('Token created successfully. Transaction signature:', data);
+      onSuccess: signature => {
+         notifySuccess({ title: 'Token created', signature });
       },
 
-      onError: error => {
-         toast.error(`Error creating token`);
-      },
+      onError: e => handleProgramError(e, 'Error creating token'),
    });
 
    const mintTokens = useMutation({
@@ -68,9 +68,8 @@ export function useTokenActions() {
             commitment: 'confirmed',
          });
       },
-      onSuccess: data => {
-         console.log('data: ', data);
-         toast.success(`Tokens minted successfully. Tx: ${data}`);
+      onSuccess: signature => {
+         notifySuccess({ title: 'Tokens minted', signature });
       },
       onError: error => {
          toast.error(`Error minting tokens: ${error.message}`);
@@ -88,8 +87,8 @@ export function useTokenActions() {
             commitment: 'confirmed',
          });
       },
-      onSuccess: data => {
-         toast.success(`Authority updated successfully. Tx: ${data}`);
+      onSuccess: signature => {
+         notifySuccess({ title: 'Authority updated', signature });
       },
       onError: error => {
          toast.error(`Error updating authority: ${error.message}`);

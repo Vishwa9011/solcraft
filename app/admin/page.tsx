@@ -38,13 +38,7 @@ function truncateAddress(address?: string | null) {
 }
 
 export default function Admin() {
-   const {
-      isAdmin,
-      isConfigured,
-      isLoading,
-      adminAddress: adminAddressRaw,
-      connectedAddress,
-   } = useFactoryAdmin();
+   const { isAdmin, isConfigured, isLoading, adminAddress: adminAddressRaw, connectedAddress } = useFactoryAdmin();
    const { initialize, factoryConfig, pause, unpause, updateCreationFee, withdrawFees } = useFactoryActions();
 
    const factoryData = factoryConfig.data?.exists ? factoryConfig.data.data : null;
@@ -111,7 +105,7 @@ export default function Admin() {
                   <CardDescription>Connect the factory admin wallet to continue.</CardDescription>
                </CardHeader>
                <CardContent className="space-y-4 text-sm">
-                  <div className="border-border/60 divide-border/60 overflow-hidden rounded-xl border divide-y">
+                  <div className="border-border/60 divide-border/60 divide-y overflow-hidden rounded-xl border">
                      <div className="flex items-center justify-between px-4 py-3">
                         <span className="text-muted-foreground">Factory status</span>
                         <span className="text-foreground font-semibold">
@@ -227,7 +221,7 @@ export default function Admin() {
                   </div>
                </CardHeader>
                <CardContent className="space-y-4 text-sm">
-                  <div className="border-border/60 divide-border/60 overflow-hidden rounded-xl border divide-y">
+                  <div className="border-border/60 divide-border/60 divide-y overflow-hidden rounded-xl border">
                      <div className="flex items-center justify-between px-4 py-3">
                         <span className="text-muted-foreground">Creation fee</span>
                         <span className="text-foreground font-semibold">

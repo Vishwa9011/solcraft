@@ -5,11 +5,13 @@ This workspace contains the on-chain Solcraft program that powers the factory, t
 ## Program Overview
 
 Core instructions:
+
 - Factory: initialize, update creation fee, pause/unpause, withdraw fees.
 - Token: create token, mint tokens, transfer mint authority.
 - Faucet: initialize, deposit, withdraw, claim.
 
 Accounts:
+
 - `FactoryConfig`: admin, fee config, treasury, pause state.
 - `FaucetConfig`: owner, mint, treasury ATA, claim limits, cooldowns.
 - `FaucetRecipientData`: last-claim timestamp per wallet.
@@ -21,6 +23,7 @@ Accounts:
 - Anchor CLI
 
 Recommended:
+
 - `solana config set --url devnet` or `localnet` for local testing.
 - A funded keypair at `~/.config/solana/id.json` (default in `Anchor.toml`).
 

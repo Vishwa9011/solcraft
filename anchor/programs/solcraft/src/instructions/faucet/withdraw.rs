@@ -3,7 +3,7 @@ use anchor_spl::token::{transfer, Transfer};
 use anchor_spl::token_interface::{TokenAccount, TokenInterface};
 
 use crate::constants::FAUCET_CONFIG_SEEDS;
-use crate::errors::FaucetError;
+use crate::errors::SolcraftError;
 use crate::states::FaucetConfig;
 
 #[derive(Accounts)]
@@ -13,7 +13,7 @@ pub struct Withdraw<'info> {
       mut,
       seeds = [FAUCET_CONFIG_SEEDS.as_bytes()],
       bump = faucet_config.bump,
-        constraint = owner.key() == faucet_config.owner @ FaucetError::Unauthorized,
+        constraint = owner.key() == faucet_config.owner @ SolcraftError::Unauthorized,
    )]
     pub faucet_config: Account<'info, FaucetConfig>,
 
@@ -21,7 +21,7 @@ pub struct Withdraw<'info> {
         mut,
         associated_token::mint = faucet_config.mint,
         associated_token::authority = faucet_config,
-        constraint = faucet_config.treasury_ata == treasury_ata.key() @ FaucetError::InvalidTreasuryAta,
+        constraint = faucet_config.treasury_ata == treasury_ata.key() @ SolcraftError::InvalidTreasuryAta,
     )]
     pub treasury_ata: InterfaceAccount<'info, TokenAccount>,
 
@@ -39,7 +39,7 @@ pub struct Withdraw<'info> {
 
 pub fn withdraw(ctx: Context<Withdraw>, amount: u64) -> Result<()> {
     let treasury_balance = ctx.accounts.treasury_ata.amount.clone();
-    require!(treasury_balance >= amount, FaucetError::InsufficientFunds);
+    require!(treasury_balance >= amount, SolcraftError::InsufficientFunds);
 
     let seeds = &[
         FAUCET_CONFIG_SEEDS.as_bytes(),

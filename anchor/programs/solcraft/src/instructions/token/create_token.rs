@@ -12,7 +12,7 @@ use anchor_spl::{
 };
 
 use crate::constants::{FACTORY_CONFIG_SEEDS, FACTORY_TREASURY, MAX_DECIMALS};
-use crate::errors::{FactoryError, TokenError};
+use crate::errors::SolcraftError;
 use crate::states::FactoryConfig;
 
 #[derive(Accounts)]
@@ -21,7 +21,7 @@ pub struct CreateToken<'info> {
     #[account(
         seeds = [FACTORY_CONFIG_SEEDS.as_bytes()],
         bump = factory_config.bump,
-        constraint = !factory_config.paused @ FactoryError::FactoryPaused,
+        constraint = !factory_config.paused @ SolcraftError::FactoryPaused,
     )]
     pub factory_config: Account<'info, FactoryConfig>,
 
@@ -77,16 +77,16 @@ pub fn create_token(
     decimals: u8,
     supply: u64,
 ) -> Result<()> {
-    require!(name.len() <= 32, TokenError::InvalidInputStringLength);
-    require!(decimals <= MAX_DECIMALS, TokenError::ExceedsMaxDecimals);
-    require!(symbol.len() <= 10, TokenError::InvalidInputStringLength);
-    require!(uri.len() <= 200, TokenError::InvalidInputStringLength);
+    require!(name.len() <= 32, SolcraftError::InvalidInputStringLength);
+    require!(decimals <= MAX_DECIMALS, SolcraftError::ExceedsMaxDecimals);
+    require!(symbol.len() <= 10, SolcraftError::InvalidInputStringLength);
+    require!(uri.len() <= 200, SolcraftError::InvalidInputStringLength);
 
     // check the balance of payer to ensure they can pay creation fee
     let payer_lamports = ctx.accounts.payer.to_account_info().lamports();
     require!(
         payer_lamports >= ctx.accounts.factory_config.creation_fee_lamports,
-        FactoryError::InsufficientCreationFee
+        SolcraftError::InsufficientCreationFee
     );
 
     // Mint to payer's associated token account

@@ -3,7 +3,7 @@ use anchor_spl::token::{transfer, Transfer};
 use anchor_spl::token_interface::{TokenAccount, TokenInterface};
 
 use crate::constants::FAUCET_CONFIG_SEEDS;
-use crate::errors::FaucetError;
+use crate::errors::SolcraftError;
 use crate::states::FaucetConfig;
 
 #[derive(Accounts)]
@@ -20,7 +20,7 @@ pub struct Deposit<'info> {
         mut,
         associated_token::mint = faucet_config.mint,
         associated_token::authority = faucet_config,
-        constraint = faucet_config.treasury_ata == treasury_ata.key() @ FaucetError::InvalidTreasuryAta,
+        constraint = faucet_config.treasury_ata == treasury_ata.key() @ SolcraftError::InvalidTreasuryAta,
     )]
     pub treasury_ata: InterfaceAccount<'info, TokenAccount>,
 
@@ -38,7 +38,7 @@ pub struct Deposit<'info> {
 
 pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     let depositor_balance = ctx.accounts.depositor_ata.amount.clone();
-    require!(depositor_balance >= amount, FaucetError::InsufficientFunds);
+    require!(depositor_balance >= amount, SolcraftError::InsufficientFunds);
 
     transfer(
         CpiContext::new(

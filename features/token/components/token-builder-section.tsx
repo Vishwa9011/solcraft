@@ -11,13 +11,7 @@ type TokenBuilderSectionProps = {
    children: ReactNode;
 };
 
-export function TokenBuilderSection({
-   title,
-   description,
-   actions,
-   className,
-   children,
-}: TokenBuilderSectionProps) {
+export function TokenBuilderSection({ title, description, actions, className, children }: TokenBuilderSectionProps) {
    return (
       <section className={cn('space-y-3 sm:space-y-4', className)}>
          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">

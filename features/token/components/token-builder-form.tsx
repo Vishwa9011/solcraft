@@ -9,7 +9,11 @@ import { Form } from '@/components/ui/form';
 import { useMutation } from '@tanstack/react-query';
 import { TokenBuilderBasics } from '@/features/token/components/token-builder-basics';
 import { TokenBuilderMetadata } from '@/features/token/components/token-builder-metadata';
-import { TokenBuilderPipeline, type StepKey, type StepStatus } from '@/features/token/components/token-builder-pipeline';
+import {
+   TokenBuilderPipeline,
+   type StepKey,
+   type StepStatus,
+} from '@/features/token/components/token-builder-pipeline';
 import { TokenBuilderSection } from '@/features/token/components/token-builder-section';
 import { TokenBuilderSocialLinks } from '@/features/token/components/token-builder-social-links';
 import { tokenFormDefaults, tokenFormSchema, type TokenFormValues } from '@/features/token/lib/token-builder-schema';
