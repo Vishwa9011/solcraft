@@ -51,8 +51,6 @@ Solcraft validates env vars at runtime. The token builder requires Cloudinary an
 | `CLOUDINARY_CLOUD_NAME` | Cloudinary account name for image uploads |
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
-| `PINATA_API_KEY` | Pinata API key for metadata pinning |
-| `PINATA_API_SECRET` | Pinata API secret |
 | `PINATA_JWT_TOKEN` | Pinata JWT for uploads |
 | `NEXT_PUBLIC_PINATA_GATEWAY_URL` | Gateway base URL for fetching pinned metadata |
 

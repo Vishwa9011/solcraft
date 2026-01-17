@@ -6,8 +6,6 @@ export const env = createEnv({
       NEXT_PUBLIC_PINATA_GATEWAY_URL: z.string().min(1),
    },
    server: {
-      PINATA_API_KEY: z.string().min(1),
-      PINATA_API_SECRET: z.string().min(1),
       PINATA_JWT_TOKEN: z.string().min(1),
       CLOUDINARY_CLOUD_NAME: z.string().min(1),
       CLOUDINARY_API_KEY: z.string().min(1),
@@ -17,8 +15,6 @@ export const env = createEnv({
       CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
       CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
       CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-      PINATA_API_KEY: process.env.PINATA_API_KEY,
-      PINATA_API_SECRET: process.env.PINATA_API_SECRET,
       PINATA_JWT_TOKEN: process.env.PINATA_JWT_TOKEN,
       NEXT_PUBLIC_PINATA_GATEWAY_URL: process.env.NEXT_PUBLIC_PINATA_GATEWAY_URL,
    },
