@@ -81,7 +81,13 @@ export function useFactoryActions() {
       queryKey: queryKeys.factoryConfig.all,
       queryFn: async () => {
          const pda = await getFactoryPDA();
-         return await fetchMaybeFactoryConfig(client.runtime.rpc, pda);
+         const res = await fetchMaybeFactoryConfig(client.runtime.rpc, pda);
+
+         return {
+            exists: res.exists,
+            data: res.exists ? res.data : null,
+            address: res.address,
+         };
       },
    });
 

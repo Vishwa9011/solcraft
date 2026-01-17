@@ -20,13 +20,13 @@ export function useCopyClipboard(options: UseCopyClipboardOptions = {}): UseCopy
    const { resetMs = DEFAULT_RESET_MS } = options;
    const [copied, setCopied] = useState(false);
    const [error, setError] = useState<string | null>(null);
-   const timeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
    const reset = useCallback(() => {
       setCopied(false);
       setError(null);
       if (timeoutRef.current) {
-         window.clearTimeout(timeoutRef.current);
+         clearTimeout(timeoutRef.current);
          timeoutRef.current = null;
       }
    }, []);
@@ -34,7 +34,7 @@ export function useCopyClipboard(options: UseCopyClipboardOptions = {}): UseCopy
    useEffect(() => {
       return () => {
          if (timeoutRef.current) {
-            window.clearTimeout(timeoutRef.current);
+            clearTimeout(timeoutRef.current);
          }
       };
    }, []);
@@ -58,9 +58,9 @@ export function useCopyClipboard(options: UseCopyClipboardOptions = {}): UseCopy
 
             if (resetMs > 0) {
                if (timeoutRef.current) {
-                  window.clearTimeout(timeoutRef.current);
+                  clearTimeout(timeoutRef.current);
                }
-               timeoutRef.current = window.setTimeout(() => {
+               timeoutRef.current = setTimeout(() => {
                   setCopied(false);
                }, resetMs);
             }

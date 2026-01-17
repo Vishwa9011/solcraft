@@ -4,7 +4,6 @@ import {
    getMintTokensInstructionAsync,
    getTransferMintAuthorityInstruction,
 } from '@/generated/solcraft';
-import { TOKEN_PROGRAM_ADDRESS, findAssociatedTokenPda } from '@solana-program/token';
 import {
    generateKeyPairSigner,
    getAddressEncoder,
@@ -44,19 +43,11 @@ export async function getTokenMetadataAddress(mint: Address<string>) {
 
 export async function buildCreateTokenInstruction(signer: TransactionSigner, params: CreateTokenParams) {
    const mint = await generateKeyPairSigner();
-
-   const [payerAta] = await findAssociatedTokenPda({
-      owner: signer.address,
-      mint: mint.address,
-      tokenProgram: TOKEN_PROGRAM_ADDRESS,
-   });
-
    const metadata = await getTokenMetadataAddress(mint.address);
 
    return await getCreateTokenInstructionAsync({
       mint,
       payer: signer,
-      payerAta,
       metadata,
       ...params,
    });

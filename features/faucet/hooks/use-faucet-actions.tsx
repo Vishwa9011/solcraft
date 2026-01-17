@@ -20,6 +20,7 @@ import {
 } from '@solana-program/token';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { createTokenAmount } from '@solana/client';
 
 export type InitializeFaucetParams = {
    mint: string;
@@ -83,25 +84,12 @@ async function getRecipientDataPda(recipient: Address) {
 }
 
 function parseTokenAmount(input: string, decimals: number) {
-   const normalized = input.trim();
-   if (!normalized) {
-      throw new Error('Enter an amount to continue.');
+   if (isNaN(Number(input))) {
+      return 0n;
    }
 
-   if (!/^\d+(\.\d+)?$/.test(normalized)) {
-      throw new Error('Enter a valid numeric amount.');
-   }
-
-   const [wholePart, fractionalPart = ''] = normalized.split('.');
-
-   if (fractionalPart.length > decimals) {
-      throw new Error(`Amount exceeds ${decimals} decimal places.`);
-   }
-
-   const paddedFraction = fractionalPart.padEnd(decimals, '0');
-   const combined = `${wholePart}${paddedFraction}`.replace(/^0+(?=\d)/, '');
-
-   return BigInt(combined || '0');
+   const tokenMath = createTokenAmount(decimals);
+   return tokenMath.fromDecimal(input);
 }
 
 export function useFaucetActions() {
@@ -141,7 +129,13 @@ export function useFaucetActions() {
       queryKey: queryKeys.faucetConfig.all,
       queryFn: async () => {
          const pda = await getFaucetConfigPda();
-         return await fetchMaybeFaucetConfig(client.runtime.rpc, pda);
+         const res = await fetchMaybeFaucetConfig(client.runtime.rpc, pda);
+
+         return {
+            exists: res.exists,
+            data: res.exists ? res.data : null,
+            address: res.address,
+         };
       },
    });
 
@@ -150,26 +144,34 @@ export function useFaucetActions() {
       enabled: Boolean(signer),
       queryFn: async () => {
          const pda = await getRecipientDataPda(requireSigner(signer).address);
-         return await fetchMaybeFaucetRecipientData(client.runtime.rpc, pda);
+         const res = await fetchMaybeFaucetRecipientData(client.runtime.rpc, pda);
+
+         return {
+            exists: res.exists,
+            data: res.exists ? res.data : null,
+            address: res.address,
+         };
       },
    });
 
    const mintInfo = useQuery({
-      queryKey: ['faucet-mint', faucetConfig.data?.exists ? faucetConfig.data.data.mint.toString() : null],
+      queryKey: queryKeys.faucetMint.byAddress(faucetConfig.data?.data?.mint.toString()),
       enabled: Boolean(faucetConfig.data?.exists),
       queryFn: async () => {
-         if (!faucetConfig.data?.exists) return null;
-         const mintAddress = faucetConfig.data.data.mint;
+         const mintAddress = faucetConfig.data?.data?.mint;
+         if (!mintAddress) return null;
          return await fetchMint(client.runtime.rpc, mintAddress);
       },
    });
 
    const getConfigOrThrow = () => {
-      if (!faucetConfig.data?.exists) {
+      const config = faucetConfig.data?.data;
+
+      if (!faucetConfig.data?.exists || !config) {
          throw new Error('Faucet is not initialized.');
       }
 
-      return faucetConfig.data.data;
+      return config;
    };
 
    const initialize = useMutation({

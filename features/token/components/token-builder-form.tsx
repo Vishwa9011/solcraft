@@ -18,6 +18,7 @@ import { TokenBuilderSection } from '@/features/token/components/token-builder-s
 import { TokenBuilderSocialLinks } from '@/features/token/components/token-builder-social-links';
 import { tokenFormDefaults, tokenFormSchema, type TokenFormValues } from '@/features/token/lib/token-builder-schema';
 import { useTokenActions } from '../hooks';
+import { createTokenAmount } from '@solana/client';
 
 const cardShell = 'border-border/60 bg-card/80 shadow-sm rounded-2xl';
 
@@ -143,7 +144,7 @@ export function TokenBuilderForm() {
                name: values.name,
                symbol: values.symbol,
                decimals: Number(values.decimals),
-               supply: Number(values.supply),
+               supply: createTokenAmount(Number(values.decimals)).fromDecimal(values.supply),
                uri: metadataUrl,
             });
             updateStep('token', 'success');

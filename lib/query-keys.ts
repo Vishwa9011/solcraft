@@ -5,6 +5,9 @@ export const queryKeys = {
    faucetConfig: {
       all: ['faucet-config-pda'] as const,
    },
+   faucetMint: {
+      byAddress: (address?: string | null) => ['faucet-mint', address ?? 'unknown'] as const,
+   },
    faucetRecipient: {
       byAddress: (address?: string | null) => ['faucet-recipient', address ?? 'unknown'] as const,
    },
