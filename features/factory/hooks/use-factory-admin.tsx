@@ -17,10 +17,10 @@ export function useFactoryAdmin(): FactoryAdminState {
    const { factoryConfig } = useFactoryActions();
 
    return useMemo(() => {
-      const isConfigured = Boolean(factoryConfig.data?.exists);
-      const adminAddress = isConfigured ? factoryConfig.data?.data.admin?.toString() ?? null : null;
-      const connectedAddress =
-         wallet.status === 'connected' ? wallet.session.account.address.toString() : null;
+      const factoryData = factoryConfig.data?.exists ? factoryConfig.data.data : null;
+      const isConfigured = Boolean(factoryData);
+      const adminAddress = factoryData?.admin?.toString() ?? null;
+      const connectedAddress = wallet.status === 'connected' ? wallet.session.account.address.toString() : null;
       const isAdmin = Boolean(adminAddress && connectedAddress && adminAddress === connectedAddress);
 
       return {
