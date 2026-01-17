@@ -27,4 +27,4 @@ export const SOLANA_NETWORKS: SolanaNetwork[] = [
    },
 ];
 
-export const DEFAULT_SOLANA_NETWORK = SOLANA_NETWORKS[0];
+export const DEFAULT_SOLANA_NETWORK = SOLANA_NETWORKS[process.env.NODE_ENV === 'development' ? 0 : 1];

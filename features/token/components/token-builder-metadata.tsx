@@ -105,7 +105,7 @@ export function TokenBuilderMetadata() {
                render={field => {
                   const file = field.value as File | null;
                   return (
-                     <div className="border-border/40 bg-background/20 rounded-2xl border border-dashed p-4">
+                     <div className="border-border/40 bg-background/20 rounded-2xl border border-dashed p-3 sm:p-4">
                         <Input
                            ref={node => {
                               fileInputRef.current = node;
@@ -118,25 +118,32 @@ export function TokenBuilderMetadata() {
                            onBlur={field.onBlur}
                            onChange={event => handleFileChange(event, field.onChange)}
                         />
-                        <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                           <div className="border-border/40 flex h-14 w-14 items-center justify-center rounded-2xl border">
-                              <UploadCloud className="text-muted-foreground size-5" />
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                           <div className="flex items-center gap-3">
+                              <div className="border-border/40 flex h-12 w-12 items-center justify-center rounded-xl border sm:h-14 sm:w-14">
+                                 <UploadCloud className="text-muted-foreground size-5" />
+                              </div>
+                              <div className="min-w-0 space-y-1">
+                                 <p className="text-foreground text-sm font-semibold">
+                                    {file ? 'Logo ready' : 'Upload token logo'}
+                                 </p>
+                                 <p className="text-muted-foreground text-xs">
+                                    {file ? (
+                                       <span className="block truncate">
+                                          {file.name} · {formatBytes(file.size)}
+                                       </span>
+                                    ) : (
+                                       'SVG, PNG, or WEBP · max 2MB · square preferred.'
+                                    )}
+                                 </p>
+                              </div>
                            </div>
-                           <div className="flex-1 space-y-1">
-                              <p className="text-foreground text-sm font-semibold">
-                                 {file ? 'Logo ready' : 'Upload token logo'}
-                              </p>
-                              <p className="text-muted-foreground text-xs">
-                                 {file
-                                    ? `${file.name} · ${formatBytes(file.size)}`
-                                    : 'SVG, PNG, or WEBP · max 2MB · square preferred.'}
-                              </p>
-                           </div>
-                           <div className="flex flex-wrap gap-2">
+                           <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row">
                               <Button
                                  type="button"
                                  variant="secondary"
                                  size="sm"
+                                 className="w-full sm:w-auto"
                                  onClick={() => fileInputRef.current?.click()}
                               >
                                  {file ? 'Replace file' : 'Select file'}
@@ -146,6 +153,7 @@ export function TokenBuilderMetadata() {
                                     type="button"
                                     variant="ghost"
                                     size="sm"
+                                    className="w-full sm:w-auto"
                                     onClick={() => {
                                        field.onChange(null);
                                        if (fileInputRef.current) {

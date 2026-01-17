@@ -67,12 +67,14 @@ export function TokenBuilderPipeline({ stepStatus, imageMode, isPending, errorMe
       <div className="space-y-4">
          <div className="flex items-center justify-between gap-3">
             <div>
-               <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">Creation pipeline</p>
-               <p className="text-muted-foreground text-sm">Your token is built step by step.</p>
+               <p className="text-muted-foreground text-[10px] tracking-[0.2em] uppercase sm:text-xs">
+                  Creation pipeline
+               </p>
+               <p className="text-muted-foreground hidden text-sm sm:block">Your token is built step by step.</p>
             </div>
             <Badge variant={pipelineState.variant}>{pipelineState.label}</Badge>
          </div>
-         <div className="grid gap-3 md:grid-cols-3">
+         <div className="grid gap-2 sm:gap-3 md:grid-cols-3">
             {steps.map(step => {
                const status = stepStatus[step.key];
                const Icon =

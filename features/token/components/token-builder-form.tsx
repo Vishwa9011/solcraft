@@ -165,13 +165,15 @@ export function TokenBuilderForm() {
             <Card className={`${cardShell} relative overflow-hidden`}>
                <CardHeader className="space-y-1">
                   <div className="flex items-center justify-between">
-                     <div>
-                        <CardTitle>Token Builder</CardTitle>
-                        <CardDescription>Create an SPL token with metadata and supply controls.</CardDescription>
+                     <div className="space-y-1">
+                        <CardTitle className="text-xl sm:text-2xl">Token Builder</CardTitle>
+                        <CardDescription className="hidden sm:block">
+                           Create an SPL token with metadata and supply controls.
+                        </CardDescription>
                      </div>
                   </div>
                </CardHeader>
-               <CardContent className="space-y-10">
+               <CardContent className="space-y-6 sm:space-y-10">
                   <TokenBuilderSection title="Basics" description="Name, symbol, decimals, and supply.">
                      <TokenBuilderBasics />
                   </TokenBuilderSection>

@@ -86,7 +86,7 @@ export function TokenBuilderSidecards() {
    const hasMintAuthorityNew = Boolean(mintAuthorityNew.trim());
 
    return (
-      <div className="space-y-8">
+      <div className="space-y-6 sm:space-y-8">
          <Card className={cardShell}>
             <CardHeader>
                <CardTitle>Mint Desk</CardTitle>
