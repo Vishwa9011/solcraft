@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useBalance } from '@solana/react-hooks';
 import { Separator } from '@/components/ui/separator';
 import { useFactoryActions } from '@/features/factory';
+import { useFactoryAdmin } from '@/features/factory';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FaucetAdminPanel } from '@/features/faucet/faucet-admin-panel';
@@ -37,26 +38,30 @@ function truncateAddress(address?: string | null) {
 }
 
 export default function Admin() {
+   const {
+      isAdmin,
+      isConfigured,
+      isLoading,
+      adminAddress: adminAddressRaw,
+      connectedAddress,
+   } = useFactoryAdmin();
    const { initialize, factoryConfig, pause, unpause, updateCreationFee, withdrawFees } = useFactoryActions();
 
-   const { lamports: treasuryLamports } = useBalance(
-      factoryConfig.data?.exists ? factoryConfig.data.data.treasuryAccount : undefined
-   );
-   console.log('treasuryLamports: ', treasuryLamports);
+   const factoryData = factoryConfig.data?.exists ? factoryConfig.data.data : null;
+   const { lamports: treasuryLamports } = useBalance(factoryData?.treasuryAccount);
    const [creationFeeInput, setCreationFeeInput] = useState('');
    const lastSyncedFee = useRef<string | null>(null);
 
-   const configData = factoryConfig.data?.exists ? factoryConfig.data.data : null;
-   const isInitialized = Boolean(factoryConfig.data?.exists);
-   const isPaused = configData?.paused ?? false;
+   const isInitialized = Boolean(factoryData);
+   const isPaused = factoryData?.paused ?? false;
 
    const creationFeeSol = useMemo(() => {
-      if (!configData) {
+      if (!factoryData) {
          return null;
       }
 
-      return Number(configData.creationFeeLamports) / LAMPORTS_PER_SOL;
-   }, [configData]);
+      return Number(factoryData.creationFeeLamports) / LAMPORTS_PER_SOL;
+   }, [factoryData]);
 
    useEffect(() => {
       if (creationFeeSol === null) {
@@ -79,8 +84,57 @@ export default function Admin() {
    const parsedCreationFee = Number.parseFloat(creationFeeInput);
    const isCreationFeeValid = Number.isFinite(parsedCreationFee) && parsedCreationFee >= 0;
    const statusLabel = !isInitialized ? 'Uninitialized' : isPaused ? 'Paused' : 'Active';
-   const treasuryAddress = truncateAddress(configData?.treasuryAccount?.toString());
-   const adminAddress = truncateAddress(configData?.admin?.toString());
+   const statusBadgeVariant = !isInitialized ? 'outline' : isPaused ? 'destructive' : 'secondary';
+   const treasuryAddress = truncateAddress(factoryData?.treasuryAccount?.toString());
+   const adminAddress = truncateAddress(factoryData?.admin?.toString());
+   const adminAddressShort = truncateAddress(adminAddressRaw);
+
+   if (isLoading) {
+      return (
+         <div className="space-y-6">
+            <Card className={cardShell}>
+               <CardHeader>
+                  <CardTitle>Admin console</CardTitle>
+                  <CardDescription>Checking admin permissions...</CardDescription>
+               </CardHeader>
+            </Card>
+         </div>
+      );
+   }
+
+   if (!isAdmin) {
+      return (
+         <div className="space-y-6">
+            <Card className={cardShell}>
+               <CardHeader>
+                  <CardTitle>Admin access required</CardTitle>
+                  <CardDescription>Connect the factory admin wallet to continue.</CardDescription>
+               </CardHeader>
+               <CardContent className="space-y-4 text-sm">
+                  <div className="border-border/60 divide-border/60 overflow-hidden rounded-xl border divide-y">
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Factory status</span>
+                        <span className="text-foreground font-semibold">
+                           {isConfigured ? 'Initialized' : 'Not initialized'}
+                        </span>
+                     </div>
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Factory admin</span>
+                        <span className="text-foreground font-semibold">{adminAddressShort}</span>
+                     </div>
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Connected wallet</span>
+                        <span className="text-foreground font-semibold">{truncateAddress(connectedAddress)}</span>
+                     </div>
+                  </div>
+                  <p className="text-muted-foreground text-xs">
+                     The admin console unlocks once you connect the configured factory admin wallet.
+                  </p>
+               </CardContent>
+            </Card>
+         </div>
+      );
+   }
 
    return (
       <div className="space-y-8">
@@ -95,8 +149,8 @@ export default function Admin() {
                      <Badge variant="secondary">Admin only</Badge>
                   </div>
                </CardHeader>
-               <CardContent className="space-y-4">
-                  <div className="grid gap-2 sm:grid-cols-2">
+               <CardContent className="space-y-6">
+                  <div className="grid gap-3 sm:grid-cols-2">
                      <Button
                         type="button"
                         variant="secondary"
@@ -131,20 +185,22 @@ export default function Admin() {
                      </Button>
                   </div>
                   <Separator />
-                  <div className="space-y-2">
-                     <label className={labelClass}>Creation fee (SOL)</label>
-                     <Input
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        placeholder="0.1"
-                        value={creationFeeInput}
-                        onChange={event => setCreationFeeInput(event.target.value)}
-                        disabled={!isInitialized || updateCreationFee.isPending}
-                     />
+                  <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+                     <div className="space-y-2">
+                        <label className={labelClass}>Creation fee (SOL)</label>
+                        <Input
+                           type="number"
+                           min={0}
+                           step="0.01"
+                           placeholder="0.1"
+                           value={creationFeeInput}
+                           onChange={event => setCreationFeeInput(event.target.value)}
+                           disabled={!isInitialized || updateCreationFee.isPending}
+                        />
+                     </div>
                      <Button
                         type="button"
-                        className="w-full"
+                        className="w-full sm:w-auto"
                         onClick={() => {
                            if (!isCreationFeeValid) {
                               return;
@@ -162,33 +218,35 @@ export default function Admin() {
 
             <Card className={cardShell}>
                <CardHeader>
-                  <CardTitle>Factory status</CardTitle>
-                  <CardDescription>Latest on-chain configuration.</CardDescription>
+                  <div className="flex items-center justify-between gap-3">
+                     <div>
+                        <CardTitle>Factory status</CardTitle>
+                        <CardDescription>Latest on-chain configuration.</CardDescription>
+                     </div>
+                     <Badge variant={statusBadgeVariant}>{statusLabel}</Badge>
+                  </div>
                </CardHeader>
-               <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                     <span className="text-muted-foreground">Status</span>
-                     <span className="text-foreground font-semibold">{statusLabel}</span>
+               <CardContent className="space-y-4 text-sm">
+                  <div className="border-border/60 divide-border/60 overflow-hidden rounded-xl border divide-y">
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Creation fee</span>
+                        <span className="text-foreground font-semibold">
+                           {formatLamports(factoryData?.creationFeeLamports)}
+                        </span>
+                     </div>
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Treasury</span>
+                        <span className="text-foreground font-semibold">{treasuryAddress}</span>
+                     </div>
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Treasury Balance</span>
+                        <span className="text-foreground font-semibold">{formatLamports(treasuryLamports || 0n)}</span>
+                     </div>
+                     <div className="flex items-center justify-between px-4 py-3">
+                        <span className="text-muted-foreground">Admin</span>
+                        <span className="text-foreground font-semibold">{adminAddress}</span>
+                     </div>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                     <span className="text-muted-foreground">Creation fee</span>
-                     <span className="text-foreground font-semibold">
-                        {formatLamports(configData?.creationFeeLamports)}
-                     </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                     <span className="text-muted-foreground">Treasury</span>
-                     <span className="text-foreground font-semibold">{treasuryAddress}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                     <span className="text-muted-foreground">Treasury Balance</span>
-                     <span className="text-foreground font-semibold">{formatLamports(treasuryLamports || 0n)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                     <span className="text-muted-foreground">Admin</span>
-                     <span className="text-foreground font-semibold">{adminAddress}</span>
-                  </div>
-                  <Separator />
                   <p className="text-muted-foreground text-xs">
                      Connect an admin wallet to update the factory configuration.
                   </p>

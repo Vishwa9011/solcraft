@@ -17,7 +17,19 @@ import {
    SidebarMenuItem,
    SidebarSeparator,
 } from '@/components/ui/sidebar';
-import { Coins, Droplet, LayoutGrid, Plus, Settings2, ShieldCheck, Sparkles, Timer, TrendingUp } from 'lucide-react';
+import { useFactoryAdmin } from '@/features/factory';
+import {
+   Coins,
+   Droplet,
+   ExternalLink,
+   LayoutGrid,
+   Plus,
+   Settings2,
+   ShieldCheck,
+   Sparkles,
+   Timer,
+   TrendingUp,
+} from 'lucide-react';
 
 type AppSidebarProps = {
    pathname: string;
@@ -38,14 +50,15 @@ const coreNav: NavItem[] = [
 ];
 
 const suiteNav: NavItem[] = [
-   { label: 'Token Vesting', icon: Timer, badge: 'Soon', disabled: true },
-   { label: 'Solcraft Vault', icon: ShieldCheck, badge: 'Soon', disabled: true },
+   { label: 'Solcraft Vault', icon: Timer, href: 'https://solcraft-vault.vercel.app' },
    { label: 'Staking', icon: TrendingUp, badge: 'Soon', disabled: true },
 ];
 
 const adminNav: NavItem[] = [{ label: 'Admin Console', href: '/admin', icon: Settings2 }];
 
 export function AppSidebar({ pathname }: AppSidebarProps) {
+   const { isAdmin: showAdmin } = useFactoryAdmin();
+
    return (
       <Sidebar variant="floating" collapsible="icon">
          <SidebarHeader className="px-3 pt-4 pb-2 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:p-2">
@@ -85,6 +98,7 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
                                  <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
                               </SidebarMenuButton>
                            )}
+
                            {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
                         </SidebarMenuItem>
                      ))}
@@ -99,9 +113,15 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
                         <SidebarMenuItem key={item.label}>
                            {item.href ? (
                               <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.label}>
-                                 <Link href={item.href} className="min-w-0">
+                                 <Link
+                                    href={item.href}
+                                    className="flex min-w-0 items-center gap-2"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                 >
                                     <item.icon />
                                     <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
+                                    <ExternalLink className="text-muted-foreground ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                                  </Link>
                               </SidebarMenuButton>
                            ) : (
@@ -116,31 +136,35 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
                   </SidebarMenu>
                </SidebarGroupContent>
             </SidebarGroup>
-            <SidebarGroup className="group-data-[collapsible=icon]:p-1">
-               <SidebarGroupLabel>Admin</SidebarGroupLabel>
-               <SidebarGroupContent>
-                  <SidebarMenu>
-                     {adminNav.map(item => (
-                        <SidebarMenuItem key={item.label}>
-                           {item.href ? (
-                              <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.label}>
-                                 <Link href={item.href} className="min-w-0">
+            {showAdmin ? (
+               <SidebarGroup className="group-data-[collapsible=icon]:p-1">
+                  <SidebarGroupLabel>Admin</SidebarGroupLabel>
+                  <SidebarGroupContent>
+                     <SidebarMenu>
+                        {adminNav.map(item => (
+                           <SidebarMenuItem key={item.label}>
+                              {item.href ? (
+                                 <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.label}>
+                                    <Link href={item.href} className="min-w-0">
+                                       <item.icon />
+                                       <span className="truncate group-data-[collapsible=icon]:hidden">
+                                          {item.label}
+                                       </span>
+                                    </Link>
+                                 </SidebarMenuButton>
+                              ) : (
+                                 <SidebarMenuButton disabled tooltip={item.label}>
                                     <item.icon />
                                     <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
-                                 </Link>
-                              </SidebarMenuButton>
-                           ) : (
-                              <SidebarMenuButton disabled tooltip={item.label}>
-                                 <item.icon />
-                                 <span className="truncate group-data-[collapsible=icon]:hidden">{item.label}</span>
-                              </SidebarMenuButton>
-                           )}
-                           {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
-                        </SidebarMenuItem>
-                     ))}
-                  </SidebarMenu>
-               </SidebarGroupContent>
-            </SidebarGroup>
+                                 </SidebarMenuButton>
+                              )}
+                              {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
+                           </SidebarMenuItem>
+                        ))}
+                     </SidebarMenu>
+                  </SidebarGroupContent>
+               </SidebarGroup>
+            ) : null}
          </SidebarContent>
          <SidebarFooter>
             <Button
