@@ -1,118 +1,96 @@
-# solana-dapp-test
+# Solcraft
 
-Next.js starter with Tailwind CSS, `@solana/react-hooks`, and an Anchor vault program example.
+## Project Description
 
-## Getting Started
+Solcraft is a production-ready SPL token operations suite that combines a token builder, faucet tooling, and admin controls with an on-chain Anchor program and a type-safe client.
 
-```shell
-npx create-solana-dapp@latest -t kit/solana-dapp-test
-```
+## Tech Stack
 
-```shell
-npm install   # Builds program and generates client automatically
-npm run dev
-```
+- Frontend: Next.js 16, React 19, TypeScript
+- Styling: Tailwind CSS v4, Radix UI
+- Solana: @solana/kit, @solana/react-hooks
+- On-chain: Anchor (Rust)
+- Tooling: Codama, ESLint, Prettier
 
-Open [http://localhost:3000](http://localhost:3000), connect your wallet, and interact with the vault on devnet.
+## Highlights
 
-## What's Included
+- Token Builder: create SPL tokens with metadata, supply, and authority controls.
+- Metadata pipeline: upload token images to Cloudinary and pin metadata to IPFS via Pinata.
+- Faucet Desk: configure claim limits, cooldowns, deposits, and withdrawals.
+- Admin Console: initialize the factory, manage fees, pause or resume operations, and withdraw treasury funds.
+- Wallet-ready: built on `@solana/react-hooks` with an RPC client from `@solana/kit`.
 
-- **Wallet connection** via `@solana/react-hooks` with auto-discovery
-- **SOL Vault program** - deposit and withdraw SOL from a personal PDA vault
-- **Codama-generated client** - type-safe program interactions using `@solana/kit`
-- **Tailwind CSS v4** with light/dark mode
+## Quick Start (Local)
 
-## Stack
+Prerequisites:
+- Node.js 18+
+- npm
+- A Solana wallet (Phantom or Backpack) set to devnet
 
-| Layer          | Technology                              |
-| -------------- | --------------------------------------- |
-| Frontend       | Next.js 16, React 19, TypeScript        |
-| Styling        | Tailwind CSS v4                         |
-| Solana Client  | `@solana/client`, `@solana/react-hooks` |
-| Program Client | Codama-generated, `@solana/kit`         |
-| Program        | Anchor (Rust)                           |
+Steps:
+1. Copy the env file and fill in your credentials:
+   ```bash
+   cp .example.env .env
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the dev server:
+   ```bash
+   npm run dev
+   ```
+4. Open `http://localhost:3000` (redirects to `/overview`) and connect your wallet.
+
+## Environment Variables
+
+Solcraft validates env vars at runtime. The token builder requires Cloudinary and Pinata credentials.
+
+| Name | Purpose |
+| --- | --- |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary account name for image uploads |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `PINATA_API_KEY` | Pinata API key for metadata pinning |
+| `PINATA_API_SECRET` | Pinata API secret |
+| `PINATA_JWT_TOKEN` | Pinata JWT for uploads |
+| `NEXT_PUBLIC_PINATA_GATEWAY_URL` | Gateway base URL for fetching pinned metadata |
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the Next.js dev server |
+| `npm run build` | Build the production bundle |
+| `npm run start` | Start the production server |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format files with Prettier |
+| `npm run format:check` | Check formatting |
+| `npm run anchor-build` | Build the Anchor program |
+| `npm run anchor-test` | Run Anchor tests (skip deploy) |
+| `npm run codama:js` | Regenerate the client from the IDL |
+| `npm run setup` | Build Anchor and regenerate the client |
 
 ## Project Structure
 
 ```
-├── app/
-│   ├── components/
-│   │   ├── providers.tsx      # Solana client setup
-│   │   └── vault-card.tsx     # Vault deposit/withdraw UI
-│   ├── generated/vault/       # Codama-generated program client
-│   └── page.tsx               # Main page
-├── anchor/                    # Anchor workspace
-│   └── programs/vault/        # Vault program (Rust)
-└── codama.json                # Codama client generation config
+app/                Next.js app routes and layouts
+features/           Feature modules (token, faucet, factory)
+generated/          Codama-generated Solana client
+anchor/             Anchor workspace for on-chain programs
+lib/                Shared utilities and env validation
+public/             Static assets
 ```
 
-## Deploy Your Own Vault
+## Program and Client
 
-The included vault program is already deployed to devnet. To deploy your own:
+- The Anchor workspace lives in `anchor/`.
+- Client code is generated in `generated/` using Codama.
+- After changing on-chain programs, run:
+  ```bash
+  npm run setup
+  ```
 
-### Prerequisites
+## Deployment Notes
 
-- [Rust](https://rustup.rs/)
-- [Solana CLI](https://solana.com/docs/intro/installation)
-- [Anchor](https://www.anchor-lang.com/docs/installation)
-
-### Steps
-
-1. **Configure Solana CLI for devnet**
-
-   ```bash
-   solana config set --url devnet
-   ```
-
-2. **Create a wallet (if needed) and fund it**
-
-   ```bash
-   solana-keygen new
-   solana airdrop 2
-   ```
-
-3. **Build and deploy the program**
-
-   ```bash
-   cd anchor
-   anchor build
-   anchor keys sync    # Updates program ID in source
-   anchor build        # Rebuild with new ID
-   anchor deploy
-   cd ..
-   ```
-
-4. **Regenerate the client and restart**
-   ```bash
-   npm run setup   # Rebuilds program and regenerates client
-   npm run dev
-   ```
-
-## Testing
-
-Tests use [LiteSVM](https://github.com/LiteSVM/litesvm), a fast lightweight Solana VM for testing.
-
-```bash
-npm run anchor-build   # Build the program first
-npm run anchor-test    # Run tests
-```
-
-The tests are in `anchor/programs/vault/src/tests.rs` and automatically use the program ID from `declare_id!`.
-
-## Regenerating the Client
-
-If you modify the program, regenerate the TypeScript client:
-
-```bash
-npm run setup   # Or: npm run anchor-build && npm run codama:js
-```
-
-This uses [Codama](https://github.com/codama-idl/codama) to generate a type-safe client from the Anchor IDL.
-
-## Learn More
-
-- [Solana Docs](https://solana.com/docs) - core concepts and guides
-- [Anchor Docs](https://www.anchor-lang.com/docs) - program development framework
-- [Deploying Programs](https://solana.com/docs/programs/deploying) - deployment guide
-- [framework-kit](https://github.com/solana-foundation/framework-kit) - the React hooks used here
-- [Codama](https://github.com/codama-idl/codama) - client generation from IDL
+If you deploy to Vercel, ensure build artifacts are excluded from uploads. A `.vercelignore` file is included to skip `anchor/target`.

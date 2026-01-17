@@ -1,76 +1,78 @@
-# Anchor Vault Program
+# Solcraft Anchor Workspace
 
-This template includes a simple SOL vault program built with [Anchor](https://www.anchor-lang.com/).
-
-## Pre-deployed Program
-
-The vault program is deployed on **devnet** at:
-
-```
-F4jZpgbtTb6RWNWq6v35fUeiAsRJMrDczVPv9U23yXjB
-```
-
-You can interact with it immediately by connecting your wallet to devnet.
-
-## Deploying Your Own Program
-
-To deploy your own version of the program:
-
-### 1. Generate a new program keypair
-
-```bash
-cd anchor
-solana-keygen new -o target/deploy/vault-keypair.json
-```
-
-### 2. Get the new program ID
-
-```bash
-solana address -k target/deploy/vault-keypair.json
-```
-
-### 3. Update the program ID
-
-Update the program ID in these files:
-
-- `anchor/Anchor.toml` - Update `vault = "..."` under `[programs.devnet]`
-- `anchor/programs/vault/src/lib.rs` - Update `declare_id!("...")`
-
-### 4. Build and deploy
-
-```bash
-# Build the program
-anchor build
-
-# Get devnet SOL for deployment (~2 SOL needed)
-solana airdrop 2 --url devnet
-
-# Deploy to devnet
-anchor deploy --provider.cluster devnet
-```
-
-### 5. Regenerate the TypeScript client
-
-```bash
-cd ..
-npm run codama:js
-```
-
-This updates the generated client code in `app/generated/vault/` with your new program ID.
+This workspace contains the on-chain Solcraft program that powers the factory, token, and faucet flows used by the Next.js app.
 
 ## Program Overview
 
-The vault program allows users to:
+Core instructions:
+- Factory: initialize, update creation fee, pause/unpause, withdraw fees.
+- Token: create token, mint tokens, transfer mint authority.
+- Faucet: initialize, deposit, withdraw, claim.
 
-- **Deposit**: Send SOL to a personal vault PDA (Program Derived Address)
-- **Withdraw**: Retrieve all SOL from your vault
+Accounts:
+- `FactoryConfig`: admin, fee config, treasury, pause state.
+- `FaucetConfig`: owner, mint, treasury ATA, claim limits, cooldowns.
+- `FaucetRecipientData`: last-claim timestamp per wallet.
 
-Each user gets their own vault derived from their wallet address.
+## Prerequisites
 
-## Testing
+- Rust toolchain
+- Solana CLI
+- Anchor CLI
 
-Run the Anchor tests:
+Recommended:
+- `solana config set --url devnet` or `localnet` for local testing.
+- A funded keypair at `~/.config/solana/id.json` (default in `Anchor.toml`).
+
+## Build
 
 ```bash
+cd anchor
+anchor build
+```
+
+## Test (Local Validator)
+
+If you need Metaplex on localnet, start a validator with the token metadata program cloned from mainnet:
+
+```bash
+solana-test-validator --reset \
+  --clone-upgradeable-program metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s \
+  --url https://api.mainnet-beta.solana.com
+```
+
+Keep this running in a separate terminal while you test locally.
+
+```bash
+cd anchor
 anchor test --skip-deploy
+```
+
+The test validator configuration lives in `anchor/Anchor.toml`.
+
+## Deploy
+
+1. Make sure your program ID matches:
+   - `anchor/programs/solcraft/src/lib.rs` (`declare_id!`)
+   - `anchor/Anchor.toml` under `[programs.<cluster>]`
+2. Build and deploy:
+   ```bash
+   cd anchor
+   anchor build
+   solana airdrop 2 --url devnet
+   anchor deploy --provider.cluster devnet
+   ```
+
+## Regenerate the TypeScript Client
+
+From the repo root, regenerate the Codama client after program changes:
+
+```bash
+npm run codama:js
+```
+
+Or run the combined workflow:
+
+```bash
+npm run setup
 ```
