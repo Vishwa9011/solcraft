@@ -2,7 +2,6 @@ import {
    CreateTokenInput,
    getCreateTokenInstructionAsync,
    getMintTokensInstructionAsync,
-   getTransferFreezeAuthorityInstruction,
    getTransferMintAuthorityInstruction,
 } from '@/generated/solcraft';
 import { TOKEN_PROGRAM_ADDRESS, findAssociatedTokenPda } from '@solana-program/token';
@@ -68,17 +67,6 @@ export async function buildMintTokensInstruction(signer: TransactionSigner, { mi
       amount,
       mint,
       recipient: signer,
-   });
-}
-
-export function buildTransferFreezeAuthorityInstruction(
-   signer: TransactionSigner,
-   { mint, newAuthority }: TransferAuthorityParams
-) {
-   return getTransferFreezeAuthorityInstruction({
-      mint,
-      currentAuthority: signer,
-      newAuthority,
    });
 }
 

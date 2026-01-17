@@ -10,7 +10,6 @@ import { useMutation } from '@tanstack/react-query';
 import {
    buildCreateTokenInstruction,
    buildMintTokensInstruction,
-   buildTransferFreezeAuthorityInstruction,
    buildTransferMintAuthorityInstruction,
    CreateTokenParams,
    type MintTokensParams,
@@ -78,25 +77,6 @@ export function useTokenActions() {
       },
    });
 
-   const transferOrRevokeFreezeAuthority = useMutation({
-      mutationFn: async (params: TransferAuthorityParams) => {
-         const walletSigner = requireSigner(signer);
-         const instructions = buildTransferFreezeAuthorityInstruction(walletSigner, params);
-
-         return await send({
-            instructions: [instructions],
-            feePayer: walletSigner,
-            commitment: 'confirmed',
-         });
-      },
-      onSuccess: data => {
-         toast.success(`Authority updated successfully. Tx: ${data}`);
-      },
-      onError: error => {
-         toast.error(`Error updating authority: ${error.message}`);
-      },
-   });
-
    const transferOrRevokeMintAuthority = useMutation({
       mutationFn: async (params: TransferAuthorityParams) => {
          const walletSigner = requireSigner(signer);
@@ -119,7 +99,6 @@ export function useTokenActions() {
    return {
       createToken,
       mintTokens,
-      transferOrRevokeFreezeAuthority,
       transferOrRevokeMintAuthority,
    };
 }

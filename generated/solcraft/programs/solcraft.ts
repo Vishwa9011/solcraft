@@ -15,7 +15,6 @@ import {
    type ParsedInitializeFaucetInstruction,
    type ParsedMintTokensInstruction,
    type ParsedPauseFactoryInstruction,
-   type ParsedTransferFreezeAuthorityInstruction,
    type ParsedTransferMintAuthorityInstruction,
    type ParsedUnpauseFactoryInstruction,
    type ParsedUpdateCreationFeeInstruction,
@@ -72,7 +71,6 @@ export enum SolcraftInstruction {
    InitializeFaucet,
    MintTokens,
    PauseFactory,
-   TransferFreezeAuthority,
    TransferMintAuthority,
    UnpauseFactory,
    UpdateCreationFee,
@@ -150,15 +148,6 @@ export function identifySolcraftInstruction(
    if (
       containsBytes(
          data,
-         fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([235, 44, 91, 221, 224, 5, 187, 172])),
-         0
-      )
-   ) {
-      return SolcraftInstruction.TransferFreezeAuthority;
-   }
-   if (
-      containsBytes(
-         data,
          fixEncoderSize(getBytesEncoder(), 8).encode(new Uint8Array([87, 237, 187, 84, 168, 175, 241, 75])),
          0
       )
@@ -226,9 +215,6 @@ export type ParsedSolcraftInstruction<TProgram extends string = 'FWsMJ3Ysc51jNMk
    | ({
         instructionType: SolcraftInstruction.PauseFactory;
      } & ParsedPauseFactoryInstruction<TProgram>)
-   | ({
-        instructionType: SolcraftInstruction.TransferFreezeAuthority;
-     } & ParsedTransferFreezeAuthorityInstruction<TProgram>)
    | ({
         instructionType: SolcraftInstruction.TransferMintAuthority;
      } & ParsedTransferMintAuthorityInstruction<TProgram>)

@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 const labelClass = 'text-[11px] font-semibold text-muted-foreground';
+const toFieldId = (name: string) => `field-${name.replace(/[^a-zA-Z0-9_-]/g, '-')}`;
 
 type TokenFormFieldProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> = {
    control: Control<TFieldValues>;
@@ -28,6 +29,8 @@ export function TokenFormField<TFieldValues extends FieldValues, TName extends F
    actions,
    render,
 }: TokenFormFieldProps<TFieldValues, TName>) {
+   const fieldId = toFieldId(String(name));
+
    return (
       <FormField
          control={control}
@@ -35,7 +38,7 @@ export function TokenFormField<TFieldValues extends FieldValues, TName extends F
          render={({ field, fieldState }) => {
             const helperText = description;
             return (
-               <FormItem className={cn('flex flex-col gap-2', className)}>
+               <FormItem id={fieldId} className={cn('flex flex-col gap-2', className)}>
                   <div className="flex items-center justify-between gap-3">
                      <FormLabel className={labelClass}>
                         {label} {required ? <span className="text-primary">*</span> : null}

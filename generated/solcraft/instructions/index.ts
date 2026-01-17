@@ -13,7 +13,6 @@ export * from './initializeFactory';
 export * from './initializeFaucet';
 export * from './mintTokens';
 export * from './pauseFactory';
-export * from './transferFreezeAuthority';
 export * from './transferMintAuthority';
 export * from './unpauseFactory';
 export * from './updateCreationFee';

@@ -61,13 +61,6 @@ pub mod solcraft {
         instructions::token::transfer_mint_authority(ctx, new_authority)
     }
 
-    pub fn transfer_freeze_authority(
-        ctx: Context<TransferFreezeAuthority>,
-        new_authority: Option<Pubkey>,
-    ) -> Result<()> {
-        instructions::token::transfer_freeze_authority(ctx, new_authority)
-    }
-
     pub fn initialize_faucet(ctx: Context<InitializeFaucet>) -> Result<()> {
         instructions::faucet::initialize(ctx)
     }

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/shared/app-sidebar';
 import { ConnectButton } from '@/features/wallet';
@@ -47,7 +47,10 @@ export function AppShell({ children }: AppShellProps) {
                   <div className="flex items-start gap-3 md:items-center">
                      <SidebarTrigger className="md:hidden" />
                      <div className="max-w-xl space-y-1">
-                        <p className="text-muted-foreground text-[9px] tracking-[0.24em] uppercase">Solcraft</p>
+                        <div className="text-muted-foreground flex items-center gap-2 text-[9px] tracking-[0.24em] uppercase">
+                           <Image src="/logo.png" alt="Solcraft" width={14} height={14} className="size-3.5" />
+                           <span>Solcraft</span>
+                        </div>
                         <h1 className="text-foreground text-lg font-semibold tracking-tight md:text-xl lg:text-2xl">
                            {current.title}
                         </h1>

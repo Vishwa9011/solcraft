@@ -1,33 +1,12 @@
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
-import { Coins, Droplet, Gauge, ShieldCheck, Sparkles } from 'lucide-react';
+import { Coins, Droplet, ShieldCheck } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const cardShell = 'border-border/60 bg-card/80 shadow-sm';
-
-const heroStats = [
-   {
-      label: 'Minted today',
-      value: '12',
-      detail: '5.3k total supply',
-      icon: Sparkles,
-   },
-   {
-      label: 'Faucet claims',
-      value: '128',
-      detail: '500 token limit per cycle',
-      icon: Droplet,
-   },
-   {
-      label: 'Authority edits',
-      value: '3',
-      detail: 'Revokes and transfers pending',
-      icon: Gauge,
-   },
-];
 
 const modules = [
    {
@@ -81,22 +60,6 @@ export function OverviewContent() {
                      <Link href="/faucet">Open faucet</Link>
                   </Button>
                </div>
-            </div>
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-               {heroStats.map(item => (
-                  <Card key={item.label} className={cn(cardShell, 'rounded-2xl border-white/10 bg-white/5')}>
-                     <CardContent className="flex items-center gap-4 p-4">
-                        <div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-xl">
-                           <item.icon className="size-5" />
-                        </div>
-                        <div className="space-y-1">
-                           <p className="text-muted-foreground text-xs tracking-[0.2em] uppercase">{item.label}</p>
-                           <p className="text-foreground text-lg font-semibold">{item.value}</p>
-                           <p className="text-muted-foreground text-xs">{item.detail}</p>
-                        </div>
-                     </CardContent>
-                  </Card>
-               ))}
             </div>
          </section>
 

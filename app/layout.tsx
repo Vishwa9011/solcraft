@@ -27,6 +27,11 @@ const sora = Sora({
 export const metadata: Metadata = {
    title: 'Solcraft',
    description: 'Create and manage Solana tokens with ease.',
+   icons: {
+      icon: '/favicon.ico',
+      shortcut: '/favicon.ico',
+      apple: '/logo.png',
+   },
 };
 
 export default function RootLayout({
