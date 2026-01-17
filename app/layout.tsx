@@ -25,8 +25,11 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-   title: 'Solcraft',
-   description: 'Create and manage Solana tokens with ease.',
+   title: {
+      default: 'Solcraft',
+      template: '%s · Solcraft',
+   },
+   description: 'Build and operate SPL token products with metadata, faucets, and admin controls.',
    icons: {
       icon: '/favicon.ico',
       shortcut: '/favicon.ico',

@@ -15,19 +15,19 @@ type AppShellProps = {
 const pageMeta: Record<string, { title: string; subtitle: string }> = {
    '/overview': {
       title: 'Overview',
-      subtitle: 'Mission control for your Solana token factory.',
+      subtitle: 'Monitor your Solcraft suite and keep token ops on track.',
    },
-   '/token-builder': {
+   '/token': {
       title: 'Token Builder',
-      subtitle: 'Create new mints and manage supply authority.',
+      subtitle: 'Create SPL tokens with metadata, supply, and authority controls.',
    },
    '/faucet': {
       title: 'Faucet',
-      subtitle: 'Control free mints and claim limits for users.',
+      subtitle: 'Configure free mints, claim limits, and cooldowns.',
    },
    '/admin': {
       title: 'Admin Console',
-      subtitle: 'Factory controls, fee updates, and treasury actions.',
+      subtitle: 'Factory setup, fee management, and treasury actions.',
    },
 };
 
@@ -37,7 +37,7 @@ export function AppShell({ children }: AppShellProps) {
    const pathname = usePathname();
    const current = pageMeta[pathname] ?? {
       title: 'Solcraft',
-      subtitle: 'Create and manage Solana tokens with confidence.',
+      subtitle: 'Build and operate SPL token products with confidence.',
    };
 
    return (

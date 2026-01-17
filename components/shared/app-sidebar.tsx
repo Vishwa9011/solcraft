@@ -177,16 +177,6 @@ export function AppSidebar({ pathname }: AppSidebarProps) {
                </span>
                <span className="text-muted-foreground text-xs group-data-[collapsible=icon]:hidden">Beta</span>
             </Button>
-            <Button
-               variant="ghost"
-               className="w-full justify-between gap-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
-            >
-               <span className="flex items-center gap-2 text-xs">
-                  <Plus className="size-4" />
-                  <span className="truncate group-data-[collapsible=icon]:hidden">Add app link</span>
-               </span>
-               <span className="text-muted-foreground text-xs group-data-[collapsible=icon]:hidden">Soon</span>
-            </Button>
          </SidebarFooter>
       </Sidebar>
    );
