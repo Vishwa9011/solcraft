@@ -18,9 +18,10 @@ import {
    getCreateAssociatedTokenIdempotentInstructionAsync,
    TOKEN_PROGRAM_ADDRESS,
 } from '@solana-program/token';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { createTokenAmount } from '@solana/client';
+import { handleProgramError } from '@/lib/errors';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { requireSigner } from '@/features/wallet';
 
 export type InitializeFaucetParams = {
    mint: string;
@@ -32,26 +33,9 @@ export type FaucetAmountParams = {
 
 const FAUCET_CONFIG_SEED = 'faucet_config';
 const FAUCET_RECIPIENT_SEED = 'faucet_recipient';
-const WALLET_REQUIRED_MESSAGE = 'Connect a wallet to use the faucet.';
 
 let faucetPdaCache: Awaited<ReturnType<typeof getProgramDerivedAddress>>[0] | null = null;
 const recipientPdaCache = new Map<string, Address>();
-
-function resolveErrorMessage(error: unknown, fallback: string) {
-   if (error instanceof Error && error.message) {
-      return `${fallback}: ${error.message}`;
-   }
-
-   return fallback;
-}
-
-function requireSigner(signer: TransactionSigner | null) {
-   if (!signer) {
-      throw new Error(WALLET_REQUIRED_MESSAGE);
-   }
-
-   return signer;
-}
 
 async function getFaucetConfigPda() {
    if (faucetPdaCache) {
@@ -185,7 +169,7 @@ export function useFaucetActions() {
          );
       },
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to initialize faucet'));
+         handleProgramError(error, 'Failed to initialize faucet');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Faucet initialized', signature });
@@ -197,8 +181,7 @@ export function useFaucetActions() {
       mutationFn: async ({ amount }: FaucetAmountParams) => {
          const walletSigner = requireSigner(signer);
          const config = getConfigOrThrow();
-         const mintInfo = await fetchMint(client.runtime.rpc, config.mint);
-         const amountInBaseUnits = parseTokenAmount(amount, mintInfo.data.decimals);
+         const amountInBaseUnits = parseTokenAmount(amount, mintInfo.data?.data.decimals || 0);
 
          if (amountInBaseUnits <= 0n) {
             throw new Error('Amount must be greater than zero.');
@@ -229,7 +212,7 @@ export function useFaucetActions() {
          return await sendInstructions(async () => [createDepositorAta, depositIx]);
       },
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to deposit tokens'));
+         handleProgramError(error, 'Failed to deposit tokens');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Deposit confirmed', signature });
@@ -267,7 +250,7 @@ export function useFaucetActions() {
          return await sendInstructions(async () => [withdrawIx]);
       },
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to withdraw tokens'));
+         handleProgramError(error, 'Failed to withdraw tokens');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Withdraw confirmed', signature });
@@ -303,7 +286,7 @@ export function useFaucetActions() {
          return await sendInstructions(async () => [createRecipientAta, claimIx]);
       },
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to claim tokens'));
+         handleProgramError(error, 'Failed to claim tokens');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Tokens claimed', signature });

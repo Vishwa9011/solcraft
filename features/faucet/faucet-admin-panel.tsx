@@ -14,8 +14,8 @@ const labelClass = 'text-[11px] font-semibold uppercase tracking-[0.2em] text-mu
 
 export function FaucetAdminPanel() {
    const { initialize, deposit, withdraw, faucetConfig } = useFaucetActions();
-   const configData = faucetConfig.data?.exists ? faucetConfig.data.data : null;
-   const isInitialized = Boolean(configData);
+   const configData = faucetConfig.data?.data ?? null;
+   const isInitialized = Boolean(faucetConfig.data?.exists);
    const signer = useWalletSigner();
    const hasWallet = Boolean(signer?.address);
 
