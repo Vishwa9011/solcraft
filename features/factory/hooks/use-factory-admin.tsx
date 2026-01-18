@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { useWallet } from '@solana/react-hooks';
 import { useFactoryActions } from '@/features/factory/hooks/use-factory-actions';
+import { env } from '@/lib';
 
 export type FactoryAdminState = {
    isAdmin: boolean;
@@ -24,7 +25,7 @@ export function useFactoryAdmin(): FactoryAdminState {
       const isAdmin = Boolean(adminAddress && connectedAddress && adminAddress === connectedAddress);
 
       return {
-         isAdmin: true,
+         isAdmin: env.NEXT_PUBLIC_NODE_ENV === 'development' ? true : isAdmin,
          isLoading: factoryConfig.isLoading,
          isConfigured,
          adminAddress,
