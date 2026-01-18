@@ -1,7 +1,5 @@
 'use client';
 
-import { toast } from 'sonner';
-
 import { client, useTransactionToast, useWalletSigner } from '@/features/wallet';
 import { address, type TransactionSigner } from '@solana/kit';
 
@@ -16,7 +14,7 @@ import {
    type TransferAuthorityParams,
 } from '@/features/token/lib';
 import { fetchMint } from '@solana-program/token';
-import { handleProgramError, resolveProgramError } from '@/lib/errors';
+import { handleProgramError } from '@/lib/errors';
 
 const WALLET_REQUIRED_MESSAGE = 'Connect a wallet to initialize the factory.';
 
@@ -72,7 +70,7 @@ export function useTokenActions() {
          notifySuccess({ title: 'Tokens minted', signature });
       },
       onError: error => {
-         toast.error(`Error minting tokens: ${error.message}`);
+         handleProgramError(error, 'Error minting tokens');
       },
    });
 
@@ -91,7 +89,7 @@ export function useTokenActions() {
          notifySuccess({ title: 'Authority updated', signature });
       },
       onError: error => {
-         toast.error(`Error updating authority: ${error.message}`);
+         handleProgramError(error, 'Error updating authority');
       },
    });
 

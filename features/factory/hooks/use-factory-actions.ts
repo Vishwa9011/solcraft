@@ -7,7 +7,6 @@ import {
    getWithdrawFeesInstructionAsync,
    SOLCRAFT_PROGRAM_ADDRESS,
 } from '@/generated/solcraft';
-import { toast } from 'sonner';
 import { lamportsFromSol } from '@solana/client';
 import { getProgramDerivedAddress, type TransactionSigner } from '@solana/kit';
 import { useSendTransaction } from '@solana/react-hooks';
@@ -15,20 +14,13 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/app/providers';
 import { client, useTransactionToast, useWalletSigner } from '@/features/wallet';
 import { queryKeys } from '@/lib';
+import { handleProgramError } from '@/lib/errors';
 
 const FACTORY_SEED = 'factory_config';
 const WALLET_REQUIRED_MESSAGE = 'Connect a wallet to manage the factory.';
 const DEFAULT_CREATION_FEE_SOL = '0.1';
 
 let factoryPdaCache: Awaited<ReturnType<typeof getProgramDerivedAddress>>[0] | null = null;
-
-function resolveErrorMessage(error: unknown, fallback: string) {
-   if (error instanceof Error && error.message) {
-      return `${fallback}: ${error.message}`;
-   }
-
-   return fallback;
-}
 
 function requireSigner(signer: TransactionSigner | null) {
    if (!signer) {
@@ -100,7 +92,7 @@ export function useFactoryActions() {
             })
          ),
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to initialize factory'));
+         handleProgramError(error, 'Failed to initialize factory');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Factory initialized', signature });
@@ -116,7 +108,7 @@ export function useFactoryActions() {
             })
          ),
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to pause factory'));
+         handleProgramError(error, 'Failed to pause factory');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Factory paused', signature });
@@ -132,7 +124,7 @@ export function useFactoryActions() {
             })
          ),
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to unpause factory'));
+         handleProgramError(error, 'Failed to unpause factory');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Factory unpaused', signature });
@@ -149,7 +141,7 @@ export function useFactoryActions() {
             })
          ),
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to update creation fee'));
+         handleProgramError(error, 'Failed to update creation fee');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Creation fee updated', signature });
@@ -165,7 +157,7 @@ export function useFactoryActions() {
             })
          ),
       onError: error => {
-         toast.error(resolveErrorMessage(error, 'Failed to withdraw fees'));
+         handleProgramError(error, 'Failed to withdraw fees');
       },
       onSuccess: signature => {
          notifySuccess({ title: 'Fees withdrawn', signature });

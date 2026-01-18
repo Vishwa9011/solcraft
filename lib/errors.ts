@@ -8,6 +8,11 @@ export function resolveProgramError(error: any, fallbackMessage = 'An unknown er
       return getSolcraftErrorMessage(errCode);
    }
 
+   if ('cause' in error) {
+      const cause = error.cause as any;
+      return cause;
+   }
+
    return error.message ?? fallbackMessage;
 }
 
