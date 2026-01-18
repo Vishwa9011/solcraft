@@ -41,10 +41,10 @@ export function useTransactionToast() {
          toast.success(title, {
             description: (
                <div className="mt-1 space-y-1 text-xs">
-                  {description ? <span className="block text-foreground/80">{description}</span> : null}
-                  <span className="flex items-center gap-2 text-muted-foreground">
-                     <span className="text-[10px] font-semibold uppercase tracking-[0.2em]">Signature</span>
-                     <span className="font-mono text-[11px] text-foreground/80" title={signature}>
+                  {description ? <span className="text-foreground/80 block">{description}</span> : null}
+                  <span className="text-muted-foreground flex items-center gap-2">
+                     <span className="text-[10px] font-semibold tracking-[0.2em] uppercase">Signature</span>
+                     <span className="text-foreground/80 font-mono text-[11px]" title={signature}>
                         {signatureLabel}
                      </span>
                   </span>

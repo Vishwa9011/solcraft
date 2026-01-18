@@ -146,8 +146,7 @@ export function useFaucetDeskState(): FaucetDeskState {
    const claimAmountText = isMintLoading || !tokenMath ? 'tokens' : claimAmountLabel;
    const summaryLabel = `Claim ${claimAmountText} once every ${cooldownLabel}.`;
    const nextClaimLabel = formatRemaining(remainingCooldownSeconds);
-   const eligibilityLabel =
-      remainingCooldownSeconds && remainingCooldownSeconds > 0 ? 'Cooldown' : 'Eligible';
+   const eligibilityLabel = remainingCooldownSeconds && remainingCooldownSeconds > 0 ? 'Cooldown' : 'Eligible';
 
    const onClaim = () => {
       void claim.mutateAsync();

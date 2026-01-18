@@ -25,10 +25,7 @@ export default function RootLayout({
    return (
       <html lang="en" className="dark">
          <Providers>
-            <body
-               suppressHydrationWarning
-               className="antialiased"
-            >
+            <body suppressHydrationWarning className="antialiased">
                <AppShell>{children}</AppShell>
                <Toaster position="top-right" richColors />
             </body>

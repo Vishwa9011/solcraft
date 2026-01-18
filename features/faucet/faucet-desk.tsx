@@ -29,7 +29,7 @@ export function FaucetDesk() {
 
    return (
       <div className="flex w-full items-center justify-center">
-         <Card className="border-border-low relative w-full max-w-2xl overflow-hidden rounded-[34px] border bg-gradient-to-br from-amber-500/10 via-card/90 to-emerald-500/10 shadow-[0_25px_35px_rgba(0,0,0,0.55)] backdrop-blur-3xl">
+         <Card className="border-border-low via-card/90 relative w-full max-w-2xl overflow-hidden rounded-[34px] border bg-gradient-to-br from-amber-500/10 to-emerald-500/10 shadow-[0_25px_35px_rgba(0,0,0,0.55)] backdrop-blur-3xl">
             <div className="text-foreground relative z-10 space-y-6 px-6 py-10 text-center md:px-12">
                <div className="space-y-3">
                   <div className="flex items-center justify-center gap-3">
