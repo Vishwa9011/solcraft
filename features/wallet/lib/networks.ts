@@ -1,3 +1,4 @@
+import { env } from '@/lib';
 import { ClusterMoniker } from '@solana/client';
 
 export type SolanaNetworkId = 'solana-localnet' | 'solana-devnet';
@@ -26,7 +27,7 @@ const DEVNET_NETWORK: SolanaNetwork = {
    websocketEndpoint: 'wss://api.devnet.solana.com',
 };
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const IS_DEV = env.NEXT_PUBLIC_NODE_ENV === 'development';
 
 export const SOLANA_NETWORKS: SolanaNetwork[] = IS_DEV ? [LOCALNET_NETWORK, DEVNET_NETWORK] : [DEVNET_NETWORK];
 
