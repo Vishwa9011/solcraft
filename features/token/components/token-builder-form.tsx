@@ -19,6 +19,7 @@ import { TokenBuilderSocialLinks } from '@/features/token/components/token-build
 import { tokenFormDefaults, tokenFormSchema, type TokenFormValues } from '@/features/token/lib/token-builder-schema';
 import { useTokenActions } from '../hooks';
 import { createTokenAmount } from '@solana/client';
+import { handleProgramError } from '@/lib/errors';
 
 const cardShell = 'border-border/60 bg-card/80 shadow-sm rounded-2xl';
 
@@ -154,6 +155,7 @@ export function TokenBuilderForm() {
          }
       },
       onError: error => {
+         handleProgramError(error);
          const message = error instanceof Error ? error.message : 'Something went wrong during token creation.';
          setErrorMessage(message);
       },

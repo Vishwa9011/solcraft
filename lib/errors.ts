@@ -1,9 +1,13 @@
 import { getSolcraftErrorMessage } from '@/generated/solcraft';
-import { isSolanaError } from '@solana/kit';
+import { isSolanaError, SOLANA_ERROR__CODECS__NUMBER_OUT_OF_RANGE } from '@solana/kit';
 import { toast } from 'sonner';
 
 export function resolveProgramError(error: any, fallbackMessage = 'An unknown error occurred') {
    if (isSolanaError(error)) {
+      const ctx = error.context;
+      if (ctx?.__code === SOLANA_ERROR__CODECS__NUMBER_OUT_OF_RANGE) {
+         return `Number is too large. Max is ${ctx.max.toString()}.`;
+      }
       const errCode = Object.getOwnPropertyDescriptors((error.cause as any)?.cause).context.value.code;
       return getSolcraftErrorMessage(errCode);
    }

@@ -85,7 +85,7 @@ export function AppShell({ children }: AppShellProps) {
                   </div>
                </header>
                <div className="flex-1 pt-4 pb-12 sm:pt-8">
-                  <div className={cn(contentShell, 'px-3 sm:px-0')}>{children}</div>
+                  <div className={cn(contentShell, 'px-3 md:px-0')}>{children}</div>
                </div>
             </div>
          </SidebarInset>
